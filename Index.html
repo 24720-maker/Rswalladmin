@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN PANEL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>body { font-family: 'Prompt', sans-serif; background: #1e293b; color: #cbd5e1; }</style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <div class="w-64 bg-slate-900 border-r border-slate-700 flex flex-col">
+        <div class="p-6 text-white font-bold text-xl"><i class="fa-solid fa-user-shield"></i> ADMIN</div>
+        <nav class="flex-1 p-2 space-y-1">
+            <a onclick="UI.page('dash')" class="block p-3 rounded hover:bg-slate-800 cursor-pointer text-white bg-slate-800" id="nav-dash">แดชบอร์ด (ธุรกรรม)</a>
+            <a onclick="UI.page('users')" class="block p-3 rounded hover:bg-slate-800 cursor-pointer" id="nav-users">จัดการลูกค้า</a>
+            <a onclick="UI.page('promos')" class="block p-3 rounded hover:bg-slate-800 cursor-pointer" id="nav-promos">โปรโมชั่น</a>
+            <a onclick="UI.page('settings')" class="block p-3 rounded hover:bg-slate-800 cursor-pointer" id="nav-settings">ตั้งค่าระบบ</a>
+        </nav>
+        <div class="p-4">
+            <button onclick="Auth.logout()" class="w-full bg-red-900/50 text-red-400 py-2 rounded border border-red-900 hover:bg-red-900/80">Logout</button>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-auto p-8">
+        
+        <div id="page-dash">
+            <h2 class="text-2xl font-bold text-white mb-6">รายการรอตรวจสอบ</h2>
+            <div id="tx-pending" class="grid gap-4"></div>
+        </div>
+
+        <div id="page-users" class="hidden">
+            <h2 class="text-2xl font-bold text-white mb-6">รายชื่อลูกค้า</h2>
+            <div class="bg-slate-800 rounded-xl overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-900 text-white"><tr><th class="p-4">ชื่อ</th><th>อีเมล</th><th>ยอดเงิน</th><th>จัดการ</th></tr></thead>
+                    <tbody id="user-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-promos" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">จัดการโปรโมชั่น</h2>
+                <button onclick="Admin.addPromo()" class="bg-blue-600 text-white px-4 py-2 rounded">+ เพิ่มโปร</button>
+            </div>
+            <div id="promo-list" class="grid grid-cols-3 gap-4"></div>
+        </div>
+
+        <div id="page-settings" class="hidden">
+            <div class="max-w-xl bg-slate-800 p-6 rounded-xl space-y-4">
+                <h2 class="text-xl font-bold text-white mb-4">ตั้งค่าระบบ</h2>
+                <div>
+                    <label class="block text-sm mb-1">ประกาศหน้าเว็บ</label>
+                    <input id="set-ann" class="w-full bg-slate-700 border-none rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm mb-1">ลิ้งก์ติดต่อ (Line)</label>
+                    <input id="set-link" class="w-full bg-slate-700 border-none rounded p-2 text-white">
+                </div>
+                <div class="flex items-center gap-3 pt-4">
+                    <input type="checkbox" id="set-maint" class="w-5 h-5 accent-red-500">
+                    <label for="set-maint" class="text-white">เปิดโหมดปิดปรับปรุง (Maintenance)</label>
+                </div>
+                <button onclick="Admin.saveSettings()" class="w-full bg-blue-600 text-white py-2 rounded mt-4">บันทึก</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAochx_FIKbXLrbhhcLdVrpaurjjk4aQYc", authDomain: "paoshuv-c260d.firebaseapp.com", databaseURL: "https://paoshuv-c260d-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "paoshuv-c260d" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        // AUTH (Simple for demo)
+        auth.onAuthStateChanged(u => {
+            if(!u) {
+                Swal.fire({title:'Admin Login', input:'password', allowOutsideClick:false}).then(r=>{
+                    if(r.value=='admin123') auth.signInAnonymously(); else location.reload();
+                });
+            } else {
+                Admin.init();
+            }
+        });
+
+        const UI = {
+            page: (id) => {
+                document.querySelectorAll('[id^="page-"]').forEach(e=>e.classList.add('hidden'));
+                document.getElementById('page-'+id).classList.remove('hidden');
+                document.querySelectorAll('.nav-item').forEach(e=>{e.classList.remove('bg-slate-800','text-white'); e.classList.add('text-gray-400')});
+                document.getElementById('nav-'+id).classList.add('bg-slate-800','text-white');
+            }
+        };
+
+        const Admin = {
+            init: () => {
+                // Load Pending TX
+                db.ref('transactions').on('value', s => {
+                    const l = document.getElementById('tx-pending'); l.innerHTML = '';
+                    s.forEach(d => {
+                        const t = d.val();
+                        if(t.status === 'pending') {
+                            const isDep = t.type === 'deposit';
+                            l.innerHTML += `
+                                <div class="bg-slate-800 p-4 rounded-xl flex justify-between items-center border-l-4 ${isDep?'border-green-500':'border-red-500'}">
+                                    <div>
+                                        <span class="font-bold text-white text-lg">${isDep?'ฝากเงิน':'ถอนเงิน'} ฿${t.amount}</span>
+                                        <p class="text-xs text-gray-400">User: ${t.user_name} | ${isDep ? 'เวลา: '+t.time : 'Bank: '+t.bank_info}</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="Admin.tx('${d.key}','approve','${t.uid}',${t.amount},'${t.type}')" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">อนุมัติ</button>
+                                        <button onclick="Admin.tx('${d.key}','reject','${t.uid}',${t.amount},'${t.type}')" class="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700">ปฏิเสธ</button>
+                                    </div>
+                                </div>`;
+                        }
+                    });
+                });
+
+                // Load Users
+                db.ref('users').on('value', s => {
+                    const l = document.getElementById('user-list'); l.innerHTML = '';
+                    s.forEach(d => {
+                        const u = d.val();
+                        l.innerHTML += `
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/50">
+                                <td class="p-4 font-bold text-white">${u.name}</td>
+                                <td>${u.bank} ${u.acc}</td>
+                                <td class="font-mono text-green-400">฿${u.balance}</td>
+                                <td>
+                                    <button onclick="Admin.deduct('${d.key}', '${u.name}')" class="text-red-400 text-xs border border-red-400 px-2 py-1 rounded hover:bg-red-400 hover:text-white">หักเงิน</button>
+                                </td>
+                            </tr>`;
+                    });
+                });
+
+                // Load Promos
+                db.ref('promotions').on('value', s => {
+                    const l = document.getElementById('promo-list'); l.innerHTML = '';
+                    s.forEach(d => {
+                        const p = d.val();
+                        l.innerHTML += `
+                            <div class="bg-slate-800 p-3 rounded relative group">
+                                <button onclick="db.ref('promotions/${d.key}').remove()" class="absolute top-2 right-2 text-red-500 hidden group-hover:block"><i class="fa-solid fa-trash"></i></button>
+                                <img src="${p.img}" class="w-full h-24 object-cover rounded mb-2 bg-slate-700">
+                                <h4 class="font-bold text-white">${p.title}</h4>
+                                <p class="text-xs text-gray-400">${p.desc}</p>
+                            </div>`;
+                    });
+                });
+
+                // Load Settings
+                db.ref('settings').on('value', s => {
+                    const c = s.val() || {};
+                    document.getElementById('set-ann').value = c.announcement || '';
+                    document.getElementById('set-link').value = c.contactLink || '';
+                    document.getElementById('set-maint').checked = c.isMaintenance || false;
+                });
+            },
+            tx: (key, action, uid, amount, type) => {
+                if(action === 'approve') {
+                    db.ref('transactions/'+key).update({status: 'approved'});
+                    if(type === 'deposit') {
+                        db.ref('users/'+uid+'/balance').once('value', s => {
+                            db.ref('users/'+uid).update({balance: (s.val()||0) + amount});
+                        });
+                    }
+                    Swal.fire('อนุมัติแล้ว','','success');
+                } else {
+                    db.ref('transactions/'+key).update({status: 'rejected'});
+                    if(type === 'withdraw') { // Refund if withdraw rejected
+                        db.ref('users/'+uid+'/balance').once('value', s => {
+                            db.ref('users/'+uid).update({balance: (s.val()||0) + amount});
+                        });
+                    }
+                    Swal.fire('ปฏิเสธรายการ','','info');
+                }
+            },
+            deduct: async (uid, name) => {
+                const { value: form } = await Swal.fire({
+                    title: `หักเงิน: ${name}`,
+                    html: '<input id="d-amt" type="number" class="swal2-input" placeholder="จำนวนเงิน"><input id="d-reason" class="swal2-input" placeholder="เหตุผล (เช่น ผิดกฎ)">',
+                    focusConfirm: false,
+                    preConfirm: () => [document.getElementById('d-amt').value, document.getElementById('d-reason').value]
+                });
+                if(form && form[0]) {
+                    const amt = Number(form[0]);
+                    db.ref('users/'+uid+'/balance').once('value', s => {
+                        const cur = s.val() || 0;
+                        if(cur < amt) return Swal.fire('ยอดเงินไม่พอหัก','','error');
+                        db.ref('users/'+uid).update({balance: cur - amt});
+                        // Add record? Optional
+                        Swal.fire('หักเงินเรียบร้อย','','success');
+                    });
+                }
+            },
+            addPromo: async () => {
+                const { value: form } = await Swal.fire({
+                    title: 'เพิ่มโปรโมชั่น',
+                    html: '<input id="p-title" class="swal2-input" placeholder="ชื่อโปร"><input id="p-desc" class="swal2-input" placeholder="รายละเอียด"><input id="p-img" class="swal2-input" placeholder="URL รูปภาพ">',
+                    preConfirm: () => ({title: document.getElementById('p-title').value, desc: document.getElementById('p-desc').value, img: document.getElementById('p-img').value})
+                });
+                if(form.title) {
+                    db.ref('promotions').push(form);
+                    Swal.fire('เพิ่มโปรฯ แล้ว','','success');
+                }
+            },
+            saveSettings: () => {
+                db.ref('settings').update({
+                    announcement: document.getElementById('set-ann').value,
+                    contactLink: document.getElementById('set-link').value,
+                    isMaintenance: document.getElementById('set-maint').checked
+                });
+                Swal.fire('บันทึกการตั้งค่า','','success');
+            }
+        };
+        const Auth = { logout: () => auth.signOut().then(()=>location.reload()) };
+    </script>
+</body>
+</html>
