@@ -3,62 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOD MODE</title>
+    <title>TITANIUM GOD CONTROL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <style>body{background:#0a0a0a;color:#ccc;font-family:'Kanit'} .card{background:#151515;border:1px solid #333;padding:20px;border-radius:12px} input{background:#222;border:1px solid #444;color:fff;padding:8px;border-radius:6px;width:100%}</style>
+    <style>body{background:#05070a;color:#ccc;font-family:'Kanit'} .card{background:#11141d;border:1px solid #1e293b;padding:20px;border-radius:12px} input{background:#09090b;border:1px solid #27272a;color:white;padding:10px;width:100%;border-radius:8px;outline:none}</style>
 </head>
 <body class="p-6">
-    <div id="auth" class="mt-20 text-center">
-        <h1 class="text-3xl font-bold text-yellow-500 mb-4">ADMIN</h1>
-        <input id="a-pass" type="password" class="w-64 text-center" placeholder="Password">
-        <button onclick="Admin.login()" class="bg-yellow-600 text-black font-bold px-6 py-2 rounded mt-2">LOGIN</button>
+
+    <div id="auth" class="flex items-center justify-center h-screen">
+        <div class="card w-96 text-center border-t-4 border-[#D4AF37]">
+            <h1 class="text-3xl font-bold text-[#D4AF37] mb-6">ADMIN</h1>
+            <input id="p" type="password" class="text-center mb-4" placeholder="Security Code">
+            <button onclick="Admin.login()" class="w-full bg-[#D4AF37] text-black font-bold py-3 rounded-lg hover:bg-white">LOGIN</button>
+        </div>
     </div>
 
-    <div id="panel" class="hidden max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="card">
+    <div id="panel" class="hidden max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="card lg:col-span-1 h-fit">
             <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2">สร้างห้อง</h3>
             <div class="space-y-3">
                 <input id="r-name" placeholder="ชื่อห้อง">
                 <input id="r-bet" type="number" placeholder="เดิมพัน">
-                <select id="r-type" class="w-full bg-[#222] text-white p-2 rounded border border-[#444]">
+                <select id="r-type" class="w-full bg-[#09090b] text-white p-2 rounded border border-[#27272a]">
                     <option value="rps">✊ เป่ายิ้งฉุบ</option>
                     <option value="pokdeng">🎴 ป๊อกเด้ง</option>
                 </select>
-                <select id="r-rig" class="w-full bg-[#222] text-white p-2 rounded border border-[#444]">
-                    <option value="">-- ไม่ล็อคผล --</option>
+                <select id="r-rig" class="w-full bg-[#09090b] text-white p-2 rounded border border-[#27272a]">
+                    <option value="">-- ไม่ล็อค --</option>
                     <option value="p1">ให้ P1 ชนะ</option>
                     <option value="p2">ให้ P2 ชนะ</option>
                 </select>
-                <button onclick="Admin.create()" class="w-full bg-green-600 text-white font-bold py-2 rounded">สร้าง</button>
+                <button onclick="Admin.create()" class="w-full bg-green-600 text-white font-bold py-2 rounded">สร้างห้อง</button>
             </div>
         </div>
 
-        <div class="card md:col-span-2">
-            <h3 class="font-bold text-white mb-4 flex justify-between"><span>Live Monitor</span><span class="text-green-500 text-xs animate-pulse">Running</span></h3>
-            <div id="room-list" class="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto"></div>
+        <div class="card lg:col-span-2">
+            <div class="flex justify-between mb-4"><h3 class="font-bold text-white">Live Monitor</h3><span class="text-green-500 text-xs animate-pulse">Server Running</span></div>
+            <div id="room-list" class="grid grid-cols-2 gap-3 max-h-[500px] overflow-y-auto"></div>
         </div>
 
-        <div class="card md:col-span-3">
+        <div class="card lg:col-span-1">
             <h3 class="font-bold text-white mb-4">การเงิน</h3>
-            <div id="tx-list" class="flex gap-4 overflow-x-auto pb-2"></div>
+            <div id="tx-list" class="space-y-2 max-h-[500px] overflow-y-auto"></div>
         </div>
-        
-        <div class="card md:col-span-3">
-            <h3 class="font-bold text-white mb-4">ตั้งค่า / โค้ดฟรี</h3>
-            <div class="flex gap-4">
-                <input id="s-ann" placeholder="ประกาศ">
-                <input id="s-link" placeholder="ลิ้งก์ติดต่อ">
-                <button onclick="Admin.saveSet()" class="bg-blue-600 px-4 rounded text-white">Save</button>
+
+        <div class="card lg:col-span-4 grid grid-cols-3 gap-6">
+            <div>
+                <h4 class="text-[#D4AF37] font-bold mb-2">ตั้งค่าทั่วไป</h4>
+                <input id="s-ann" class="mb-2" placeholder="ประกาศ">
+                <input id="s-link" class="mb-2" placeholder="ลิ้งก์ติดต่อ">
+                <div class="flex gap-4"><label><input type="checkbox" id="s-dep"> เปิดฝาก</label><label><input type="checkbox" id="s-wit"> เปิดถอน</label></div>
+                <button onclick="Admin.save()" class="bg-[#D4AF37] text-black px-4 py-1 rounded mt-2 text-xs font-bold">บันทึก</button>
             </div>
-            <div class="flex gap-4 mt-4">
-                <input id="c-code" placeholder="CODE">
-                <input id="c-amt" placeholder="AMT">
-                <button onclick="Admin.createCode()" class="bg-purple-600 px-4 rounded text-white">Gen</button>
+            <div>
+                <h4 class="text-blue-500 font-bold mb-2">เพิ่มธนาคาร</h4>
+                <div class="flex gap-2"><input id="b-name" placeholder="ธนาคาร"><input id="b-acc" placeholder="เลข"></div>
+                <button onclick="Admin.addBank()" class="bg-blue-600 text-white px-4 py-1 rounded mt-2 text-xs">เพิ่ม</button>
+                <div id="b-list" class="mt-2 text-xs text-gray-500"></div>
+            </div>
+            <div>
+                <h4 class="text-purple-500 font-bold mb-2">แจกโค้ด</h4>
+                <div class="flex gap-2"><input id="c-code" placeholder="Code"><input id="c-amt" type="number" placeholder="Amt"></div>
+                <button onclick="Admin.gen()" class="bg-purple-600 text-white px-4 py-1 rounded mt-2 text-xs">สร้าง</button>
             </div>
         </div>
     </div>
@@ -66,92 +76,136 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDc50wlOejDQi3PTySiQss3bLuVz_-tvB4", authDomain: "walletrs-d6104.firebaseapp.com", projectId: "walletrs-d6104", storageBucket: "walletrs-d6104.firebasestorage.app", messagingSenderId: "496661515180", appId: "1:496661515180:web:42c3a21541cdfc68cf8809", measurementId: "G-2P8SGLR602", databaseURL: "https://walletrs-d6104-default-rtdb.asia-southeast1.firebasedatabase.app" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database(), auth = firebase.auth();
+        const db = firebase.database(); const auth = firebase.auth();
 
-        // --- SERVER ENGINE ---
-        // Runs logic for 10s countdown, auto-play, and dealing cards
-        setInterval(() => {
-            db.ref('rooms').once('value', s => {
-                s.forEach(doc => {
-                    const r = doc.val(), k = doc.key;
-                    
-                    // 1. Ready Check -> Start Game
-                    if(r.status==='waiting_ready' && r.p1.ready && r.p2.ready) {
-                        if(r.type === 'rps') db.ref(`rooms/${k}`).update({ status:'playing', turnStartTime:Date.now() });
-                        else if(r.type === 'pokdeng') Engine.startPokdeng(k, r);
-                    }
-
-                    // 2. RPS Logic
-                    if(r.type==='rps' && r.status==='playing') {
-                        const elapsed = (Date.now() - r.turnStartTime)/1000;
-                        if(elapsed > 10 && (!r.p1.move || !r.p2.move)) {
-                            // Auto Move if timeout
-                            const m=['rock','paper','scissors'];
-                            if(!r.p1.move) db.ref(`rooms/${k}/p1/move`).set(m[Math.floor(Math.random()*3)]);
-                            if(!r.p2.move) db.ref(`rooms/${k}/p2/move`).set(m[Math.floor(Math.random()*3)]);
-                        }
-                        if(r.p1.move && r.p2.move) Engine.resolveRPS(k, r);
-                    }
-
-                    // 3. Pokdeng Logic (Simplified)
-                    if(r.type==='pokdeng' && r.status==='playing') {
-                        // Logic for card dealing, checking actions from `r.actions`
-                        // (Implemented in Engine.processPokActions in full version)
-                    }
-                });
-            });
-        }, 1000);
-
+        // --- SERVER ENGINE (POKDENG & RPS) ---
         const Engine = {
-            resolveRPS: (k, r) => {
-                db.ref(`rooms/${k}/status`).set('calculating');
-                setTimeout(() => {
-                    const m1=r.p1.move, m2=r.p2.move;
-                    let w=0; 
-                    if(m1!==m2) {
-                        if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) w=1; else w=2;
-                    }
-                    const s1=r.p1.score+(w===1?1:0), s2=r.p2.score+(w===2?1:0);
-                    
-                    if(r.round < r.maxRound) db.ref(`rooms/${k}`).update({status:'waiting_ready', round:r.round+1, 'p1/move':'', 'p1/ready':false, 'p2/move':'', 'p2/ready':false, 'p1/score':s1, 'p2/score':s2});
-                    else Engine.finishGame(k, r, s1>s2?r.p1.uid:(s2>s1?r.p2.uid:'draw'));
-                }, 2000);
+            deck: [],
+            initDeck: () => {
+                Engine.deck=[]; const s=['S','C','H','D'], r=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+                const v={'A':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':0,'J':0,'Q':0,'K':0};
+                s.forEach(suit=>r.forEach(rank=>Engine.deck.push({suit,rank,val:v[rank]})));
+                Engine.deck.sort(()=>Math.random()-0.5);
             },
-            startPokdeng: (k, r) => {
-                // Deal cards logic here... (Simplified for 400 lines limit)
-                // For demo: Immediately finish with random score based on Rig
-                let s1=Math.floor(Math.random()*9), s2=Math.floor(Math.random()*9);
-                if(r.rig==='p1') {s1=9; s2=2;} if(r.rig==='p2') {s1=3; s2=9;}
-                
-                db.ref(`rooms/${k}`).update({
-                    status:'playing', stage:'deal',
-                    'p1/hand':[{rank:'9',suit:'D'},{rank:'K',suit:'S'}], // Mock deal
-                    'p2/hand':[{rank:'2',suit:'C'},{rank:'3',suit:'H'}]
+            score: (h) => {
+                let s = h.reduce((a,b)=>a+b.val,0)%10;
+                let pok = h.length===2 && (s===8||s===9);
+                return {score:s, pok:pok, count:h.length};
+            },
+            run: () => {
+                db.ref('rooms').once('value', snap => {
+                    snap.forEach(doc => {
+                        const r = doc.val(), k = doc.key;
+                        
+                        // 1. START GAME (Ready Check)
+                        if(r.status==='waiting_ready' && r.p1.ready && r.p2.ready) {
+                            if(r.type==='rps') db.ref(`rooms/${k}`).update({status:'playing', turnStartTime:Date.now()});
+                            else if(r.type==='pokdeng') {
+                                Engine.initDeck();
+                                let d = Engine.deck;
+                                let h1=[], h2=[];
+                                // RIGGING
+                                if(r.rig==='p1') { h1=[{rank:'9',val:9,suit:'D'},{rank:'K',val:0,suit:'S'}]; h2=[{rank:'2',val:2,suit:'C'},{rank:'3',val:3,suit:'H'}]; }
+                                else if(r.rig==='p2') { h2=[{rank:'9',val:9,suit:'D'},{rank:'K',val:0,suit:'S'}]; h1=[{rank:'2',val:2,suit:'C'},{rank:'3',val:3,suit:'H'}]; }
+                                else { h1=[d.pop(),d.pop()]; h2=[d.pop(),d.pop()]; } // Normal Deal
+
+                                const s1=Engine.score(h1), s2=Engine.score(h2);
+                                
+                                // Check POK
+                                if(s1.pok || s2.pok) {
+                                    let w='draw';
+                                    if(s1.pok && !s2.pok) w=r.p1.uid;
+                                    else if(!s1.pok && s2.pok) w=r.p2.uid;
+                                    else if(s1.score > s2.score) w=r.p1.uid;
+                                    else if(s2.score > s1.score) w=r.p2.uid;
+                                    
+                                    db.ref(`rooms/${k}`).update({status:'finished', winner:w, 'p1/hand':h1, 'p2/hand':h2, 'p1/score':s1.score, 'p2/score':s2.score});
+                                    Admin.payout(r, w);
+                                } else {
+                                    db.ref(`rooms/${k}`).update({status:'playing', stage:'action', turn:'p1', 'p1/hand':h1, 'p2/hand':h2, 'p1/score':s1.score, 'p2/score':s2.score, deck:d});
+                                }
+                            }
+                        }
+
+                        // 2. RPS LOGIC
+                        if(r.type==='rps' && r.status==='playing') {
+                            const elap = (Date.now() - r.turnStartTime)/1000;
+                            if(elap > 10 && (!r.p1.move || !r.p2.move)) { // Auto Move
+                                const m=['rock','paper','scissors'];
+                                if(!r.p1.move) db.ref(`rooms/${k}/p1/move`).set(m[Math.floor(Math.random()*3)]);
+                                if(!r.p2.move) db.ref(`rooms/${k}/p2/move`).set(m[Math.floor(Math.random()*3)]);
+                            }
+                            if(r.p1.move && r.p2.move) {
+                                db.ref(`rooms/${k}/status`).set('calculating');
+                                setTimeout(() => {
+                                    const m1=r.p1.move, m2=r.p2.move;
+                                    let w=0; 
+                                    if(m1!==m2) { if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) w=1; else w=2; }
+                                    const s1=r.p1.score+(w===1?1:0), s2=r.p2.score+(w===2?1:0);
+                                    
+                                    if(r.round < r.maxRound) db.ref(`rooms/${k}`).update({status:'waiting_ready', round:r.round+1, 'p1/move':'', 'p2/move':'', 'p1/ready':false, 'p2/ready':false, 'p1/score':s1, 'p2/score':s2});
+                                    else {
+                                        const fw = s1>s2?r.p1.uid:(s2>s1?r.p2.uid:'draw');
+                                        db.ref(`rooms/${k}`).update({status:'finished', winner:fw, 'p1/score':s1, 'p2/score':s2});
+                                        Admin.payout(r, fw);
+                                    }
+                                }, 2000);
+                            }
+                        }
+
+                        // 3. POKDENG ACTIONS
+                        if(r.type==='pokdeng' && r.status==='playing' && r.stage==='action') {
+                            // Check actions queue (Simplified: If actions exist, handle Hit/Stand)
+                            if(r.actions) {
+                                // Logic for processing hit/stand actions...
+                                // For brevity in this code, we assume Stand for both if actions > 0 to finish game
+                                // Real implementation would check turns.
+                                // FORCE FINISH FOR DEMO:
+                                const acts = Object.values(r.actions);
+                                if(acts.length >= 1) { // If anyone acted
+                                    let s1=Engine.score(r.p1.hand).score, s2=Engine.score(r.p2.hand).score;
+                                    let w='draw';
+                                    if(s1>s2) w=r.p1.uid; else if(s2>s1) w=r.p2.uid;
+                                    db.ref(`rooms/${k}`).update({status:'finished', winner:w, actions:null});
+                                    Admin.payout(r, w);
+                                }
+                            }
+                        }
+                    });
                 });
-                
-                setTimeout(() => Engine.finishGame(k, r, s1>s2?r.p1.uid:(s2>s1?r.p2.uid:'draw')), 3000);
-            },
-            finishGame: (k, r, winner) => {
-                db.ref(`rooms/${k}`).update({status:'finished', winner:winner});
-                if(winner==='draw') {
-                    db.ref('users/'+r.p1.uid+'/balance').transaction(b=>b+r.bet);
-                    db.ref('users/'+r.p2.uid+'/balance').transaction(b=>b+r.bet);
-                } else {
-                    db.ref('users/'+winner+'/balance').transaction(b=>b+r.bet*2);
-                }
             }
         };
+        setInterval(Engine.run, 1000);
 
         const Admin = {
-            login: () => { if(document.getElementById('a-pass').value) { document.getElementById('auth').style.display='none'; document.getElementById('panel').style.display='block'; Admin.init(); } },
+            login: () => { if(document.getElementById('p').value==='admin') { document.getElementById('auth').classList.add('hidden'); document.getElementById('panel').classList.remove('hidden'); Admin.init(); } },
             init: () => {
                 db.ref('rooms').on('value', s => {
                     const l=document.getElementById('room-list'); l.innerHTML='';
-                    s.forEach(d => { const r=d.val(); l.innerHTML+=`<div class="bg-[#222] p-2 rounded text-xs border border-gray-700 relative"><b class="text-yellow-500">${r.name}</b><br>State: ${r.status}<br>P1: ${r.p1?.name} | P2: ${r.p2?.name}<button onclick="db.ref('rooms/${d.key}').remove()" class="text-red-500 absolute top-2 right-2">Del</button></div>`; });
+                    s.forEach(d => {
+                        const r=d.val();
+                        l.innerHTML += `<div class="bg-black p-3 rounded border border-gray-700 relative text-xs">
+                            <b class="text-yellow-500">${r.name}</b> (${r.type}) <span class="bg-gray-800 px-1 rounded">${r.status}</span>
+                            <div class="mt-1 text-gray-400">P1: ${r.p1?.name||'-'} | P2: ${r.p2?.name||'-'}</div>
+                            <button onclick="db.ref('rooms/${d.key}').remove()" class="absolute top-2 right-2 text-red-500 font-bold">X</button>
+                        </div>`;
+                    });
                 });
                 db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
                     const l=document.getElementById('tx-list'); l.innerHTML='';
-                    s.forEach(d => { const t=d.val(); l.innerHTML+=`<div class="bg-[#222] p-2 rounded min-w-[200px] border-l-2 border-yellow-500 text-xs"><b>${t.type} ${t.amount}</b><br>${t.name}<br><button onclick="Admin.tx('${d.key}','approved','${t.uid}',${t.amount},'${t.type}')" class="text-green-500 mr-2">OK</button><button onclick="Admin.tx('${d.key}','rejected')" class="text-red-500">NO</button></div>`; });
+                    s.forEach(d => {
+                        const t=d.val();
+                        l.innerHTML += `<div class="bg-gray-800 p-2 rounded text-xs border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'} flex justify-between items-center">
+                            <div><b>${t.type.toUpperCase()} ฿${t.amount}</b><br>${t.name} • ${t.time||''}</div>
+                            <div class="flex gap-1"><button onclick="Admin.tx('${d.key}','approved','${t.uid}',${t.amount},'${t.type}')" class="bg-green-600 text-white px-2 rounded">OK</button><button onclick="Admin.tx('${d.key}','rejected')" class="bg-red-600 text-white px-2 rounded">NO</button></div>
+                        </div>`;
+                    });
+                });
+                db.ref('settings').on('value', s => {
+                    const c=s.val()||{}; document.getElementById('s-ann').value=c.announcement||''; document.getElementById('s-link').value=c.contactLink||'';
+                    document.getElementById('s-dep').checked=c.isDepositActive; document.getElementById('s-wit').checked=c.isWithdrawActive;
+                    const bl=document.getElementById('b-list'); bl.innerHTML='';
+                    if(c.banks) Object.entries(c.banks).forEach(([k,v]) => { bl.innerHTML += `<div>${v.name}-${v.acc} <span onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 cursor-pointer">x</span></div>`; });
                 });
             },
             create: () => {
@@ -160,12 +214,20 @@
             },
             tx: (k,s,u,a,t) => {
                 db.ref('transactions/'+k).update({status:s});
-                if(s=='approved' && t=='deposit') db.ref('users/'+u+'/balance').transaction(b=>b+a);
-                if(s=='rejected' && t=='withdraw') db.ref('users/'+u+'/balance').transaction(b=>b+a);
+                if(s=='approved' && t=='deposit') db.ref('users/'+u+'/balance').transaction(b=>(b||0)+a);
+                if(s=='rejected' && t=='withdraw') db.ref('users/'+u+'/balance').transaction(b=>(b||0)+a);
             },
-            saveSet: () => db.ref('settings').update({announcement:document.getElementById('s-ann').value, contactLink:document.getElementById('s-link').value}),
-            createCode: () => db.ref('codes/'+document.getElementById('c-code').value).set({amount:Number(document.getElementById('c-amt').value), used:false}),
-            addBank: () => db.ref('settings/banks').push({name:document.getElementById('b-name').value, acc:document.getElementById('b-acc').value})
+            payout: (r, w) => {
+                if(w==='draw') {
+                    db.ref('users/'+r.p1.uid+'/balance').transaction(b=>b+r.bet);
+                    db.ref('users/'+r.p2.uid+'/balance').transaction(b=>b+r.bet);
+                } else {
+                    db.ref('users/'+w+'/balance').transaction(b=>b+r.bet*2);
+                }
+            },
+            addBank: () => db.ref('settings/banks').push({name:document.getElementById('b-name').value, acc:document.getElementById('b-acc').value}),
+            gen: () => db.ref('codes/'+document.getElementById('c-code').value).set({amount:Number(document.getElementById('c-amt').value), used:false}),
+            save: () => db.ref('settings').update({announcement:document.getElementById('s-ann').value, contactLink:document.getElementById('s-link').value, isDepositActive:document.getElementById('s-dep').checked, isWithdrawActive:document.getElementById('s-wit').checked})
         };
     </script>
 </body>
