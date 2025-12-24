@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN PANEL - PRO</title>
+    <title>ADMIN DASHBOARD - TITANIUM</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -21,23 +21,23 @@
         body { font-family: 'Prompt', sans-serif; background: #0f172a; color: #cbd5e1; overflow: hidden; }
         ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .sidebar { width: 260px; height: 100vh; background: #020617; border-right: 1px solid #1e293b; position: fixed; display: flex; flex-direction: column; z-index: 50; }
-        .main { margin-left: 260px; height: 100vh; overflow-y: auto; padding: 2rem; background: radial-gradient(circle at 50% 0%, #172033 0%, #0f172a 100%); }
+        .main { margin-left: 260px; height: 100vh; overflow-y: auto; padding: 2rem; background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%); }
         .nav-btn { padding: 12px 20px; margin: 4px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #94a3b8; transition: 0.2s; }
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .nav-btn.active { background: rgba(212, 175, 55, 0.1); color: #D4AF37; border-left: 3px solid #D4AF37; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .input-dark { background: #020617; border: 1px solid #334155; color: white; padding: 10px 14px; border-radius: 8px; width: 100%; outline: none; }
         .input-dark:focus { border-color: #D4AF37; }
         .btn-gold { background: linear-gradient(to right, #D4AF37, #b4902b); color: #000; font-weight: bold; padding: 10px 20px; border-radius: 8px; width: 100%; transition: 0.2s; }
-        .new-entry { animation: pulse 2s infinite; border: 1px solid #D4AF37; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.7); } 70% { box-shadow: 0 0 0 10px rgba(212,175,55,0); } 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); } }
+        .new-entry { animation: pulse 2s infinite; border-left: 4px solid #D4AF37 !important; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.5); } 70% { box-shadow: 0 0 0 10px rgba(212,175,55,0); } 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); } }
     </style>
 </head>
 <body>
 
     <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95">
         <div class="card w-full max-w-sm text-center border-t-4 border-[#D4AF37] animate__animated animate__fadeInDown">
-            <h1 class="text-3xl font-bold text-[#D4AF37] mb-6">ADMIN PANEL</h1>
+            <h1 class="text-3xl font-bold text-[#D4AF37] mb-6">ADMIN</h1>
             <input id="a-email" class="input-dark mb-3 text-center" value="farisxuma1@gmail.com" readonly>
             <input id="a-pass" type="password" class="input-dark mb-4 text-center" placeholder="Password">
             <button onclick="Auth.login()" class="btn-gold">LOGIN</button>
@@ -55,6 +55,7 @@
                 <div onclick="UI.route('finance')" id="nav-finance" class="nav-btn"><i class="fa-solid fa-wallet w-5"></i> ธุรกรรม <span id="badge" class="ml-auto bg-red-500 text-white text-[10px] px-2 rounded-full hidden animate-pulse">0</span></div>
                 <div onclick="UI.route('users')" id="nav-users" class="nav-btn"><i class="fa-solid fa-users w-5"></i> สมาชิก</div>
                 <div onclick="UI.route('banks')" id="nav-banks" class="nav-btn"><i class="fa-solid fa-building-columns w-5"></i> ธนาคารเว็บ</div>
+                <div onclick="UI.route('promos')" id="nav-promos" class="nav-btn"><i class="fa-solid fa-tags w-5"></i> โปรโมชั่น</div>
                 <div onclick="UI.route('settings')" id="nav-settings" class="nav-btn"><i class="fa-solid fa-gear w-5"></i> ตั้งค่า</div>
             </nav>
             <div class="p-4"><button onclick="Auth.logout()" class="w-full bg-red-900/20 text-red-500 py-2 rounded text-sm hover:bg-red-900/40">LOGOUT</button></div>
@@ -63,7 +64,7 @@
         <main class="main">
             <header class="flex justify-between items-center mb-8">
                 <div><h2 id="title" class="text-2xl font-bold text-white">DASHBOARD</h2></div>
-                <div id="status" class="text-xs border border-gray-700 px-3 py-1 rounded-full text-gray-500">Checking...</div>
+                <div id="status" class="text-xs border border-gray-700 px-3 py-1 rounded-full text-gray-500 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gray-500"></span> Connecting...</div>
             </header>
 
             <section id="p-dash" class="animate__animated animate__fadeIn">
@@ -100,6 +101,11 @@
                 <div id="bank-list" class="grid grid-cols-2 gap-4"></div>
             </section>
 
+            <section id="p-promos" class="hidden animate__animated animate__fadeIn">
+                <div class="flex justify-between mb-6"><h3 class="font-bold text-white">โปรโมชั่น</h3><button onclick="Admin.addPromo()" class="btn-gold text-xs px-3">+ เพิ่มโปร</button></div>
+                <div id="promo-list" class="grid grid-cols-3 gap-4"></div>
+            </section>
+
             <section id="p-settings" class="hidden animate__animated animate__fadeIn">
                 <div class="card max-w-xl mx-auto space-y-4">
                     <h3 class="font-bold text-white mb-4">ตั้งค่าระบบ</h3>
@@ -112,28 +118,26 @@
     </div>
 
     <script>
-        // --- ⚠️ CONFIGURATION (NEW) ---
+        // --- CONFIG ---
         const firebaseConfig = {
-            apiKey: "AIzaSyA2NTzJKFK3GtULDl-l2EvEH3VamDh-VZI",
-            authDomain: "chat-27f96.firebaseapp.com",
-            databaseURL: "https://chat-27f96-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "chat-27f96",
-            storageBucket: "chat-27f96.firebasestorage.app",
-            messagingSenderId: "336686938010",
-            appId: "1:336686938010:web:9ea0e0ddd8d93e8358ec23",
-            measurementId: "G-GR38B5JHZZ"
+            apiKey: "AIzaSyDc50wlOejDQi3PTySiQss3bLuVz_-tvB4",
+            authDomain: "walletrs-d6104.firebaseapp.com",
+            databaseURL: "https://walletrs-d6104-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "walletrs-d6104",
+            storageBucket: "walletrs-d6104.firebasestorage.app",
+            messagingSenderId: "496661515180",
+            appId: "1:496661515180:web:42c3a21541cdfc68cf8809",
+            measurementId: "G-2P8SGLR602"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
         const ADMIN_MAIL = "farisxuma1@gmail.com";
 
-        // Connection
         db.ref(".info/connected").on("value", s => {
             const el = document.getElementById('status');
-            if(s.val()===true) { el.innerHTML='<span class="text-green-500">●</span> ONLINE'; el.className='text-xs border border-green-900 bg-green-900/20 px-3 py-1 rounded-full text-green-500 font-bold'; }
-            else { el.innerHTML='<span class="text-red-500">●</span> OFFLINE'; el.className='text-xs border border-red-900 bg-red-900/20 px-3 py-1 rounded-full text-red-500 font-bold'; }
+            if(s.val()===true) { el.innerHTML='<span class="w-2 h-2 rounded-full bg-green-500"></span> ONLINE'; el.className='text-xs border border-green-900 bg-green-900/20 px-3 py-1 rounded-full text-green-500 font-bold flex items-center gap-2'; }
+            else { el.innerHTML='<span class="w-2 h-2 rounded-full bg-red-500"></span> OFFLINE'; el.className='text-xs border border-red-900 bg-red-900/20 px-3 py-1 rounded-full text-red-500 font-bold flex items-center gap-2'; }
         });
 
         auth.onAuthStateChanged(u => {
@@ -153,12 +157,10 @@
             init: () => {
                 new Chart(document.getElementById('chart').getContext('2d'),{type:'line',data:{labels:['M','T','W','T','F','S','S'],datasets:[{label:'Deposit',data:[0,0,0,0,0,0,0],borderColor:'#D4AF37',backgroundColor:'rgba(212,175,55,0.1)',fill:true}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{grid:{color:'#333'}},x:{grid:{color:'#333'}}}}});
 
-                // Transactions
                 db.ref('transactions').limitToLast(50).on('value', s => {
                     const pl=document.getElementById('list-pending'); pl.innerHTML='';
                     const hl=document.getElementById('tb-hist'); hl.innerHTML='';
                     let d=0, p=0; const arr=[];
-                    
                     if(s.exists()) s.forEach(doc => arr.unshift({k:doc.key,...doc.val()}));
                     if(arr.length==0) pl.innerHTML='<div class="text-center text-gray-500 py-4 border border-dashed border-gray-700 rounded-xl">ไม่มีรายการ</div>';
 
@@ -166,7 +168,25 @@
                         if(t.type=='deposit' && t.status=='approved') d+=Number(t.amount);
                         if(t.status=='pending') {
                             p++; const isDep=t.type=='deposit';
-                            pl.innerHTML += `<div class="bg-[#1e293b] p-4 rounded-xl border-l-4 ${isDep?'border-green-500':'border-red-500'} flex justify-between items-center shadow-lg new-entry"><div><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl ${isDep?'bg-green-600':'bg-red-600'}"><i class="fa-solid ${isDep?'fa-arrow-down':'fa-arrow-up'}"></i></div><div><div class="font-bold text-white text-lg">${isDep?'ฝากเงิน':'ถอนเงิน'} ฿${Number(t.amount).toLocaleString()} ${t.bonus?`(+${t.bonus})`:''}</div><div class="text-xs text-gray-400 mt-1">${t.name} • ${moment(t.timestamp).fromNow()}</div></div></div><div class="mt-2 ml-14 text-xs text-[#D4AF37] bg-black/20 px-2 py-1 rounded inline-block">${t.time||t.bank_info} ${t.promo?`(PRO:${t.promo})`:''}</div></div><div class="flex gap-2"><button onclick="Admin.tx('${t.k}','app','${t.uid}',${t.total||t.amount},'${t.type}',${t.amount})" class="bg-green-600 text-white px-4 py-2 rounded text-xs font-bold hover:bg-green-500">อนุมัติ</button><button onclick="Admin.tx('${t.k}','rej','${t.uid}',${t.amount},'${t.type}',${t.amount})" class="bg-red-600 text-white px-4 py-2 rounded text-xs font-bold hover:bg-red-500">ปฏิเสธ</button></div></div>`;
+                            pl.innerHTML += `
+                                <div class="bg-[#1e293b] p-4 rounded-xl border-l-4 ${isDep?'border-green-500':'border-red-500'} flex justify-between items-center shadow-lg new-entry">
+                                    <div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl ${isDep?'bg-green-600':'bg-red-600'}">
+                                                <i class="fa-solid ${isDep?'fa-arrow-down':'fa-arrow-up'}"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-white text-lg">${isDep?'ฝากเงิน':'ถอนเงิน'} ฿${Number(t.amount).toLocaleString()} ${t.bonus?`(+${t.bonus})`:''}</div>
+                                                <div class="text-xs text-gray-400 mt-1">${t.name} • ${moment(t.timestamp).fromNow()}</div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 ml-14 text-xs text-[#D4AF37] bg-black/20 px-2 py-1 rounded inline-block">${t.time||t.bank_info} ${t.promo?`(PRO:${t.promo})`:''}</div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="Admin.tx('${t.k}','app','${t.uid}',${t.total||t.amount},'${t.type}',${t.amount})" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg">อนุมัติ</button>
+                                        <button onclick="Admin.tx('${t.k}','rej','${t.uid}',${t.amount},'${t.type}',${t.amount})" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg">ปฏิเสธ</button>
+                                    </div>
+                                </div>`;
                         } else {
                             let c=t.status=='approved'?'text-green-500':(t.status=='rejected'?'text-red-500':'text-yellow-500');
                             hl.innerHTML += `<tr class="border-b border-gray-800 hover:bg-[#222]"><td class="p-3 pl-6 text-xs text-gray-500">${moment(t.timestamp).format('DD/MM HH:mm')}</td><td><span class="text-[10px] uppercase border px-2 py-0.5 rounded ${t.type=='deposit'?'border-green-800 text-green-500':'border-red-800 text-red-500'}">${t.type}</span></td><td class="text-xs text-gray-300">${t.name}</td><td class="font-bold text-white">฿${Number(t.amount).toLocaleString()}</td><td class="text-[10px] uppercase font-bold ${c}">${t.status}</td></tr>`;
@@ -177,20 +197,17 @@
                     const b = document.getElementById('badge'); if(p>0){b.innerText=p;b.classList.remove('hidden');}else b.classList.add('hidden');
                 });
 
-                // Banks
                 db.ref('admin_banks').on('value', s => {
                     const l=document.getElementById('bank-list'); l.innerHTML='';
                     if(s.exists()) s.forEach(d => { const b=d.val(); l.innerHTML+=`<div class="bg-[#1e293b] p-3 rounded-xl border border-gray-700 flex justify-between items-center"><div><div class="font-bold text-white">${b.bankName}</div><div class="text-[#D4AF37] font-mono">${b.accNo}</div><div class="text-xs text-gray-500">${b.accName}</div></div><button onclick="db.ref('admin_banks/${d.key}').remove()" class="text-red-500 hover:bg-red-900/20 p-2 rounded"><i class="fa-solid fa-trash"></i></button></div>`; });
                 });
 
-                // Users
                 db.ref('users').on('value', s => {
                     const l=document.getElementById('tb-users'); l.innerHTML='';
                     document.getElementById('st-users').innerText = s.numChildren();
                     s.forEach(d => { const u=d.val(); l.innerHTML+=`<tr class="border-b border-gray-800 hover:bg-[#222]"><td class="p-3 pl-6 text-white font-bold">${u.name}<br><span class="text-xs text-gray-500">${u.email}</span></td><td><span class="text-xs text-gray-400">${u.bank}</span><br><span class="text-[#D4AF37] text-xs">${u.acc}</span></td><td class="text-green-400 font-mono font-bold">฿${(u.balance||0).toLocaleString()}</td><td><a href="${u.fb_link}" target="_blank" class="text-blue-400 text-xs">ติดต่อ</a></td><td class="text-right pr-6"><button onclick="Admin.adj('${d.key}',${u.balance||0})" class="bg-gray-700 text-white px-2 py-1 rounded text-xs">ปรับเงิน</button></td></tr>`; });
                 });
 
-                // Settings
                 db.ref('settings').on('value', s => {
                     const c=s.val()||{};
                     document.getElementById('set-ann').value=c.announcement||'';
@@ -198,6 +215,11 @@
                     document.getElementById('set-min').value=c.minWithdraw||100;
                     document.getElementById('set-dep').checked=c.isDepositActive!==false;
                     document.getElementById('set-wit').checked=c.isWithdrawActive!==false;
+                });
+
+                db.ref('promotions').on('value', s => {
+                    const l=document.getElementById('promo-list'); l.innerHTML='';
+                    if(s.exists()) s.forEach(d => { const p=d.val(); l.innerHTML+=`<div class="card p-3 relative"><button onclick="db.ref('promotions/${d.key}').remove()" class="absolute top-2 right-2 text-red-500"><i class="fa-solid fa-trash"></i></button><div class="flex gap-3"><img src="${p.img}" class="w-12 h-12 rounded bg-[#333]"><div><h4 class="font-bold text-[#D4AF37] text-sm">${p.title}</h4><p class="text-xs text-gray-400">ฝาก: ${p.minDep} | แถม: ${p.bonus}%</p></div></div></div>`; });
                 });
             },
 
@@ -211,6 +233,8 @@
                     if(t=='withdraw') {
                         db.ref('users/'+u).once('value',s=>db.ref('users/'+u).update({balance:(s.val().balance||0)+Number(raw)}));
                         Swal.fire({icon:'info',title:'คืนเงินแล้ว',timer:1000,showConfirmButton:false,background:'#222',color:'#fff'});
+                    } else {
+                        Swal.fire({icon:'info',title:'ปฏิเสธ',timer:800,showConfirmButton:false,background:'#222',color:'#fff'});
                     }
                 }
             },
@@ -218,14 +242,12 @@
                 const n=document.getElementById('b-name').value, a=document.getElementById('b-acc').value, o=document.getElementById('b-own').value;
                 if(n&&a) db.ref('admin_banks').push({bankName:n,accNo:a,accName:o}).then(()=>{Swal.fire('เพิ่มแล้ว','','success'); document.getElementById('b-acc').value='';});
             },
+            addPromo: async () => {
+                const {value:f}=await Swal.fire({title:'เพิ่มโปร',html:`<input id="pt" class="swal2-input" placeholder="ชื่อ"><input id="pm" type="number" class="swal2-input" placeholder="ฝากขั้นต่ำ"><input id="pb" type="number" class="swal2-input" placeholder="โบนัส %"><input id="pi" class="swal2-input" placeholder="URL รูป">`,preConfirm:()=>({title:document.getElementById('pt').value,minDep:Number(document.getElementById('pm').value),bonus:Number(document.getElementById('pb').value),img:document.getElementById('pi').value})});
+                if(f) db.ref('promotions').push(f);
+            },
             saveSet: () => {
-                db.ref('settings').update({
-                    announcement: document.getElementById('set-ann').value,
-                    contactLink: document.getElementById('set-link').value,
-                    minWithdraw: Number(document.getElementById('set-min').value),
-                    isDepositActive: document.getElementById('set-dep').checked,
-                    isWithdrawActive: document.getElementById('set-wit').checked
-                }).then(()=>Swal.fire('บันทึก','','success'));
+                db.ref('settings').update({announcement:document.getElementById('set-ann').value,contactLink:document.getElementById('set-link').value,minWithdraw:Number(document.getElementById('set-min').value),isDepositActive:document.getElementById('set-dep').checked,isWithdrawActive:document.getElementById('set-wit').checked}).then(()=>Swal.fire('บันทึก','','success'));
             },
             adj: async (uid, old) => {
                 const {value:n}=await Swal.fire({title:'ปรับยอด',input:'number',inputValue:old,background:'#222',color:'#fff'});
@@ -235,7 +257,7 @@
 
         const UI = {
             route: (p) => {
-                ['dash','finance','users','banks','settings'].forEach(id=>{ document.getElementById('p-'+id).classList.add('hidden'); document.getElementById('nav-'+id).classList.remove('active'); });
+                ['dash','finance','users','banks','promos','settings'].forEach(id=>{ document.getElementById('p-'+id).classList.add('hidden'); document.getElementById('nav-'+id).classList.remove('active'); });
                 document.getElementById('p-'+p).classList.remove('hidden'); document.getElementById('p-'+p).classList.add('animate__fadeIn'); document.getElementById('nav-'+p).classList.add('active');
                 document.getElementById('title').innerText = p.toUpperCase();
             },
