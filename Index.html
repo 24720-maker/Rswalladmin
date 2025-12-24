@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN - GAME MASTER</title>
+    <title>ADMIN PANEL - GOD MODE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
@@ -13,51 +13,40 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        body { background: #111; color: #ddd; font-family: 'Kanit'; }
-        .card { background: #222; border: 1px solid #333; padding: 15px; border-radius: 10px; }
-        .btn-adm { background: #444; color: white; padding: 8px 15px; border-radius: 5px; transition: 0.2s; }
-        .btn-adm:hover { background: #666; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        body { background: #0f172a; color: #cbd5e1; font-family: 'Kanit'; }
+        .card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; }
+        .btn-act { padding: 5px 15px; border-radius: 6px; font-size: 0.8rem; transition: 0.2s; }
+        .btn-act:hover { filter: brightness(1.1); }
     </style>
 </head>
-<body class="p-6">
+<body class="p-8">
 
-    <div id="auth" class="max-w-sm mx-auto mt-20 text-center">
-        <h1 class="text-3xl font-bold text-yellow-500 mb-4">ADMIN LOGIN</h1>
-        <input id="a-pass" type="password" class="w-full bg-[#222] border border-[#444] p-2 text-white mb-2" placeholder="Password">
-        <button onclick="Admin.login()" class="w-full bg-yellow-600 text-black font-bold p-2 rounded">LOGIN</button>
+    <h1 class="text-3xl font-bold text-yellow-500 mb-8 border-b border-gray-700 pb-4">ADMIN DASHBOARD</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <div class="card">
+            <h3 class="text-xl font-bold text-white mb-4">รายการรออนุมัติ (ฝาก/ถอน)</h3>
+            <div id="tx-list" class="space-y-3 max-h-[500px] overflow-y-auto">
+                <p class="text-center text-gray-600">ไม่มีรายการ</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="text-xl font-bold text-white mb-4">รายชื่อสมาชิก</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead><tr class="text-gray-500 border-b border-gray-700"><th>ชื่อ</th><th>ยอดเงิน</th><th>ปรับ</th></tr></thead>
+                    <tbody id="user-list"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <div id="panel" class="hidden max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-yellow-500">GAME CONTROL</h1>
-            <button onclick="location.reload()" class="text-red-500">Logout</button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-6">
-            <div class="card">
-                <h3 class="font-bold mb-4 border-b border-gray-700 pb-2">จัดการห้องเกม</h3>
-                <div class="flex gap-2 mb-4">
-                    <input id="r-code" class="bg-[#111] border border-[#444] p-2 text-white w-full uppercase" placeholder="รหัสห้อง (เช่น A1)">
-                    <input id="r-round" type="number" class="bg-[#111] border border-[#444] p-2 text-white w-20" placeholder="รอบ" value="3">
-                    <button onclick="Admin.createRoom()" class="bg-green-600 text-white p-2 rounded w-24">สร้าง</button>
-                </div>
-                <div id="room-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
-            </div>
-
-            <div class="card">
-                <h3 class="font-bold mb-4 border-b border-gray-700 pb-2">อนุมัติการเงิน</h3>
-                <div id="tx-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
-            </div>
-        </div>
-
-        <div class="card mt-6">
-            <h3 class="font-bold mb-4 border-b border-gray-700 pb-2">รายชื่อผู้เล่น</h3>
-            <table class="w-full text-left text-sm">
-                <thead><tr class="text-gray-500"><th>ชื่อ</th><th>อีเมล</th><th>เครดิต</th><th>ปรับ</th></tr></thead>
-                <tbody id="user-list"></tbody>
-            </table>
-        </div>
+    <div class="card mt-8">
+        <h3 class="text-xl font-bold text-white mb-4">ห้องเกมที่กำลังเล่น</h3>
+        <div id="room-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </div>
 
     <script>
@@ -65,101 +54,78 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Game Loop Watcher (Server Logic Simulation)
-        setInterval(() => {
-            db.ref('rooms').once('value', s => {
-                s.forEach(doc => {
-                    const r = doc.val();
-                    const key = doc.key;
-                    // Check if both moved
-                    if(r.status === 'playing' && r.p1?.move && r.p2?.move) {
-                        // Determine winner
-                        let win = 0; // 0=draw, 1=p1, 2=p2
-                        const m1 = r.p1.move, m2 = r.p2.move;
-                        if(m1===m2) win=0;
-                        else if((m1=='rock'&&m2=='scissors') || (m1=='paper'&&m2=='rock') || (m1=='scissors'&&m2=='paper')) win=1;
-                        else win=2;
-
-                        // Update Score
-                        if(win===1) db.ref(`rooms/${key}/p1/score`).set(r.p1.score+1);
-                        if(win===2) db.ref(`rooms/${key}/p2/score`).set(r.p2.score+1);
-
-                        // Next Round or Finish
-                        if(r.round < r.maxRound) {
-                            db.ref(`rooms/${key}`).update({
-                                round: r.round+1,
-                                status: 'waiting',
-                                'p1/move': null, 'p1/ready': false,
-                                'p2/move': null, 'p2/ready': false
-                            });
-                        } else {
-                            db.ref(`rooms/${key}/status`).set('finished');
-                        }
-                    }
-                });
+        // 1. Transactions
+        db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
+            const l = document.getElementById('tx-list'); l.innerHTML = '';
+            if(!s.exists()) { l.innerHTML = '<p class="text-center text-gray-600">ไม่มีรายการ</p>'; return; }
+            s.forEach(d => {
+                const t = d.val();
+                l.innerHTML += `
+                    <div class="bg-[#0f172a] p-3 rounded-lg border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'} flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white">${t.type.toUpperCase()} ฿${t.amount}</div>
+                            <div class="text-xs text-gray-400">${t.name}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="Tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="btn-act bg-green-600 text-white">อนุมัติ</button>
+                            <button onclick="Tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="btn-act bg-red-600 text-white">ปฏิเสธ</button>
+                        </div>
+                    </div>`;
             });
-        }, 2000); // Check every 2s
+        });
 
-        const Admin = {
-            login: () => {
-                if(document.getElementById('a-pass').value === 'admin123') { // Simple password
-                    document.getElementById('auth').classList.add('hidden');
-                    document.getElementById('panel').classList.remove('hidden');
-                    Admin.load();
-                } else Swal.fire('Wrong Password');
-            },
-            createRoom: () => {
-                const code = document.getElementById('r-code').value.toUpperCase();
-                const round = Number(document.getElementById('r-round').value);
-                if(code) {
-                    db.ref('rooms/'+code).set({
-                        status: 'waiting',
-                        maxRound: round,
-                        round: 1,
-                        created: Date.now()
-                    });
-                    Swal.fire('Created');
+        // 2. Users
+        db.ref('users').on('value', s => {
+            const l = document.getElementById('user-list'); l.innerHTML = '';
+            s.forEach(d => {
+                const u = d.val();
+                l.innerHTML += `
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 text-white">${u.name}</td>
+                        <td class="text-yellow-500 font-bold">฿${u.balance}</td>
+                        <td><button onclick="Adj('${d.key}')" class="text-blue-400 hover:text-white">✏️</button></td>
+                    </tr>`;
+            });
+        });
+
+        // 3. Rooms
+        db.ref('rooms').on('value', s => {
+            const l = document.getElementById('room-list'); l.innerHTML = '';
+            s.forEach(d => {
+                const r = d.val();
+                l.innerHTML += `
+                    <div class="bg-[#0f172a] p-3 rounded border border-gray-700">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-yellow-500 font-bold">฿${r.bet}</span>
+                            <span class="text-xs bg-gray-700 px-2 rounded text-white">${r.status}</span>
+                        </div>
+                        <div class="text-xs text-gray-400 flex justify-between">
+                            <span>P1: ${r.p1.name}</span>
+                            <span>P2: ${r.p2?r.p2.name:'-'}</span>
+                        </div>
+                        <button onclick="db.ref('rooms/${d.key}').remove()" class="mt-2 w-full bg-red-900/50 text-red-400 text-xs py-1 rounded hover:bg-red-500 hover:text-white">ลบห้อง</button>
+                    </div>`;
+            });
+        });
+
+        // Actions
+        window.Tx = (key, action, uid, amt, type) => {
+            if(action === 'ok') {
+                db.ref('transactions/'+key).update({status:'approved'});
+                if(type === 'deposit') {
+                    db.ref('users/'+uid+'/balance').once('value', s => db.ref('users/'+uid).update({balance:(s.val()||0)+amt}));
                 }
-            },
-            load: () => {
-                // Rooms
-                db.ref('rooms').on('value', s => {
-                    const l = document.getElementById('room-list'); l.innerHTML='';
-                    s.forEach(d => {
-                        const r = d.val();
-                        l.innerHTML += `<div class="bg-[#111] p-2 rounded flex justify-between items-center border border-gray-700"><div><span class="font-bold text-yellow-500">${d.key}</span> <span class="text-xs text-gray-500">(${r.status})</span> <span class="text-xs">R:${r.round}/${r.maxRound}</span></div><button onclick="db.ref('rooms/${d.key}').remove()" class="text-red-500 text-xs">ลบ</button></div>`;
-                    });
-                });
-                // Transactions
-                db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
-                    const l = document.getElementById('tx-list'); l.innerHTML='';
-                    s.forEach(d => {
-                        const t = d.val();
-                        l.innerHTML += `<div class="bg-[#111] p-2 rounded flex justify-between items-center border border-gray-700 border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'}"><div><div class="font-bold">${t.type.toUpperCase()} ${t.amount}</div><div class="text-xs text-gray-500">${moment(t.timestamp).fromNow()}</div></div><div class="flex gap-2"><button onclick="Admin.tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="text-green-500">✔</button><button onclick="Admin.tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="text-red-500">✘</button></div></div>`;
-                    });
-                });
-                // Users
-                db.ref('users').on('value', s => {
-                    const l = document.getElementById('user-list'); l.innerHTML='';
-                    s.forEach(d => {
-                        const u = d.val();
-                        l.innerHTML += `<tr class="border-b border-gray-800"><td>${u.name}</td><td class="text-xs text-gray-500">${u.email}</td><td class="text-yellow-500 font-bold">${u.balance}</td><td><button onclick="Admin.adj('${d.key}')" class="text-blue-500 text-xs">แก้ไข</button></td></tr>`;
-                    });
-                });
-            },
-            tx: (k, a, u, m, t) => {
-                if(a=='ok') {
-                    db.ref('transactions/'+k).update({status:'approved'});
-                    if(t=='deposit') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance:(s.val().balance||0)+m}));
-                } else {
-                    db.ref('transactions/'+k).update({status:'rejected'});
-                    if(t=='withdraw') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance:(s.val().balance||0)+m})); // Return money
+            } else {
+                db.ref('transactions/'+key).update({status:'rejected'});
+                if(type === 'withdraw') { // Refund logic
+                    db.ref('users/'+uid+'/balance').once('value', s => db.ref('users/'+uid).update({balance:(s.val()||0)+amt}));
                 }
-            },
-            adj: async (uid) => {
-                const {value:amt} = await Swal.fire({title:'ปรับเครดิต', input:'number'});
-                if(amt) db.ref('users/'+uid).update({balance:Number(amt)});
             }
+        };
+
+        window.Adj = async (uid) => {
+            const {value: amt} = await Swal.fire({title:'แก้ไขยอดเงิน', input:'number', background:'#1e293b', color:'#fff'});
+            if(amt) db.ref('users/'+uid).update({balance:Number(amt)});
         };
     </script>
 </body>
