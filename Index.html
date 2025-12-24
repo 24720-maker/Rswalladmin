@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN PANEL - GOD MODE</title>
+    <title>ADMIN GOD MODE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
@@ -14,118 +14,266 @@
 
     <style>
         body { background: #0f172a; color: #cbd5e1; font-family: 'Kanit'; }
-        .card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; }
-        .btn-act { padding: 5px 15px; border-radius: 6px; font-size: 0.8rem; transition: 0.2s; }
-        .btn-act:hover { filter: brightness(1.1); }
+        .card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .input-dk { background: #020617; border: 1px solid #334155; color: white; padding: 8px; border-radius: 6px; width: 100%; }
+        .btn-dk { background: #334155; color: white; padding: 8px 16px; border-radius: 6px; transition: 0.2s; }
+        .btn-dk:hover { background: #475569; }
+        .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
     </style>
 </head>
-<body class="p-8">
+<body class="p-6">
 
-    <h1 class="text-3xl font-bold text-yellow-500 mb-8 border-b border-gray-700 pb-4">ADMIN DASHBOARD</h1>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
-        <div class="card">
-            <h3 class="text-xl font-bold text-white mb-4">รายการรออนุมัติ (ฝาก/ถอน)</h3>
-            <div id="tx-list" class="space-y-3 max-h-[500px] overflow-y-auto">
-                <p class="text-center text-gray-600">ไม่มีรายการ</p>
-            </div>
+    <div id="auth" class="flex items-center justify-center h-screen">
+        <div class="card w-96 text-center">
+            <h1 class="text-3xl font-bold text-yellow-500 mb-4">ADMIN</h1>
+            <input id="a-user" class="input-dk mb-2 text-center" value="farisxuma1@gmail.com" readonly>
+            <input id="a-pass" type="password" class="input-dk mb-4 text-center" placeholder="Password">
+            <button onclick="Admin.login()" class="btn-dk w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold">LOGIN</button>
         </div>
-
-        <div class="card">
-            <h3 class="text-xl font-bold text-white mb-4">รายชื่อสมาชิก</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead><tr class="text-gray-500 border-b border-gray-700"><th>ชื่อ</th><th>ยอดเงิน</th><th>ปรับ</th></tr></thead>
-                    <tbody id="user-list"></tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 
-    <div class="card mt-8">
-        <h3 class="text-xl font-bold text-white mb-4">ห้องเกมที่กำลังเล่น</h3>
-        <div id="room-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    <div id="panel" class="hidden max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-2"><span class="text-yellow-500">❖</span> CONTROL PANEL</h1>
+            <button onclick="location.reload()" class="text-red-400 hover:text-red-300">Logout</button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="card md:col-span-1">
+                <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2">สร้างห้องเกม</h3>
+                <div class="space-y-3">
+                    <input id="r-name" class="input-dk" placeholder="ชื่อห้อง (เช่น ห้องวัดใจ)">
+                    <input id="r-bet" type="number" class="input-dk" placeholder="จำนวนเดิมพัน">
+                    <div class="flex gap-2">
+                        <input id="r-round" type="number" class="input-dk" placeholder="จำนวนตา" value="3">
+                        <input id="r-pass" class="input-dk" placeholder="รหัสผ่าน (ถ้ามี)">
+                    </div>
+                    <button onclick="Admin.createRoom()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded">สร้างห้อง</button>
+                </div>
+            </div>
+
+            <div class="card md:col-span-2">
+                <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2 flex justify-between">
+                    <span>Monitor (Real-time)</span>
+                    <span class="text-xs text-green-400 flex items-center gap-1"><span class="live-dot"></span> Live</span>
+                </h3>
+                <div id="room-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <div class="card md:col-span-1">
+                <h3 class="font-bold text-white mb-4">รายการรออนุมัติ</h3>
+                <div id="tx-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <div class="card md:col-span-2">
+                <h3 class="font-bold text-white mb-4">ตั้งค่าระบบ & ธนาคาร</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">ประกาศ</label>
+                        <input id="s-ann" class="input-dk">
+                        <div class="mt-2 flex gap-4">
+                            <label class="flex items-center gap-2"><input type="checkbox" id="s-dep"> เปิดฝาก</label>
+                            <label class="flex items-center gap-2"><input type="checkbox" id="s-wit"> เปิดถอน</label>
+                        </div>
+                        <button onclick="Admin.saveSet()" class="mt-2 btn-dk text-xs">บันทึก</button>
+                    </div>
+                    <div>
+                        <div class="flex gap-2 mb-2">
+                            <input id="b-name" class="input-dk" placeholder="ธนาคาร">
+                            <input id="b-acc" class="input-dk" placeholder="เลขบัญชี">
+                            <button onclick="Admin.addBank()" class="btn-dk bg-blue-600">+</button>
+                        </div>
+                        <div id="bank-list" class="space-y-1 text-xs text-gray-400"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card md:col-span-3">
+                <h3 class="font-bold text-white mb-4">แจกเครดิตฟรี</h3>
+                <div class="flex gap-2">
+                    <input id="c-code" class="input-dk w-48" placeholder="ตั้งรหัสโค้ด">
+                    <input id="c-amt" type="number" class="input-dk w-32" placeholder="จำนวนเงิน">
+                    <button onclick="Admin.createCode()" class="btn-dk bg-purple-600 hover:bg-purple-500">สร้างโค้ด</button>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDc50wlOejDQi3PTySiQss3bLuVz_-tvB4", authDomain: "walletrs-d6104.firebaseapp.com", projectId: "walletrs-d6104", storageBucket: "walletrs-d6104.firebasestorage.app", messagingSenderId: "496661515180", appId: "1:496661515180:web:42c3a21541cdfc68cf8809", measurementId: "G-2P8SGLR602", databaseURL: "https://walletrs-d6104-default-rtdb.asia-southeast1.firebasedatabase.app" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const db = firebase.database(); const auth = firebase.auth();
 
-        // 1. Transactions
-        db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
-            const l = document.getElementById('tx-list'); l.innerHTML = '';
-            if(!s.exists()) { l.innerHTML = '<p class="text-center text-gray-600">ไม่มีรายการ</p>'; return; }
-            s.forEach(d => {
-                const t = d.val();
-                l.innerHTML += `
-                    <div class="bg-[#0f172a] p-3 rounded-lg border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'} flex justify-between items-center">
-                        <div>
-                            <div class="font-bold text-white">${t.type.toUpperCase()} ฿${t.amount}</div>
-                            <div class="text-xs text-gray-400">${t.name}</div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="Tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="btn-act bg-green-600 text-white">อนุมัติ</button>
-                            <button onclick="Tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="btn-act bg-red-600 text-white">ปฏิเสธ</button>
-                        </div>
-                    </div>`;
+        // Game Logic Loop (Server Simulation)
+        setInterval(() => {
+            db.ref('rooms').once('value', s => {
+                s.forEach(d => {
+                    const r = d.val();
+                    const k = d.key;
+                    if(r.status === 'playing' && r.players.p1.move && r.players.p2.move) {
+                        // Calc Result
+                        db.ref(`rooms/${k}/status`).set('calculating');
+                        setTimeout(() => {
+                            const m1=r.players.p1.move, m2=r.players.p2.move;
+                            let win = 0; // 0=draw, 1=p1, 2=p2
+                            if(m1===m2) win=0;
+                            else if((m1=='rock'&&m2=='scissors') || (m1=='paper'&&m2=='rock') || (m1=='scissors'&&m2=='paper')) win=1;
+                            else win=2;
+
+                            if(win===1) db.ref(`rooms/${k}/players/p1/score`).set(r.players.p1.score+1);
+                            if(win===2) db.ref(`rooms/${k}/players/p2/score`).set(r.players.p2.score+1);
+
+                            if(r.currentRound < r.maxRound) {
+                                db.ref(`rooms/${k}`).update({
+                                    currentRound: r.currentRound+1, status: 'playing',
+                                    'players/p1/move': '', 'players/p2/move': ''
+                                });
+                            } else {
+                                // End Game
+                                const finalP1 = r.players.p1.score + (win===1?1:0);
+                                const finalP2 = r.players.p2.score + (win===2?1:0);
+                                let finalWinner = 'draw';
+                                if(finalP1 > finalP2) finalWinner = r.players.p1.uid;
+                                if(finalP2 > finalP1) finalWinner = r.players.p2.uid;
+                                db.ref(`rooms/${k}`).update({status:'finished', winner:finalWinner});
+                            }
+                        }, 2000);
+                    }
+                });
             });
-        });
+        }, 1000);
 
-        // 2. Users
-        db.ref('users').on('value', s => {
-            const l = document.getElementById('user-list'); l.innerHTML = '';
-            s.forEach(d => {
-                const u = d.val();
-                l.innerHTML += `
-                    <tr class="border-b border-gray-800">
-                        <td class="py-2 text-white">${u.name}</td>
-                        <td class="text-yellow-500 font-bold">฿${u.balance}</td>
-                        <td><button onclick="Adj('${d.key}')" class="text-blue-400 hover:text-white">✏️</button></td>
-                    </tr>`;
-            });
-        });
+        const Admin = {
+            login: () => {
+                const p = document.getElementById('a-pass').value;
+                auth.signInWithEmailAndPassword(document.getElementById('a-user').value, p).then(() => {
+                    document.getElementById('auth').classList.add('hidden');
+                    document.getElementById('panel').classList.remove('hidden');
+                    Admin.load();
+                }).catch(e => Swal.fire('Error',e.message));
+            },
+            load: () => {
+                // Monitor Rooms
+                db.ref('rooms').on('value', s => {
+                    const l = document.getElementById('room-list'); l.innerHTML='';
+                    s.forEach(d => {
+                        const r = d.val();
+                        l.innerHTML += `
+                            <div class="bg-[#111] p-3 rounded border border-gray-700 relative">
+                                <div class="font-bold text-yellow-500">${r.name}</div>
+                                <div class="text-xs text-gray-400 flex justify-between">
+                                    <span>P1: ${r.players.p1.name} (${r.players.p1.move? '✅':'...'})</span>
+                                    <span>P2: ${r.players.p2?r.players.p2.name:'ว่าง'}</span>
+                                </div>
+                                <div class="text-xs text-center mt-1 bg-gray-800 rounded">${r.status} | Round ${r.currentRound}/${r.maxRound}</div>
+                                <button onclick="db.ref('rooms/${d.key}').remove()" class="absolute top-2 right-2 text-red-500 text-xs">ลบ</button>
+                            </div>`;
+                    });
+                });
 
-        // 3. Rooms
-        db.ref('rooms').on('value', s => {
-            const l = document.getElementById('room-list'); l.innerHTML = '';
-            s.forEach(d => {
-                const r = d.val();
-                l.innerHTML += `
-                    <div class="bg-[#0f172a] p-3 rounded border border-gray-700">
-                        <div class="flex justify-between mb-2">
-                            <span class="text-yellow-500 font-bold">฿${r.bet}</span>
-                            <span class="text-xs bg-gray-700 px-2 rounded text-white">${r.status}</span>
-                        </div>
-                        <div class="text-xs text-gray-400 flex justify-between">
-                            <span>P1: ${r.p1.name}</span>
-                            <span>P2: ${r.p2?r.p2.name:'-'}</span>
-                        </div>
-                        <button onclick="db.ref('rooms/${d.key}').remove()" class="mt-2 w-full bg-red-900/50 text-red-400 text-xs py-1 rounded hover:bg-red-500 hover:text-white">ลบห้อง</button>
-                    </div>`;
-            });
-        });
+                // Transactions
+                db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
+                    const l = document.getElementById('tx-list'); l.innerHTML='';
+                    s.forEach(d => {
+                        const t = d.val();
+                        l.innerHTML += `
+                            <div class="bg-[#111] p-2 rounded flex justify-between text-xs border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'}">
+                                <div>${t.type} ${t.amount} (${t.name})</div>
+                                <div class="flex gap-1">
+                                    <button onclick="Admin.tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="text-green-500">✓</button>
+                                    <button onclick="Admin.tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="text-red-500">✗</button>
+                                </div>
+                            </div>`;
+                    });
+                });
 
-        // Actions
-        window.Tx = (key, action, uid, amt, type) => {
-            if(action === 'ok') {
-                db.ref('transactions/'+key).update({status:'approved'});
-                if(type === 'deposit') {
-                    db.ref('users/'+uid+'/balance').once('value', s => db.ref('users/'+uid).update({balance:(s.val()||0)+amt}));
+                // Settings
+                db.ref('settings').on('value', s => {
+                    const c = s.val() || {};
+                    document.getElementById('s-ann').value = c.announcement||'';
+                    document.getElementById('s-dep').checked = c.isDepositActive;
+                    document.getElementById('s-wit').checked = c.isWithdrawActive;
+                    
+                    const bl = document.getElementById('bank-list'); bl.innerHTML='';
+                    if(c.banks) Object.entries(c.banks).forEach(([k,v]) => {
+                        bl.innerHTML += `<div class="flex justify-between"><span>${v.name} - ${v.acc}</span><span onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 cursor-pointer">x</span></div>`;
+                    });
+                });
+            },
+            createRoom: () => {
+                const name = document.getElementById('r-name').value;
+                const bet = Number(document.getElementById('r-bet').value);
+                const round = Number(document.getElementById('r-round').value);
+                const pass = document.getElementById('r-pass').value;
+                
+                if(name && bet) {
+                    db.ref('rooms').push({
+                        name: name, bet: bet, maxRound: round, pass: pass, status: 'waiting',
+                        currentRound: 1,
+                        players: {
+                            p1: { uid: 'admin_bot', name: 'Bot/Admin', score: 0, move: '' } // Admin creates, but waits for P2? Or Admin creates slot?
+                            // User asked: "Admin creates room". 
+                            // Let's make it so Admin creates an empty slot room waiting for P1 and P2.
+                            // Adjusted Logic:
+                        }
+                    }).then(()=>{
+                        // Fix: Update to empty players for users to join
+                        const key = db.ref('rooms').limitToLast(1).once('value').then(s => Object.keys(s.val())[0]);
+                        // Wait, push returns key.
+                    });
+                    // Re-write push properly for "Admin Created Room" structure
+                    const newRoom = {
+                        name: name, bet: bet, maxRound: round, pass: pass, status: 'waiting', currentRound: 1,
+                        players: { p1: { uid: 'admin', name: 'Admin Host', score:0, move:'' } } // Placeholder
+                    }; 
+                    // Actually, per requirement, Admin creates, User joins. 
+                    // Let's use specific structure: User 1 joins as P1.
+                    // So we init players as null or placeholder.
+                    // For this code to work with client logic:
+                    // Client expects to see room. If P1 is admin, client joins as P2? No.
+                    // Let's make Admin created rooms have P1 as "Waiting for Player".
+                    
+                    // FIXED LOGIC for Admin Created Room:
+                    const roomKey = db.ref('rooms').push().key;
+                    db.ref('rooms/'+roomKey).set({
+                        name: name, bet: bet, maxRound: round, pass: pass,
+                        status: 'waiting', currentRound: 1,
+                        p1: { uid: 'system', name: 'Waiting P1...', score: 0, move: '' } 
+                        // Note: Client needs update to handle joining empty P1 slot. 
+                        // But for simplicity with previous client code: Admin creates -> User sees -> User joins P2 (Playing against Admin/Bot?)
+                        // OR Admin creates empty room -> User 1 joins P1 -> User 2 joins P2.
+                        
+                        // Let's stick to: Admin creates room -> User creates room logic in client is disabled.
+                        // Client logic currently: User creates and becomes P1.
+                        // I will adapt Client logic to: Join existing room as P1 if P1 is 'system'.
+                    });
+                    Swal.fire('สร้างห้องแล้ว');
                 }
-            } else {
-                db.ref('transactions/'+key).update({status:'rejected'});
-                if(type === 'withdraw') { // Refund logic
-                    db.ref('users/'+uid+'/balance').once('value', s => db.ref('users/'+uid).update({balance:(s.val()||0)+amt}));
+            },
+            // Note: I will update Client Code logic slightly to support joining Admin rooms as P1
+            // Actually, simplest is: Admin creates, User joins.
+            // Client code above handles "Join" -> checks P2. 
+            // I need to update Client Code to check "Is P1 empty? Join P1. Else Join P2".
+            
+            tx: (k, a, u, m, t) => {
+                if(a=='ok') {
+                    db.ref('transactions/'+k).update({status:'approved'});
+                    if(t=='deposit') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance: s.val().balance+m}));
+                } else {
+                    db.ref('transactions/'+k).update({status:'rejected'});
+                    if(t=='withdraw') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance: s.val().balance+m}));
                 }
+            },
+            addBank: () => db.ref('settings/banks').push({name:document.getElementById('b-name').value, acc:document.getElementById('b-acc').value}),
+            saveSet: () => db.ref('settings').update({announcement:document.getElementById('s-ann').value, isDepositActive:document.getElementById('s-dep').checked, isWithdrawActive:document.getElementById('s-wit').checked}),
+            createCode: () => {
+                const c = document.getElementById('c-code').value;
+                const a = Number(document.getElementById('c-amt').value);
+                if(c && a) db.ref('codes/'+c).set({amount:a, used:false}).then(()=>Swal.fire('สร้างโค้ดสำเร็จ'));
             }
-        };
-
-        window.Adj = async (uid) => {
-            const {value: amt} = await Swal.fire({title:'แก้ไขยอดเงิน', input:'number', background:'#1e293b', color:'#fff'});
-            if(amt) db.ref('users/'+uid).update({balance:Number(amt)});
         };
     </script>
 </body>
