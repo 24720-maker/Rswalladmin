@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN GOD MODE</title>
+    <title>TITANIUM GOD MODE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
@@ -13,139 +13,198 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        body { background: #0f172a; color: #cbd5e1; font-family: 'Kanit'; }
+        body { background: #0f172a; color: #cbd5e1; font-family: 'Kanit'; overflow-x: hidden; }
         .card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .input-dk { background: #020617; border: 1px solid #334155; color: white; padding: 8px; border-radius: 6px; width: 100%; }
-        .btn-dk { background: #334155; color: white; padding: 8px 16px; border-radius: 6px; transition: 0.2s; }
+        .input-dk { background: #020617; border: 1px solid #334155; color: white; padding: 8px 12px; border-radius: 6px; width: 100%; outline: none; transition: 0.2s; }
+        .input-dk:focus { border-color: #d4af37; }
+        .btn-dk { background: #334155; color: white; padding: 8px 16px; border-radius: 6px; transition: 0.2s; width: 100%; }
         .btn-dk:hover { background: #475569; }
-        .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
         @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
 <body class="p-6">
 
     <div id="auth" class="flex items-center justify-center h-screen">
-        <div class="card w-96 text-center">
-            <h1 class="text-3xl font-bold text-yellow-500 mb-4">ADMIN</h1>
-            <input id="a-user" class="input-dk mb-2 text-center" value="farisxuma1@gmail.com" readonly>
-            <input id="a-pass" type="password" class="input-dk mb-4 text-center" placeholder="Password">
-            <button onclick="Admin.login()" class="btn-dk w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold">LOGIN</button>
+        <div class="card w-96 text-center border-t-4 border-[#d4af37]">
+            <h1 class="text-3xl font-bold text-[#d4af37] mb-6">ADMIN SYSTEM</h1>
+            <input id="a-user" class="input-dk mb-3 text-center" value="farisxuma1@gmail.com" readonly>
+            <input id="a-pass" type="password" class="input-dk mb-6 text-center" placeholder="Security Key">
+            <button onclick="Admin.login()" class="btn-dk bg-[#d4af37] text-black font-bold hover:bg-[#b5922b]">ACCESS CONTROL</button>
         </div>
     </div>
 
-    <div id="panel" class="hidden max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-bold text-white flex items-center gap-2"><span class="text-yellow-500">❖</span> CONTROL PANEL</h1>
-            <button onclick="location.reload()" class="text-red-400 hover:text-red-300">Logout</button>
+    <div id="panel" class="hidden max-w-7xl mx-auto">
+        <header class="flex justify-between items-center mb-8 bg-[#1e293b] p-4 rounded-xl border border-[#334155]">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <span class="bg-[#d4af37] text-black w-8 h-8 flex items-center justify-center rounded-lg">A</span> 
+                TITANIUM CONTROL
+            </h1>
+            <div class="flex items-center gap-4">
+                <div class="text-xs text-green-400 border border-green-900 bg-green-900/20 px-3 py-1 rounded-full"><span class="live-dot mr-1"></span> SYSTEM ONLINE</div>
+                <button onclick="location.reload()" class="text-red-400 hover:text-white text-xs">LOGOUT</button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
-            <div class="card md:col-span-1">
-                <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2">สร้างห้องเกม</h3>
+            <div class="card lg:col-span-1 h-fit">
+                <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2">🎮 สร้างห้องเกม</h3>
                 <div class="space-y-3">
-                    <input id="r-name" class="input-dk" placeholder="ชื่อห้อง (เช่น ห้องวัดใจ)">
-                    <input id="r-bet" type="number" class="input-dk" placeholder="จำนวนเดิมพัน">
-                    <div class="flex gap-2">
-                        <input id="r-round" type="number" class="input-dk" placeholder="จำนวนตา" value="3">
-                        <input id="r-pass" class="input-dk" placeholder="รหัสผ่าน (ถ้ามี)">
-                    </div>
-                    <button onclick="Admin.createRoom()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded">สร้างห้อง</button>
-                </div>
-            </div>
-
-            <div class="card md:col-span-2">
-                <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2 flex justify-between">
-                    <span>Monitor (Real-time)</span>
-                    <span class="text-xs text-green-400 flex items-center gap-1"><span class="live-dot"></span> Live</span>
-                </h3>
-                <div id="room-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto"></div>
-            </div>
-
-            <div class="card md:col-span-1">
-                <h3 class="font-bold text-white mb-4">รายการรออนุมัติ</h3>
-                <div id="tx-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
-            </div>
-
-            <div class="card md:col-span-2">
-                <h3 class="font-bold text-white mb-4">ตั้งค่าระบบ & ธนาคาร</h3>
-                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs text-gray-500 mb-1">ประกาศ</label>
-                        <input id="s-ann" class="input-dk">
-                        <div class="mt-2 flex gap-4">
-                            <label class="flex items-center gap-2"><input type="checkbox" id="s-dep"> เปิดฝาก</label>
-                            <label class="flex items-center gap-2"><input type="checkbox" id="s-wit"> เปิดถอน</label>
-                        </div>
-                        <button onclick="Admin.saveSet()" class="mt-2 btn-dk text-xs">บันทึก</button>
+                        <label class="text-xs text-gray-500">ชื่อห้อง</label>
+                        <input id="r-name" class="input-dk" placeholder="เช่น ห้องวัดใจ 100">
                     </div>
                     <div>
-                        <div class="flex gap-2 mb-2">
-                            <input id="b-name" class="input-dk" placeholder="ธนาคาร">
-                            <input id="b-acc" class="input-dk" placeholder="เลขบัญชี">
-                            <button onclick="Admin.addBank()" class="btn-dk bg-blue-600">+</button>
-                        </div>
-                        <div id="bank-list" class="space-y-1 text-xs text-gray-400"></div>
+                        <label class="text-xs text-gray-500">เงินเดิมพัน</label>
+                        <input id="r-bet" type="number" class="input-dk text-[#d4af37] font-bold" placeholder="0">
                     </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs text-gray-500">จำนวนตา</label>
+                            <input id="r-round" type="number" class="input-dk" value="3">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500">รหัสผ่าน (ถ้ามี)</label>
+                            <input id="r-pass" class="input-dk" placeholder="-">
+                        </div>
+                    </div>
+                    <button onclick="Admin.createRoom()" class="btn-dk bg-green-600 hover:bg-green-500 font-bold mt-2">สร้างห้องทันที</button>
                 </div>
             </div>
 
-            <div class="card md:col-span-3">
-                <h3 class="font-bold text-white mb-4">แจกเครดิตฟรี</h3>
-                <div class="flex gap-2">
-                    <input id="c-code" class="input-dk w-48" placeholder="ตั้งรหัสโค้ด">
-                    <input id="c-amt" type="number" class="input-dk w-32" placeholder="จำนวนเงิน">
-                    <button onclick="Admin.createCode()" class="btn-dk bg-purple-600 hover:bg-purple-500">สร้างโค้ด</button>
+            <div class="card lg:col-span-2 flex flex-col gap-6">
+                
+                <div>
+                    <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2 flex justify-between">
+                        <span>📺 Live Monitor</span>
+                        <span class="text-xs text-gray-500" id="room-count">0 Rooms Active</span>
+                    </h3>
+                    <div id="room-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-1">
+                        </div>
                 </div>
+
+                <div>
+                    <h3 class="font-bold text-white mb-4 border-b border-gray-700 pb-2">💸 รายการรออนุมัติ</h3>
+                    <div id="tx-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <p class="text-center text-xs text-gray-600 py-4">ไม่มีรายการค้าง</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card lg:col-span-1 space-y-6 h-fit">
+                
+                <div>
+                    <h3 class="font-bold text-white mb-3 text-sm">🎁 แจกโค้ดเครดิตฟรี</h3>
+                    <div class="flex gap-2 mb-2">
+                        <input id="c-code" class="input-dk uppercase" placeholder="CODE">
+                        <input id="c-amt" type="number" class="input-dk w-20" placeholder="฿">
+                    </div>
+                    <button onclick="Admin.createCode()" class="btn-dk bg-purple-600 hover:bg-purple-500 text-xs">สร้างโค้ด</button>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-white mb-3 text-sm">⚙️ ตั้งค่าระบบ</h3>
+                    <label class="text-xs text-gray-500">ประกาศหน้าเว็บ</label>
+                    <input id="s-ann" class="input-dk mb-2">
+                    
+                    <div class="flex gap-3 mb-2">
+                        <label class="flex items-center gap-2 text-xs text-white bg-[#020617] px-2 py-1 rounded w-full cursor-pointer"><input type="checkbox" id="s-dep"> เปิดฝาก</label>
+                        <label class="flex items-center gap-2 text-xs text-white bg-[#020617] px-2 py-1 rounded w-full cursor-pointer"><input type="checkbox" id="s-wit"> เปิดถอน</label>
+                    </div>
+                    <button onclick="Admin.saveSet()" class="btn-dk text-xs">บันทึกตั้งค่า</button>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-white mb-3 text-sm">🏦 จัดการธนาคาร</h3>
+                    <div class="flex gap-2 mb-2">
+                        <input id="b-name" class="input-dk" placeholder="ธนาคาร">
+                        <input id="b-acc" class="input-dk" placeholder="เลข">
+                    </div>
+                    <button onclick="Admin.addBank()" class="btn-dk bg-blue-600 hover:bg-blue-500 text-xs mb-2">เพิ่มบัญชี</button>
+                    <div id="bank-list" class="space-y-1 max-h-32 overflow-y-auto"></div>
+                </div>
+
             </div>
 
         </div>
     </div>
 
     <script>
+        // --- CONFIGURATION ---
         const firebaseConfig = { apiKey: "AIzaSyDc50wlOejDQi3PTySiQss3bLuVz_-tvB4", authDomain: "walletrs-d6104.firebaseapp.com", projectId: "walletrs-d6104", storageBucket: "walletrs-d6104.firebasestorage.app", messagingSenderId: "496661515180", appId: "1:496661515180:web:42c3a21541cdfc68cf8809", measurementId: "G-2P8SGLR602", databaseURL: "https://walletrs-d6104-default-rtdb.asia-southeast1.firebasedatabase.app" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database(); const auth = firebase.auth();
+        const db = firebase.database();
+        const auth = firebase.auth();
 
-        // Game Logic Loop (Server Simulation)
+        // --- SERVER-SIDE GAME LOGIC SIMULATION (The Brain) ---
+        // This simulates a server running game logic. Admin browser MUST be open for games to progress automatically.
         setInterval(() => {
             db.ref('rooms').once('value', s => {
-                s.forEach(d => {
-                    const r = d.val();
-                    const k = d.key;
-                    if(r.status === 'playing' && r.players.p1.move && r.players.p2.move) {
-                        // Calc Result
-                        db.ref(`rooms/${k}/status`).set('calculating');
+                s.forEach(doc => {
+                    const r = doc.val();
+                    const k = doc.key;
+                    
+                    // Logic: Both players moved -> Calculate Winner
+                    if(r.status === 'playing' && r.p1 && r.p2 && r.p1.move && r.p2.move) {
+                        
+                        db.ref(`rooms/${k}/status`).set('calculating'); // Show animation on client
+
                         setTimeout(() => {
-                            const m1=r.players.p1.move, m2=r.players.p2.move;
+                            const m1 = r.p1.move, m2 = r.p2.move;
                             let win = 0; // 0=draw, 1=p1, 2=p2
+                            
                             if(m1===m2) win=0;
                             else if((m1=='rock'&&m2=='scissors') || (m1=='paper'&&m2=='rock') || (m1=='scissors'&&m2=='paper')) win=1;
                             else win=2;
 
-                            if(win===1) db.ref(`rooms/${k}/players/p1/score`).set(r.players.p1.score+1);
-                            if(win===2) db.ref(`rooms/${k}/players/p2/score`).set(r.players.p2.score+1);
+                            // Update Score
+                            const s1 = r.p1.score + (win===1?1:0);
+                            const s2 = r.p2.score + (win===2?1:0);
+                            
+                            const updates = {};
+                            updates[`rooms/${k}/p1/score`] = s1;
+                            updates[`rooms/${k}/p2/score`] = s2;
+                            updates[`rooms/${k}/p1/move`] = ''; // Reset move
+                            updates[`rooms/${k}/p2/move`] = ''; // Reset move
 
+                            // Check End Game
                             if(r.currentRound < r.maxRound) {
-                                db.ref(`rooms/${k}`).update({
-                                    currentRound: r.currentRound+1, status: 'playing',
-                                    'players/p1/move': '', 'players/p2/move': ''
-                                });
+                                updates[`rooms/${k}/currentRound`] = r.currentRound + 1;
+                                updates[`rooms/${k}/status`] = 'playing';
                             } else {
-                                // End Game
-                                const finalP1 = r.players.p1.score + (win===1?1:0);
-                                const finalP2 = r.players.p2.score + (win===2?1:0);
+                                updates[`rooms/${k}/status`] = 'finished';
                                 let finalWinner = 'draw';
-                                if(finalP1 > finalP2) finalWinner = r.players.p1.uid;
-                                if(finalP2 > finalP1) finalWinner = r.players.p2.uid;
-                                db.ref(`rooms/${k}`).update({status:'finished', winner:finalWinner});
+                                if(s1 > s2) finalWinner = r.p1.uid;
+                                if(s2 > s1) finalWinner = r.p2.uid;
+                                updates[`rooms/${k}/winner`] = finalWinner;
+
+                                // Payout Logic (Auto)
+                                if(finalWinner === r.p1.uid) {
+                                    db.ref('users/'+r.p1.uid+'/balance').once('value', us=>db.ref('users/'+r.p1.uid).update({balance:us.val()+r.bet*2}));
+                                } else if (finalWinner === r.p2.uid) {
+                                    db.ref('users/'+r.p2.uid+'/balance').once('value', us=>db.ref('users/'+r.p2.uid).update({balance:us.val()+r.bet*2}));
+                                } else {
+                                    // Draw: Refund both
+                                    db.ref('users/'+r.p1.uid+'/balance').once('value', us=>db.ref('users/'+r.p1.uid).update({balance:us.val()+r.bet}));
+                                    db.ref('users/'+r.p2.uid+'/balance').once('value', us=>db.ref('users/'+r.p2.uid).update({balance:us.val()+r.bet}));
+                                }
                             }
-                        }, 2000);
+                            db.ref().update(updates);
+                        }, 2000); // 2s delay for excitement
                     }
                 });
             });
         }, 1000);
 
+        // --- ADMIN UI LOGIC ---
         const Admin = {
             login: () => {
                 const p = document.getElementById('a-pass').value;
@@ -155,42 +214,71 @@
                     Admin.load();
                 }).catch(e => Swal.fire('Error',e.message));
             },
+            createRoom: () => {
+                const name = document.getElementById('r-name').value;
+                const bet = Number(document.getElementById('r-bet').value);
+                const round = Number(document.getElementById('r-round').value);
+                const pass = document.getElementById('r-pass').value;
+                
+                if(name && bet > 0) {
+                    db.ref('rooms').push({
+                        name: name, bet: bet, maxRound: round, pass: pass, 
+                        status: 'open', // New status for admin-created rooms
+                        currentRound: 1,
+                        p1: null, // Empty slots
+                        p2: null,
+                        created: Date.now()
+                    });
+                    Swal.fire({icon:'success',title:'สร้างห้องสำเร็จ',timer:1000,showConfirmButton:false});
+                    document.getElementById('r-name').value = '';
+                } else Swal.fire('ข้อมูลไม่ครบ');
+            },
             load: () => {
                 // Monitor Rooms
                 db.ref('rooms').on('value', s => {
                     const l = document.getElementById('room-list'); l.innerHTML='';
+                    let count = 0;
                     s.forEach(d => {
+                        count++;
                         const r = d.val();
+                        let p1Status = r.p1 ? (r.p1.move ? '✅' : '⏳') : 'Empty';
+                        let p2Status = r.p2 ? (r.p2.move ? '✅' : '⏳') : 'Empty';
+                        
                         l.innerHTML += `
-                            <div class="bg-[#111] p-3 rounded border border-gray-700 relative">
-                                <div class="font-bold text-yellow-500">${r.name}</div>
-                                <div class="text-xs text-gray-400 flex justify-between">
-                                    <span>P1: ${r.players.p1.name} (${r.players.p1.move? '✅':'...'})</span>
-                                    <span>P2: ${r.players.p2?r.players.p2.name:'ว่าง'}</span>
+                            <div class="bg-[#0f172a] p-3 rounded border border-gray-700 relative">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-[#d4af37]">${r.name}</span>
+                                    <span class="text-xs bg-gray-700 px-2 rounded text-white">${r.status}</span>
                                 </div>
-                                <div class="text-xs text-center mt-1 bg-gray-800 rounded">${r.status} | Round ${r.currentRound}/${r.maxRound}</div>
-                                <button onclick="db.ref('rooms/${d.key}').remove()" class="absolute top-2 right-2 text-red-500 text-xs">ลบ</button>
+                                <div class="text-xs text-gray-400 grid grid-cols-2 gap-2">
+                                    <div class="bg-[#1e293b] p-1 rounded border border-gray-600">P1: ${r.p1?r.p1.name:'-'} <br> Status: ${p1Status}</div>
+                                    <div class="bg-[#1e293b] p-1 rounded border border-gray-600">P2: ${r.p2?r.p2.name:'-'} <br> Status: ${p2Status}</div>
+                                </div>
+                                <div class="mt-2 text-xs text-center text-gray-500">เดิมพัน: ${r.bet} | รอบ: ${r.currentRound}/${r.maxRound}</div>
+                                <button onclick="db.ref('rooms/${d.key}').remove()" class="absolute top-2 right-2 text-red-500 hover:text-red-300 text-xs bg-red-900/30 px-2 rounded">Delete</button>
                             </div>`;
                     });
+                    document.getElementById('room-count').innerText = count + " Active";
                 });
 
                 // Transactions
                 db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
                     const l = document.getElementById('tx-list'); l.innerHTML='';
+                    if(!s.exists()) { l.innerHTML = '<p class="text-center text-xs text-gray-600 py-4">ไม่มีรายการค้าง</p>'; return; }
                     s.forEach(d => {
                         const t = d.val();
                         l.innerHTML += `
-                            <div class="bg-[#111] p-2 rounded flex justify-between text-xs border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'}">
-                                <div>${t.type} ${t.amount} (${t.name})</div>
+                            <div class="bg-[#0f172a] p-2 rounded flex justify-between items-center text-xs border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'}">
+                                <div><span class="font-bold text-white">${t.type.toUpperCase()}</span> ${t.amount} (${t.name})</div>
                                 <div class="flex gap-1">
-                                    <button onclick="Admin.tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="text-green-500">✓</button>
-                                    <button onclick="Admin.tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="text-red-500">✗</button>
+                                    <button onclick="Admin.tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="bg-green-600 text-white px-2 rounded">✓</button>
+                                    <button onclick="Admin.tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="bg-red-600 text-white px-2 rounded">✗</button>
                                 </div>
                             </div>`;
                     });
                 });
 
-                // Settings
+                // Settings & Banks
                 db.ref('settings').on('value', s => {
                     const c = s.val() || {};
                     document.getElementById('s-ann').value = c.announcement||'';
@@ -199,78 +287,24 @@
                     
                     const bl = document.getElementById('bank-list'); bl.innerHTML='';
                     if(c.banks) Object.entries(c.banks).forEach(([k,v]) => {
-                        bl.innerHTML += `<div class="flex justify-between"><span>${v.name} - ${v.acc}</span><span onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 cursor-pointer">x</span></div>`;
+                        bl.innerHTML += `<div class="flex justify-between bg-[#0f172a] p-1 px-2 rounded mb-1"><span>${v.name} - ${v.acc}</span><span onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 cursor-pointer">x</span></div>`;
                     });
                 });
             },
-            createRoom: () => {
-                const name = document.getElementById('r-name').value;
-                const bet = Number(document.getElementById('r-bet').value);
-                const round = Number(document.getElementById('r-round').value);
-                const pass = document.getElementById('r-pass').value;
-                
-                if(name && bet) {
-                    db.ref('rooms').push({
-                        name: name, bet: bet, maxRound: round, pass: pass, status: 'waiting',
-                        currentRound: 1,
-                        players: {
-                            p1: { uid: 'admin_bot', name: 'Bot/Admin', score: 0, move: '' } // Admin creates, but waits for P2? Or Admin creates slot?
-                            // User asked: "Admin creates room". 
-                            // Let's make it so Admin creates an empty slot room waiting for P1 and P2.
-                            // Adjusted Logic:
-                        }
-                    }).then(()=>{
-                        // Fix: Update to empty players for users to join
-                        const key = db.ref('rooms').limitToLast(1).once('value').then(s => Object.keys(s.val())[0]);
-                        // Wait, push returns key.
-                    });
-                    // Re-write push properly for "Admin Created Room" structure
-                    const newRoom = {
-                        name: name, bet: bet, maxRound: round, pass: pass, status: 'waiting', currentRound: 1,
-                        players: { p1: { uid: 'admin', name: 'Admin Host', score:0, move:'' } } // Placeholder
-                    }; 
-                    // Actually, per requirement, Admin creates, User joins. 
-                    // Let's use specific structure: User 1 joins as P1.
-                    // So we init players as null or placeholder.
-                    // For this code to work with client logic:
-                    // Client expects to see room. If P1 is admin, client joins as P2? No.
-                    // Let's make Admin created rooms have P1 as "Waiting for Player".
-                    
-                    // FIXED LOGIC for Admin Created Room:
-                    const roomKey = db.ref('rooms').push().key;
-                    db.ref('rooms/'+roomKey).set({
-                        name: name, bet: bet, maxRound: round, pass: pass,
-                        status: 'waiting', currentRound: 1,
-                        p1: { uid: 'system', name: 'Waiting P1...', score: 0, move: '' } 
-                        // Note: Client needs update to handle joining empty P1 slot. 
-                        // But for simplicity with previous client code: Admin creates -> User sees -> User joins P2 (Playing against Admin/Bot?)
-                        // OR Admin creates empty room -> User 1 joins P1 -> User 2 joins P2.
-                        
-                        // Let's stick to: Admin creates room -> User creates room logic in client is disabled.
-                        // Client logic currently: User creates and becomes P1.
-                        // I will adapt Client logic to: Join existing room as P1 if P1 is 'system'.
-                    });
-                    Swal.fire('สร้างห้องแล้ว');
-                }
-            },
-            // Note: I will update Client Code logic slightly to support joining Admin rooms as P1
-            // Actually, simplest is: Admin creates, User joins.
-            // Client code above handles "Join" -> checks P2. 
-            // I need to update Client Code to check "Is P1 empty? Join P1. Else Join P2".
-            
+
             tx: (k, a, u, m, t) => {
                 if(a=='ok') {
                     db.ref('transactions/'+k).update({status:'approved'});
-                    if(t=='deposit') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance: s.val().balance+m}));
+                    if(t=='deposit') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance: (s.val().balance||0)+m}));
                 } else {
                     db.ref('transactions/'+k).update({status:'rejected'});
-                    if(t=='withdraw') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance: s.val().balance+m}));
+                    if(t=='withdraw') db.ref('users/'+u).once('value', s => db.ref('users/'+u).update({balance: (s.val().balance||0)+m})); // Refund
                 }
             },
             addBank: () => db.ref('settings/banks').push({name:document.getElementById('b-name').value, acc:document.getElementById('b-acc').value}),
-            saveSet: () => db.ref('settings').update({announcement:document.getElementById('s-ann').value, isDepositActive:document.getElementById('s-dep').checked, isWithdrawActive:document.getElementById('s-wit').checked}),
+            saveSet: () => db.ref('settings').update({announcement:document.getElementById('s-ann').value, isDepositActive:document.getElementById('s-dep').checked, isWithdrawActive:document.getElementById('s-wit').checked}).then(()=>Swal.fire({icon:'success',title:'Saved',toast:true,position:'top-end',showConfirmButton:false,timer:1000})),
             createCode: () => {
-                const c = document.getElementById('c-code').value;
+                const c = document.getElementById('c-code').value.toUpperCase();
                 const a = Number(document.getElementById('c-amt').value);
                 if(c && a) db.ref('codes/'+c).set({amount:a, used:false}).then(()=>Swal.fire('สร้างโค้ดสำเร็จ'));
             }
