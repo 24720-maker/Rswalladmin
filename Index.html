@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM ADMIN | CONTROL</title>
+    <title>ARENA ADMIN | COMMAND CENTER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
@@ -13,92 +13,101 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        body { background: #0b0f19; color: #cbd5e1; font-family: 'Kanit'; overflow-x: hidden; }
-        .card { background: #161b28; border: 1px solid #2d333b; border-radius: 12px; padding: 20px; }
-        .input-dk { background: #0d1117; border: 1px solid #2d333b; color: #fff; padding: 8px 12px; border-radius: 6px; width: 100%; outline: none; transition: 0.2s; }
+        body { background: #080a0f; color: #cbd5e1; font-family: 'Kanit'; }
+        .card { background: #11141d; border: 1px solid #1e293b; border-radius: 16px; padding: 20px; }
+        .input-dk { background: #05070a; border: 1px solid #1e293b; color: #fff; padding: 10px 14px; border-radius: 8px; width: 100%; outline: none; transition: 0.2s; }
         .input-dk:focus { border-color: #d4af37; }
-        .sidebar { width: 240px; background: #0d1117; border-right: 1px solid #2d333b; height: 100vh; position: fixed; }
-        .main { margin-left: 240px; padding: 30px; }
-        .nav-btn { width: 100%; padding: 12px 20px; text-align: left; color: #8b949e; transition: 0.2s; }
-        .nav-btn:hover, .nav-btn.active { color: #d4af37; background: rgba(212,175,55,0.05); }
+        .sidebar { width: 260px; background: #05070a; border-right: 1px solid #1e293b; height: 100vh; position: fixed; }
+        .main { margin-left: 260px; padding: 40px; }
+        .nav-btn { width: 100%; padding: 14px 24px; text-align: left; color: #64748b; transition: 0.3s; font-weight: 500; display: flex; align-items: center; gap: 12px; }
+        .nav-btn:hover, .nav-btn.active { color: #d4af37; background: rgba(212,175,55,0.05); border-right: 3px solid #d4af37; }
     </style>
 </head>
 <body>
 
     <div id="auth" class="flex items-center justify-center h-screen bg-black">
-        <div class="card w-96 text-center border-t-4 border-[#d4af37]">
-            <h1 class="text-3xl font-bold text-[#d4af37] mb-6 tracking-tighter">ADMIN LOGIN</h1>
-            <input id="a-user" class="input-dk mb-3 text-center" value="farisxuma1@gmail.com" readonly>
-            <input id="a-pass" type="password" class="input-dk mb-6 text-center" placeholder="รหัสความปลอดภัย">
-            <button onclick="Admin.login()" class="w-full bg-[#d4af37] text-black font-bold py-3 rounded-lg hover:bg-white transition">เข้าสู่ระบบจัดการ</button>
+        <div class="card w-[400px] text-center border-t-4 border-[#d4af37] animate__animated animate__fadeIn">
+            <h1 class="text-3xl font-bold text-[#d4af37] mb-8 tracking-tighter uppercase">Titanium Admin</h1>
+            <input id="a-user" class="input-dk mb-4 text-center" value="farisxuma1@gmail.com" readonly>
+            <input id="a-pass" type="password" class="input-dk mb-8 text-center" placeholder="Security Token">
+            <button onclick="Admin.login()" class="w-full bg-[#d4af37] text-black font-bold py-4 rounded-xl hover:bg-white transition duration-300">AUTHORIZE ACCESS</button>
         </div>
     </div>
 
     <div id="panel" class="hidden">
         <div class="sidebar">
-            <div class="p-6 border-b border-gray-800 text-[#d4af37] font-bold text-xl">TITANIUM</div>
-            <nav class="mt-4">
-                <button onclick="UI.route('monitor')" id="nav-monitor" class="nav-btn active"><i class="fa-solid fa-desktop mr-2"></i> มอนิเตอร์เกม</button>
-                <button onclick="UI.route('rooms')" id="nav-rooms" class="nav-btn"><i class="fa-solid fa-gamepad mr-2"></i> สร้างห้อง</button>
-                <button onclick="UI.route('money')" id="nav-money" class="nav-btn"><i class="fa-solid fa-dollar-sign mr-2"></i> ฝาก-ถอน <span id="badge" class="bg-red-500 text-white text-[9px] px-1.5 rounded-full hidden">0</span></button>
-                <button onclick="UI.route('users')" id="nav-users" class="nav-btn"><i class="fa-solid fa-users mr-2"></i> จัดการสมาชิก</button>
-                <button onclick="UI.route('settings')" id="nav-settings" class="nav-btn"><i class="fa-solid fa-sliders mr-2"></i> ตั้งค่าเว็บไซต์</button>
+            <div class="p-8 border-b border-white/5 text-[#d4af37] font-bold text-2xl tracking-tighter uppercase">Master Hub</div>
+            <nav class="mt-6">
+                <button onclick="UI.route('monitor')" id="nav-monitor" class="nav-btn active"><i class="fa-solid fa-satellite-dish"></i> Live Arena Monitor</button>
+                <button onclick="UI.route('rooms')" id="nav-rooms" class="nav-btn"><i class="fa-solid fa-square-plus"></i> Room Management</button>
+                <button onclick="UI.route('money')" id="nav-money" class="nav-btn"><i class="fa-solid fa-vault"></i> Finance Control <span id="badge" class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span></button>
+                <button onclick="UI.route('users')" id="nav-users" class="nav-btn"><i class="fa-solid fa-user-shield"></i> Player Database</button>
+                <button onclick="UI.route('settings')" id="nav-settings" class="nav-btn"><i class="fa-solid fa-gears"></i> Core Settings</button>
             </nav>
-            <div class="absolute bottom-4 left-4 text-[10px] text-gray-500">TITANIUM V.2025</div>
         </div>
 
         <div class="main">
-            <section id="p-monitor">
-                <h2 class="text-2xl font-bold text-white mb-6">📺 ระบบติดตามเกมแบบเรียลไทม์</h2>
-                <div id="room-monitor" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <section id="p-monitor" class="animate__animated animate__fadeIn">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-white tracking-tight uppercase">Arena Live Stream</h2>
+                    <div class="flex items-center gap-2 text-green-500 text-sm font-bold bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20"><span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Real-time Sync Active</div>
+                </div>
+                <div id="monitor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </section>
 
-            <section id="p-rooms" class="hidden max-w-xl">
-                <h2 class="text-2xl font-bold text-white mb-6">🎮 สร้างสังเวียนใหม่</h2>
-                <div class="card space-y-4">
-                    <div><label class="text-xs text-gray-500">ชื่อห้อง</label><input id="r-name" class="input-dk mt-1" placeholder="เช่น ห้องราชา 500"></div>
-                    <div><label class="text-xs text-gray-500">เงินเดิมพันต่อคน</label><input id="r-bet" type="number" class="input-dk mt-1" placeholder="0"></div>
-                    <div><label class="text-xs text-gray-500">จำนวนตาที่เล่น (รอบ)</label><input id="r-round" type="number" class="input-dk mt-1" value="3"></div>
-                    <button onclick="Admin.createRoom()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-500 transition mt-2">สร้างห้องเดิมพัน</button>
+            <section id="p-rooms" class="hidden max-w-2xl animate__animated animate__fadeIn">
+                <h2 class="text-3xl font-bold text-white mb-8 uppercase tracking-tight">Open New Arena</h2>
+                <div class="card space-y-6">
+                    <div><label class="text-xs text-gray-500 font-bold uppercase mb-2 block">Room Name</label><input id="r-name" class="input-dk" placeholder="Battle 100 Coins"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-xs text-gray-500 font-bold uppercase mb-2 block">Bet Amount</label><input id="r-bet" type="number" class="input-dk text-gold font-bold"></div>
+                        <div><label class="text-xs text-gray-500 font-bold uppercase mb-2 block">Rounds (Odd only)</label><input id="r-round" type="number" class="input-dk" value="3"></div>
+                    </div>
+                    <button onclick="Admin.createRoom()" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-500 transition duration-300">GENERATE ROOM DATA</button>
                 </div>
             </section>
 
-            <section id="p-money" class="hidden">
-                <h2 class="text-2xl font-bold text-white mb-6">💸 รายการธุรกรรมค้างอยู่</h2>
-                <div id="tx-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <section id="p-money" class="hidden animate__animated animate__fadeIn">
+                <h2 class="text-3xl font-bold text-white mb-8 uppercase tracking-tight">Finance Approvals</h2>
+                <div id="tx-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
             </section>
 
-            <section id="p-users" class="hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white">รายชื่อสมาชิก</h2>
-                    <input onkeyup="UI.filter(this.value)" class="input-dk w-64" placeholder="ค้นหาชื่อ, เบอร์...">
+            <section id="p-users" class="hidden animate__animated animate__fadeIn">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-white uppercase tracking-tight">Player Database</h2>
+                    <input onkeyup="UI.filter(this.value)" class="input-dk w-80" placeholder="Search by name or email...">
                 </div>
                 <div class="card p-0 overflow-hidden">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-[#0d1117] text-gray-500"><tr><th class="p-4">ชื่อ</th><th>เงินคงเหลือ</th><th>ธนาคาร</th><th>เฟสบุ๊ค</th><th class="text-right p-4">ปรับปรุง</th></tr></thead>
-                        <tbody id="user-list" class="divide-y divide-gray-800"></tbody>
+                        <thead class="bg-[#05070a] text-gray-500 uppercase text-[11px] font-bold tracking-widest"><tr class="border-b border-white/5"><th class="p-5">Name</th><th>Balance</th><th>Account Info</th><th>Social</th><th class="text-right p-5">Action</th></tr></thead>
+                        <tbody id="user-list" class="divide-y divide-white/5"></tbody>
                     </table>
                 </div>
             </section>
 
-            <section id="p-settings" class="hidden max-w-2xl">
-                <h2 class="text-2xl font-bold text-white mb-6">⚙️ ตั้งค่าระบบ</h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="card space-y-4">
-                        <h3 class="font-bold border-b border-gray-800 pb-2">ทั่วไป</h3>
-                        <div><label class="text-xs text-gray-500">ประกาศวิ่ง</label><input id="s-ann" class="input-dk mt-1"></div>
-                        <div><label class="text-xs text-gray-500">ลิ้งเฟสแอดมิน</label><input id="s-link" class="input-dark mt-1 text-xs"></div>
-                        <div class="flex gap-4">
-                            <label class="flex gap-2 text-xs items-center cursor-pointer"><input type="checkbox" id="s-dep"> เปิดฝาก</label>
-                            <label class="flex gap-2 text-xs items-center cursor-pointer"><input type="checkbox" id="s-wit"> เปิดถอน</label>
+            <section id="p-settings" class="hidden animate__animated animate__fadeIn">
+                <h2 class="text-3xl font-bold text-white mb-8 uppercase tracking-tight">System Core Control</h2>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <div class="card space-y-6">
+                        <h3 class="text-lg font-bold text-white border-b border-white/5 pb-4 uppercase">General Config</h3>
+                        <div><label class="text-xs text-gray-500 uppercase block mb-1">Live Marquee</label><input id="s-ann" class="input-dk"></div>
+                        <div><label class="text-xs text-gray-500 uppercase block mb-1">Admin Support Link</label><input id="s-link" class="input-dk"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="flex items-center gap-3 text-sm bg-black/50 p-4 rounded-xl border border-white/5 cursor-pointer"><input type="checkbox" id="s-dep" class="w-5 h-5 accent-gold"> Deposit Toggle</label>
+                            <label class="flex items-center gap-3 text-sm bg-black/50 p-4 rounded-xl border border-white/5 cursor-pointer"><input type="checkbox" id="s-wit" class="w-5 h-5 accent-red-500"> Withdraw Toggle</label>
                         </div>
-                        <button onclick="Admin.saveSet()" class="w-full bg-[#d4af37] text-black font-bold py-2 rounded">บันทึก</button>
+                        <button onclick="Admin.saveSet()" class="w-full bg-[#d4af37] text-black font-bold py-4 rounded-xl hover:bg-white transition duration-300">UPDATE SETTINGS</button>
                     </div>
-                    <div class="card space-y-4">
-                        <h3 class="font-bold border-b border-gray-800 pb-2">ธนาคารสำหรับโอนเข้า</h3>
-                        <div class="flex gap-2"><input id="b-name" class="input-dk text-xs" placeholder="ธนาคาร"><input id="b-acc" class="input-dk text-xs" placeholder="เลข"></div>
-                        <button onclick="Admin.addBank()" class="w-full bg-blue-600 text-white font-bold py-2 rounded text-xs">เพิ่มบัญชี</button>
-                        <div id="bank-list" class="space-y-1"></div>
+                    <div class="card space-y-6">
+                        <h3 class="text-lg font-bold text-white border-b border-white/5 pb-4 uppercase">Bank Vaults</h3>
+                        <div class="flex gap-4"><input id="b-name" class="input-dk" placeholder="Bank Name"><input id="b-acc" class="input-dk" placeholder="Account Number"></div>
+                        <button onclick="Admin.addBank()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-500 transition">ADD BANK ACCOUNT</button>
+                        <div id="bank-list" class="space-y-2"></div>
+                    </div>
+                    <div class="card space-y-6">
+                        <h3 class="text-lg font-bold text-white border-b border-white/5 pb-4 uppercase">Promo Code Generator</h3>
+                        <div class="flex gap-4"><input id="c-code" class="input-dk uppercase font-bold text-gold" placeholder="NEW CODE"><input id="c-amt" type="number" class="input-dk w-32" placeholder="Value"></div>
+                        <button onclick="Admin.createCode()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl transition">ACTIVATE PROMO CODE</button>
                     </div>
                 </div>
             </section>
@@ -111,92 +120,105 @@
         const db = firebase.database();
         const auth = firebase.auth();
 
-        // --- SERVER LOGIC SIMULATION ---
+        // --- THE ENGINE: MASTER GAME LOOP ---
+        // This function acts as the "Server". Admin browser must be open for games to progress automatically.
         setInterval(() => {
             db.ref('rooms').once('value', s => {
-                s.forEach(d => {
-                    const r = d.val();
-                    if(r.status === 'playing' && r.p1.move && r.p2.move) {
-                        db.ref(`rooms/${d.key}/status`).set('calculating');
+                s.forEach(doc => {
+                    const r = doc.val(), k = doc.key;
+                    // Logic 1: Both moves exist
+                    if(r.status === 'playing' && r.p1.move && r.p2 && r.p2.move) {
+                        db.ref(`rooms/${k}/status`).set('calculating');
                         setTimeout(() => {
-                            let m1=r.p1.move, m2=r.p2.move, w=0;
-                            if(m1===m2) w=0;
-                            else if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) w=1;
-                            else w=2;
+                            const m1=r.p1.move, m2=r.p2.move;
+                            let winner = 0; // 0=draw, 1=p1, 2=p2
+                            if(m1===m2) winner=0;
+                            else if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) winner=1;
+                            else winner=2;
 
-                            let s1=r.p1.score + (w===1?1:0), s2=r.p2.score + (w===2?1:0);
+                            const s1=r.p1.score + (winner===1?1:0), s2=r.p2.score + (winner===2?1:0);
                             
                             if(r.round < r.maxRound) {
-                                db.ref(`rooms/${d.key}`).update({ status:'waiting', round:r.round+1, 'p1/move':'', 'p1/ready':false, 'p2/move':'', 'p2/ready':false, 'p1/score':s1, 'p2/score':s2 });
+                                db.ref(`rooms/${k}`).update({ status:'waiting', round:r.round+1, 'p1/move':'', 'p1/ready':false, 'p2/move':'', 'p2/ready':false, 'p1/score':s1, 'p2/score':s2 });
                             } else {
-                                let finalWin = s1>s2?r.p1.uid:(s2>s1?r.p2.uid:'draw');
-                                db.ref(`rooms/${d.key}`).update({ status:'finished', winner:finalWin, 'p1/score':s1, 'p2/score':s2 });
-                                // Payout
+                                const finalWin = s1 > s2 ? r.p1.uid : (s2 > s1 ? r.p2.uid : 'draw');
+                                db.ref(`rooms/${k}`).update({ status:'finished', winner:finalWin, 'p1/score':s1, 'p2/score':s2 });
+                                // AUTO-PAYOUT
                                 if(finalWin === 'draw') {
-                                    db.ref('users/'+r.p1.uid+'/balance').once('value',us=>db.ref('users/'+r.p1.uid).update({balance:us.val()+r.bet}));
-                                    db.ref('users/'+r.p2.uid+'/balance').once('value',us=>db.ref('users/'+r.p2.uid).update({balance:us.val()+r.bet}));
+                                    db.ref('users/'+r.p1.uid+'/balance').transaction(b => (b||0) + r.bet);
+                                    db.ref('users/'+r.p2.uid+'/balance').transaction(b => (b||0) + r.bet);
                                 } else {
-                                    db.ref('users/'+finalWin+'/balance').once('value',us=>db.ref('users/'+finalWin).update({balance:us.val()+r.bet*2}));
+                                    db.ref('users/'+finalWin+'/balance').transaction(b => (b||0) + r.bet*2);
                                 }
                             }
                         }, 2000);
                     }
                 });
             });
-        }, 2000);
+        }, 1500);
 
         const Admin = {
-            login: () => auth.signInWithEmailAndPassword(document.getElementById('a-user').value, document.getElementById('a-pass').value).then(() => { document.getElementById('auth').style.display='none'; document.getElementById('panel').classList.remove('hidden'); Admin.init(); }).catch(e => Swal.fire('Error', e.message, 'error')),
+            login: () => auth.signInWithEmailAndPassword(document.getElementById('a-user').value, document.getElementById('a-pass').value).then(() => { document.getElementById('auth').style.display='none'; document.getElementById('panel').classList.remove('hidden'); Admin.init(); }).catch(e => Swal.fire('Security Error', e.message, 'error')),
             init: () => {
+                // Monitor
                 db.ref('rooms').on('value', s => {
-                    const l=document.getElementById('room-monitor'); l.innerHTML='';
+                    const l=document.getElementById('monitor-grid'); l.innerHTML='';
                     s.forEach(d => {
                         const r=d.val();
-                        l.innerHTML += `<div class="card"><div class="flex justify-between font-bold text-[#d4af37]"><span>${r.name}</span><span>฿${r.bet}</span></div><div class="text-[10px] my-2 p-1 bg-black rounded text-center">${r.status.toUpperCase()}</div><div class="grid grid-cols-2 gap-2 text-xs"><div class="p-2 bg-gray-900 rounded">P1: ${r.p1?r.p1.name:'-'}<br>Move: ${r.p1?.move||'⏳'}<br>Ready: ${r.p1?.ready?'✅':'❌'}</div><div class="p-2 bg-gray-900 rounded">P2: ${r.p2?r.p2.name:'-'}<br>Move: ${r.p2?.move||'⏳'}<br>Ready: ${r.p2?.ready?'✅':'❌'}</div></div><button onclick="db.ref('rooms/${d.key}').remove()" class="w-full mt-2 text-red-500 text-[10px]">ลบห้อง</button></div>`;
-                }); });
+                        l.innerHTML += `<div class="card animate__animated animate__fadeIn"><div class="flex justify-between items-start mb-4"><span class="font-bold text-gold">${r.name}</span><span class="text-[10px] bg-black p-1 px-2 rounded uppercase text-gray-500">${r.status}</span></div><div class="grid grid-cols-2 gap-3 text-xs"><div class="p-3 bg-black/50 rounded-xl border border-white/5">P1: ${r.p1?r.p1.name:'-'}<br>Move: ${r.p1?.move||'⏳'}<br>Score: ${r.p1?.score}</div><div class="p-3 bg-black/50 rounded-xl border border-white/5">P2: ${r.p2?r.p2.name:'-'}<br>Move: ${r.p2?.move||'⏳'}<br>Score: ${r.p2?.score||0}</div></div><div class="mt-4 text-xs flex justify-between items-center text-gray-500"><span>BET: ฿${r.bet}</span><span>RD: ${r.round}/${r.maxRound}</span></div><button onclick="db.ref('rooms/${d.key}').remove()" class="w-full mt-4 bg-red-900/20 text-red-500 text-[10px] py-1 rounded-lg border border-red-500/10 hover:bg-red-500 hover:text-white transition">SHUTDOWN ROOM</button></div>`;
+                    });
+                });
+                // Finance
                 db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
                     const l=document.getElementById('tx-list'); l.innerHTML=''; let count=0;
                     s.forEach(d => {
                         const t=d.val(); count++;
-                        l.innerHTML += `<div class="card border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'} flex justify-between items-center"><div><b class="text-white">${t.type.toUpperCase()} ฿${t.amount}</b><p class="text-xs text-gray-500">${t.name} • ${t.time||''}</p><p class="text-[9px] text-gray-600">${t.bank_info||''}</p></div><div class="flex gap-2"><button onclick="Admin.tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="bg-green-600 text-white px-3 py-1 rounded text-xs">อนุมัติ</button><button onclick="Admin.tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs">ปฏิเสธ</button></div></div>`;
+                        l.innerHTML += `<div class="card border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'} flex justify-between items-center"><div><h4 class="font-bold text-white uppercase">${t.type} ฿${t.amount}</h4><p class="text-xs text-gray-500">${t.name} • ${t.time||'Now'}</p></div><div class="flex gap-2"><button onclick="Admin.tx('${d.key}','ok','${t.uid}',${t.amount},'${t.type}')" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold">APPROVE</button><button onclick="Admin.tx('${d.key}','no','${t.uid}',${t.amount},'${t.type}')" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold">REJECT</button></div></div>`;
                     });
                     const b=document.getElementById('badge'); if(count>0){b.innerText=count; b.classList.remove('hidden');}else b.classList.add('hidden');
                 });
+                // Users
                 db.ref('users').on('value', s => {
                     const l=document.getElementById('user-list'); l.innerHTML='';
                     s.forEach(d => {
                         const u=d.val();
-                        l.innerHTML += `<tr><td class="p-4 text-white font-bold">${u.name}</td><td class="text-[#d4af37]">฿${u.balance}</td><td class="text-xs">${u.bank}<br>${u.acc}</td><td class="text-blue-400 text-xs"><a href="${u.fb_link}" target="_blank">ลิงก์เฟส</a></td><td class="text-right p-4"><button onclick="Admin.adj('${d.key}',${u.balance},'${u.name}')" class="bg-gray-700 px-2 py-1 rounded text-xs hover:bg-white transition">ปรับเงิน</button></td></tr>`;
-                }); });
+                        l.innerHTML += `<tr class="hover:bg-white/5 transition"><td class="p-5 font-bold text-white">${u.name}</td><td class="text-gold font-bold">฿${(u.balance||0).toLocaleString()}</td><td class="text-xs text-gray-500">${u.bank}<br>${u.acc}</td><td class="text-blue-400 text-xs"><a href="${u.fb_link}" target="_blank">View Profile</a></td><td class="text-right p-5"><button onclick="Admin.adj('${d.key}',${u.balance},'${u.name}')" class="bg-white/5 hover:bg-[#d4af37] hover:text-black px-4 py-2 rounded-lg text-xs transition duration-300">MANAGE CREDIT</button></td></tr>`;
+                    });
+                });
+                // Settings
                 db.ref('settings').on('value', s => {
                     const c=s.val()||{}; document.getElementById('s-ann').value=c.announcement||''; document.getElementById('s-link').value=c.contactLink||'';
                     document.getElementById('s-dep').checked=c.isDepositActive; document.getElementById('s-wit').checked=c.isWithdrawActive;
                     const bl=document.getElementById('bank-list'); bl.innerHTML='';
-                    if(c.banks) Object.entries(c.banks).forEach(([k,v]) => { bl.innerHTML += `<div class="flex justify-between text-[10px] bg-black p-1 rounded"><span>${v.name} ${v.acc}</span><span onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 cursor-pointer">X</span></div>`; });
+                    if(c.banks) Object.entries(c.banks).forEach(([k,v]) => { bl.innerHTML += `<div class="flex justify-between items-center bg-black/50 p-2 rounded-lg border border-white/5 text-xs"><span class="text-gray-400">${v.name} : ${v.acc}</span><button onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 font-bold px-2">×</button></div>`; });
                 });
             },
             createRoom: () => {
                 const n=document.getElementById('r-name').value, b=Number(document.getElementById('r-bet').value), r=Number(document.getElementById('r-round').value);
-                if(n && b>0) db.ref('rooms').push({ name:n, bet:b, maxRound:r, round:1, status:'open', p1:null, p2:null, created:Date.now() }).then(()=>Swal.fire('สำเร็จ','สร้างห้องแล้ว','success'));
+                if(n && b>0) db.ref('rooms').push({ name:n, bet:b, maxRound:r, round:1, status:'open', p1:null, p2:null, created:Date.now() }).then(()=>Swal.fire('Room Active','Arena data initialized','success'));
             },
             tx: (k,a,u,m,t) => {
                 if(a=='ok') {
                     db.ref('transactions/'+k).update({status:'approved'});
-                    if(t=='deposit') db.ref('users/'+u).once('value',s=>db.ref('users/'+u).update({balance:(s.val().balance||0)+m}));
+                    if(t=='deposit') db.ref('users/'+u+'/balance').transaction(b => (b||0) + m);
                 } else {
                     db.ref('transactions/'+k).update({status:'rejected'});
-                    if(t=='withdraw') db.ref('users/'+u).once('value',s=>db.ref('users/'+u).update({balance:(s.val().balance||0)+m}));
+                    if(t=='withdraw') db.ref('users/'+u+'/balance').transaction(b => (b||0) + m); // Refund
                 }
             },
             adj: async (uid, old, name) => {
-                const {value:n}=await Swal.fire({title:`ปรับเงิน: ${name}`, input:'number', inputValue:old, background:'#161b28', color:'#fff', confirmButtonColor:'#d4af37'});
+                const {value:n}=await Swal.fire({title:`Modify Player: ${name}`, input:'number', inputValue:old, background:'#11141d', color:'#fff', confirmButtonColor:'#d4af37'});
                 if(n) db.ref('users/'+uid).update({balance:Number(n)});
             },
             addBank: () => {
                 const n=document.getElementById('b-name').value, a=document.getElementById('b-acc').value;
                 if(n&&a) db.ref('settings/banks').push({name:n, acc:a});
             },
-            saveSet: () => db.ref('settings').update({ announcement: document.getElementById('s-ann').value, contactLink: document.getElementById('s-link').value, isDepositActive: document.getElementById('s-dep').checked, isWithdrawActive: document.getElementById('s-wit').checked }).then(()=>Swal.fire('Saved','','success'))
+            createCode: () => {
+                const c=document.getElementById('c-code').value.toUpperCase(), a=Number(document.getElementById('c-amt').value);
+                if(c&&a) db.ref('codes/'+c).set({amount:a, used:false}).then(()=>Swal.fire('PROMO ACTIVE','Code ready for distribution','success'));
+            },
+            saveSet: () => db.ref('settings').update({ announcement: document.getElementById('s-ann').value, contactLink: document.getElementById('s-link').value, isDepositActive: document.getElementById('s-dep').checked, isWithdrawActive: document.getElementById('s-wit').checked }).then(()=>Swal.fire('CORE UPDATED','System settings synchronized','success'))
         };
 
         const UI = {
