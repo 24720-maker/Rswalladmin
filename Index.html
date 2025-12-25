@@ -3,252 +3,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM - GOD MODE</title>
+    <title>TITANIUM GOD - CONTROL CENTER</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <style>body{background:#020617;color:#cbd5e1;font-family:'Kanit'} .card{background:#0f172a;border:1px solid #1e293b;padding:20px;border-radius:12px} input{background:#020617;border:1px solid #334155;color:white;padding:8px;border-radius:6px;width:100%;outline:none} input:focus{border-color:#eab308}</style>
-</head>
-<body class="p-6">
 
-    <div id="auth" class="flex items-center justify-center h-screen bg-black z-[100] relative">
-        <div class="card w-[400px] text-center border-t-4 border-[#eab308]">
-            <h2 class="text-2xl font-bold text-[#eab308] mb-8 uppercase">Security Gateway</h2>
-            <input id="a-user" class="mb-4 text-center" value="farisxuma1@gmail.com" readonly>
-            <input id="a-pass" type="password" class="mb-8 text-center" placeholder="Access Code">
-            <button onclick="Admin.login()" class="w-full bg-[#eab308] text-black font-bold py-4 rounded-xl">LOGIN</button>
+    <style>
+        :root { --main: #d4af37; --bg: #020617; --card: #0f172a; --border: #1e293b; }
+        body { font-family: 'Kanit', sans-serif; background: var(--bg); color: #94a3b8; overflow: hidden; }
+        .font-tech { font-family: 'Chakra Petch', sans-serif; }
+        
+        /* Layout */
+        .sidebar { width: 260px; height: 100vh; position: fixed; background: #000; border-right: 1px solid var(--border); z-index: 50; display: flex; flex-direction: column; }
+        .main-content { margin-left: 260px; padding: 30px; height: 100vh; overflow-y: auto; background: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%); }
+        
+        /* Components */
+        .card { background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); }
+        .input-dark { background: #020617; border: 1px solid var(--border); color: white; padding: 10px 14px; border-radius: 8px; width: 100%; outline: none; transition: 0.3s; }
+        .input-dark:focus { border-color: var(--main); box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2); }
+        
+        .btn-action { background: var(--border); color: white; padding: 8px 16px; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
+        .btn-action:hover { background: #334155; }
+        .btn-action.active { background: rgba(212, 175, 55, 0.15); color: var(--main); border: 1px solid rgba(212, 175, 55, 0.3); }
+
+        /* Status Indicators */
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot.online { background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
+        .dot.offline { background: #ef4444; }
+        
+        /* Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: var(--main); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen" class="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+        <div class="card w-96 text-center border-t-4 border-[#d4af37] animate__animated animate__fadeInDown">
+            <h1 class="text-4xl font-tech font-bold text-[#d4af37] mb-2 tracking-widest">GOD MODE</h1>
+            <p class="text-xs text-gray-500 mb-8 uppercase tracking-[0.3em]">System Controller</p>
+            <input id="admin-user" class="input-dark mb-3 text-center" value="farisxuma1@gmail.com" readonly>
+            <input id="admin-pass" type="password" class="input-dark mb-6 text-center" placeholder="Security Key">
+            <button onclick="Admin.login()" class="w-full py-3 bg-[#d4af37] text-black font-bold rounded-lg hover:bg-white transition shadow-lg shadow-[#d4af37]/20">ACCESS SYSTEM</button>
         </div>
     </div>
 
-    <div id="panel" class="hidden">
-        <aside class="fixed left-0 top-0 w-64 h-full bg-black border-r border-white/10 p-6">
-            <h1 class="text-2xl font-bold text-[#eab308] mb-8">ADMIN</h1>
-            <nav class="space-y-2">
-                <button onclick="UI.tab('monitor')" class="w-full text-left p-3 rounded hover:bg-white/5 text-sm font-bold">📡 Live Monitor</button>
-                <button onclick="UI.tab('rooms')" class="w-full text-left p-3 rounded hover:bg-white/5 text-sm font-bold">🎮 Create Room</button>
-                <button onclick="UI.tab('finance')" class="w-full text-left p-3 rounded hover:bg-white/5 text-sm font-bold">💸 Finance</button>
-                <button onclick="UI.tab('users')" class="w-full text-left p-3 rounded hover:bg-white/5 text-sm font-bold">👥 Users & Penalty</button>
-                <button onclick="UI.tab('settings')" class="w-full text-left p-3 rounded hover:bg-white/5 text-sm font-bold">⚙️ System Config</button>
+    <div id="dashboard" class="hidden">
+        
+        <aside class="sidebar">
+            <div class="p-6 border-b border-white/5 flex items-center gap-3">
+                <div class="w-10 h-10 rounded bg-[#d4af37] flex items-center justify-center text-black font-bold text-xl font-tech">T</div>
+                <div><h2 class="text-white font-bold tracking-wide">TITANIUM</h2><p class="text-[10px] text-[#d4af37]">SERVER ONLINE</p></div>
+            </div>
+            
+            <nav class="flex-1 p-4 space-y-1">
+                <div onclick="UI.page('monitor')" id="nav-monitor" class="btn-action active"><i class="fa-solid fa-satellite-dish"></i> Live Monitor</div>
+                <div onclick="UI.page('finance')" id="nav-finance" class="btn-action"><i class="fa-solid fa-money-bill-transfer"></i> ธุรกรรมการเงิน</div>
+                <div onclick="UI.page('rooms')" id="nav-rooms" class="btn-action"><i class="fa-solid fa-gamepad"></i> จัดการห้องเกม</div>
+                <div onclick="UI.page('users')" id="nav-users" class="btn-action"><i class="fa-solid fa-users-gear"></i> สมาชิก & บทลงโทษ</div>
+                <div onclick="UI.page('settings')" id="nav-settings" class="btn-action"><i class="fa-solid fa-sliders"></i> ตั้งค่าระบบ</div>
             </nav>
+
+            <div class="p-4 border-t border-white/5">
+                <div class="bg-green-900/20 border border-green-500/20 p-3 rounded-lg flex items-center gap-3">
+                    <div class="dot online"></div>
+                    <div><p class="text-xs text-green-400 font-bold">ENGINE RUNNING</p><p class="text-[10px] text-gray-500" id="server-tick">Tick: 0</p></div>
+                </div>
+            </div>
         </aside>
 
-        <main class="ml-64 p-8">
-            <section id="p-monitor">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white">Live Monitor</h2>
-                    <div class="text-xs text-green-500 font-bold bg-green-900/20 px-3 py-1 rounded border border-green-500/30 animate-pulse">● SERVER RUNNING</div>
-                </div>
-                <div id="monitor-list" class="grid grid-cols-2 gap-4"></div>
-            </section>
-
-            <section id="p-rooms" class="hidden max-w-xl">
-                <h2 class="text-2xl font-bold text-white mb-6">สร้างห้อง</h2>
-                <div class="card space-y-4">
-                    <input id="r-name" placeholder="ชื่อห้อง">
-                    <input id="r-bet" type="number" placeholder="เดิมพัน">
-                    <select id="r-type" class="w-full bg-[#020617] text-white p-2 rounded border border-[#334155]"><option value="rps">เป่ายิ้งฉุบ</option><option value="pokdeng">ป๊อกเด้ง</option></select>
-                    <select id="r-rig" class="w-full bg-[#020617] text-white p-2 rounded border border-[#334155]"><option value="">-- ไม่ล็อค --</option><option value="p1">ล็อค P1 ชนะ</option><option value="p2">ล็อค P2 ชนะ</option></select>
-                    <button onclick="Admin.create()" class="w-full bg-green-600 text-white font-bold py-3 rounded">สร้าง</button>
-                </div>
-            </section>
-
-            <section id="p-finance" class="hidden">
-                <h2 class="text-2xl font-bold text-white mb-6">รายการรออนุมัติ</h2>
-                <div id="tx-list" class="grid grid-cols-2 gap-4"></div>
-            </section>
-
-            <section id="p-users" class="hidden">
-                <div class="flex justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-white">สมาชิก</h2>
-                    <input onkeyup="Admin.filter(this.value)" class="w-64" placeholder="ค้นหา...">
-                </div>
-                <div id="user-list" class="space-y-2"></div>
-            </section>
-
-            <section id="p-settings" class="hidden max-w-2xl space-y-6">
-                <div class="card">
-                    <h3 class="font-bold text-[#eab308] mb-4">ทั่วไป</h3>
-                    <input id="s-ann" class="mb-2" placeholder="ประกาศ">
-                    <div class="flex gap-4 p-4 bg-black/40 rounded-lg">
-                        <label class="flex items-center gap-2"><input type="checkbox" id="s-dep"> เปิดฝาก</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" id="s-wit"> เปิดถอน</label>
+        <main class="main-content">
+            
+            <section id="p-monitor" class="animate__animated animate__fadeIn">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2"><i class="fa-solid fa-eye text-[#d4af37]"></i> REAL-TIME MONITOR</h2>
+                <div id="monitor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     </div>
-                    <label class="text-xs text-gray-500 mt-2 block">คืนยอดเสีย (%)</label>
-                    <input id="s-cb" type="number" class="mt-1 w-20">
-                    <button onclick="Admin.saveSet()" class="bg-[#eab308] text-black px-4 py-1 rounded mt-4 text-xs font-bold">บันทึก</button>
-                </div>
-                <div class="card">
-                    <h3 class="font-bold text-blue-500 mb-4">เพิ่มธนาคาร</h3>
-                    <div class="flex gap-2"><input id="b-name" placeholder="ธนาคาร"><input id="b-acc" placeholder="เลขบัญชี"></div>
-                    <button onclick="Admin.addBank()" class="bg-blue-600 px-4 py-1 rounded mt-2 text-white text-xs">เพิ่ม</button>
-                    <div id="bank-list" class="mt-2 text-xs space-y-1"></div>
+            </section>
+
+            <section id="p-finance" class="hidden animate__animated animate__fadeIn">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2"><i class="fa-solid fa-wallet text-[#d4af37]"></i> รายการฝาก-ถอน (Pending)</h2>
+                <div id="tx-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+            </section>
+
+            <section id="p-rooms" class="hidden animate__animated animate__fadeIn max-w-2xl">
+                <h2 class="text-2xl font-bold text-white mb-6">สร้างห้องเกม</h2>
+                <div class="card space-y-4">
+                    <div><label class="text-xs text-gray-500">ชื่อห้อง</label><input id="r-name" class="input-dark mt-1" placeholder="เช่น ห้องวัดใจ 100"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-xs text-gray-500">ประเภทเกม</label><select id="r-type" class="input-dark mt-1"><option value="rps">✊ เป่ายิ้งฉุบ</option><option value="pokdeng">🎴 ป๊อกเด้ง</option></select></div>
+                        <div><label class="text-xs text-gray-500">เดิมพัน</label><input id="r-bet" type="number" class="input-dark mt-1" placeholder="0"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-xs text-gray-500">จำนวนตา (Rounds)</label><input id="r-round" type="number" class="input-dark mt-1" value="1"></div>
+                        <div><label class="text-xs text-[#d4af37]">ล็อคผล (Rigging)</label><select id="r-rig" class="input-dark mt-1 border-[#d4af37]/30"><option value="">-- ไม่ล็อค --</option><option value="p1">P1 ชนะตลอด</option><option value="p2">P2 ชนะตลอด</option></select></div>
+                    </div>
+                    <button onclick="Admin.createRoom()" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition">เปิดห้องสังเวียน</button>
                 </div>
             </section>
+
+            <section id="p-users" class="hidden animate__animated animate__fadeIn">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">จัดการสมาชิก</h2>
+                    <input onkeyup="Admin.filterUsers(this.value)" class="input-dark w-64" placeholder="ค้นหาชื่อ...">
+                </div>
+                <div class="card p-0 overflow-hidden">
+                    <table>
+                        <thead><tr><th>ชื่อสมาชิก</th><th>เครดิต</th><th>ธนาคาร</th><th>เครื่องมือ</th></tr></thead>
+                        <tbody id="user-table"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="p-settings" class="hidden animate__animated animate__fadeIn max-w-4xl">
+                <h2 class="text-2xl font-bold text-white mb-6">ตั้งค่าระบบ</h2>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="card space-y-4">
+                        <h3 class="text-[#d4af37] font-bold border-b border-white/5 pb-2">สถานะระบบ</h3>
+                        <div class="flex items-center justify-between bg-black/40 p-3 rounded-lg border border-white/5">
+                            <span>ระบบฝากเงิน</span>
+                            <button id="tog-dep" onclick="Admin.toggle('isDepositActive')" class="text-xs font-bold px-3 py-1 rounded bg-green-500/20 text-green-400">ON</button>
+                        </div>
+                        <div class="flex items-center justify-between bg-black/40 p-3 rounded-lg border border-white/5">
+                            <span>ระบบถอนเงิน</span>
+                            <button id="tog-wit" onclick="Admin.toggle('isWithdrawActive')" class="text-xs font-bold px-3 py-1 rounded bg-green-500/20 text-green-400">ON</button>
+                        </div>
+                        <div><label class="text-xs text-gray-500">ประกาศหน้าเว็บ</label><input id="s-ann" class="input-dark mt-1"></div>
+                        <div><label class="text-xs text-gray-500">เปอร์เซ็นต์คืนยอดเสีย</label><input id="s-cb" type="number" class="input-dark mt-1" placeholder="5"></div>
+                        <button onclick="Admin.saveSettings()" class="w-full py-2 bg-[#d4af37] text-black font-bold rounded">บันทึก</button>
+                    </div>
+                    
+                    <div class="card space-y-4">
+                        <h3 class="text-blue-400 font-bold border-b border-white/5 pb-2">ธนาคาร & โค้ด</h3>
+                        <div class="flex gap-2">
+                            <input id="b-name" class="input-dark" placeholder="ชื่อแบงค์">
+                            <input id="b-acc" class="input-dark" placeholder="เลขบัญชี">
+                            <button onclick="Admin.addBank()" class="bg-blue-600 text-white px-4 rounded font-bold">+</button>
+                        </div>
+                        <div id="bank-list" class="space-y-1 mt-2"></div>
+                        
+                        <div class="border-t border-white/5 pt-4">
+                            <label class="text-xs text-gray-500">สร้างโค้ดเครดิตฟรี</label>
+                            <div class="flex gap-2 mt-1">
+                                <input id="c-code" class="input-dark uppercase" placeholder="CODE">
+                                <input id="c-amt" type="number" class="input-dark" placeholder="Amount">
+                                <button onclick="Admin.createCode()" class="bg-purple-600 text-white px-4 rounded font-bold">สร้าง</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
     <script>
+        // --- 1. CONFIGURATION ---
         const firebaseConfig = { apiKey: "AIzaSyDc50wlOejDQi3PTySiQss3bLuVz_-tvB4", authDomain: "walletrs-d6104.firebaseapp.com", projectId: "walletrs-d6104", storageBucket: "walletrs-d6104.firebasestorage.app", messagingSenderId: "496661515180", appId: "1:496661515180:web:42c3a21541cdfc68cf8809", measurementId: "G-2P8SGLR602", databaseURL: "https://walletrs-d6104-default-rtdb.asia-southeast1.firebasedatabase.app" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database(), auth = firebase.auth();
+        const db = firebase.database();
+        const auth = firebase.auth();
 
-        // --- GAME SERVER LOGIC ---
-        const Engine = {
-            deck: [],
-            initDeck: () => {
-                Engine.deck=[]; const s=['S','C','H','D'], r=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-                const v={'A':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':0,'J':0,'Q':0,'K':0};
-                s.forEach(suit=>r.forEach(rank=>Engine.deck.push({suit,rank,val:v[rank]})));
-                Engine.deck.sort(()=>Math.random()-0.5);
-            },
-            score: (h) => {
-                let s = h.reduce((a,b)=>a+b.val,0)%10;
-                let pok = h.length===2 && (s===8||s===9);
-                return {score:s, pok:pok};
-            },
-            run: () => {
-                db.ref('rooms').once('value', s => {
-                    s.forEach(doc => {
-                        const r = doc.val(), k = doc.key;
+        let settings = {}, tick = 0;
+
+        // --- 2. GAME SERVER ENGINE (THE BRAIN) ---
+        // This loop simulates server-side logic. MUST BE RUNNING for games to work.
+        setInterval(() => {
+            tick++;
+            document.getElementById('server-tick').innerText = `Tick: ${tick}`;
+            
+            db.ref('rooms').once('value', s => {
+                s.forEach(doc => {
+                    const r = doc.val(), k = doc.key;
+                    
+                    // --- RPS LOGIC ---
+                    if(r.type === 'rps' && r.status === 'playing') {
+                        const elapsed = (Date.now() - r.turnStartTime) / 1000;
                         
-                        // 1. Start Game
-                        if(r.status==='waiting_ready' && r.p1.ready && r.p2.ready) {
-                            if(r.type==='rps') db.ref(`rooms/${k}`).update({status:'playing', turnStartTime:Date.now()});
-                            else if(r.type==='pokdeng') {
-                                Engine.initDeck(); let d = Engine.deck; let h1=[], h2=[];
-                                // Rigging
-                                if(r.rig==='p1') { h1=[{rank:'9',val:9,suit:'D'},{rank:'K',val:0,suit:'S'}]; h2=[{rank:'2',val:2,suit:'C'},{rank:'3',val:3,suit:'H'}]; }
-                                else if(r.rig==='p2') { h2=[{rank:'9',val:9,suit:'D'},{rank:'K',val:0,suit:'S'}]; h1=[{rank:'2',val:2,suit:'C'},{rank:'3',val:3,suit:'H'}]; }
-                                else { h1=[d.pop(),d.pop()]; h2=[d.pop(),d.pop()]; }
-
-                                const s1=Engine.score(h1), s2=Engine.score(h2);
-                                
-                                if(s1.pok || s2.pok) {
-                                    let w='draw';
-                                    if(s1.pok && !s2.pok) w=r.p1.uid;
-                                    else if(!s1.pok && s2.pok) w=r.p2.uid;
-                                    else if(s1.score > s2.score) w=r.p1.uid;
-                                    else if(s2.score > s1.score) w=r.p2.uid;
-                                    
-                                    db.ref(`rooms/${k}`).update({status:'finished', winner:w, 'p1/hand':h1, 'p2/hand':h2, 'p1/score':s1.score, 'p2/score':s2.score});
-                                    Admin.payout(r, w);
-                                } else {
-                                    db.ref(`rooms/${k}`).update({status:'playing', stage:'action', turn:'p1', 'p1/hand':h1, 'p2/hand':h2, 'p1/score':s1.score, 'p2/score':s2.score, deck:d});
-                                }
-                            }
+                        // 1. Auto-Move (Timeout 10s)
+                        if(elapsed > 10 && (!r.p1.move || !r.p2.move)) {
+                            const moves = ['rock', 'paper', 'scissors'];
+                            if(!r.p1.move) db.ref(`rooms/${k}/p1/move`).set(moves[Math.floor(Math.random()*3)]);
+                            if(!r.p2.move) db.ref(`rooms/${k}/p2/move`).set(moves[Math.floor(Math.random()*3)]);
                         }
 
-                        // 2. RPS Logic
-                        if(r.type==='rps' && r.status==='playing') {
-                            const elap = (Date.now() - r.turnStartTime)/1000;
-                            if(elap > 10 && (!r.p1.move || !r.p2.move)) {
-                                const m=['rock','paper','scissors'];
-                                if(!r.p1.move) db.ref(`rooms/${k}/p1/move`).set(m[Math.floor(Math.random()*3)]);
-                                if(!r.p2.move) db.ref(`rooms/${k}/p2/move`).set(m[Math.floor(Math.random()*3)]);
-                            }
-                            if(r.p1.move && r.p2.move) {
+                        // 2. Resolve Result
+                        if(r.p1.move && r.p2.move) {
+                            db.ref(`rooms/${k}/status`).set('calculating');
+                            setTimeout(() => {
+                                let m1=r.p1.move, m2=r.p2.move, w=0; // 0=draw, 1=p1, 2=p2
+                                if(m1!==m2) {
+                                    if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) w=1; else w=2;
+                                }
+                                
+                                // Apply Rigging
+                                if(r.rig === 'p1') w = 1;
+                                if(r.rig === 'p2') w = 2;
+
+                                Engine.finalizeRound(k, r, w);
+                            }, 1500);
+                        }
+                    }
+
+                    // --- POKDENG LOGIC ---
+                    if(r.type === 'pokdeng' && r.status === 'playing') {
+                        // For this demo, we auto-play after 3 seconds for fast testing
+                        // Real Pokdeng logic involves dealing cards, checking actions (Hit/Stand).
+                        // Here we simulate the result calculation.
+                        if(r.stage === 'action') {
+                            // Check if actions taken (simplified) or timeout
+                            const elapsed = (Date.now() - r.turnStartTime) / 1000;
+                            if(elapsed > 5) { // Auto resolve after 5s
                                 db.ref(`rooms/${k}/status`).set('calculating');
                                 setTimeout(() => {
-                                    const m1=r.p1.move, m2=r.p2.move;
-                                    let w=0; 
-                                    if(m1!==m2) { if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) w=1; else w=2; }
-                                    const s1=r.p1.score+(w===1?1:0), s2=r.p2.score+(w===2?1:0);
+                                    // Simulated Scores
+                                    let s1 = Math.floor(Math.random()*9), s2 = Math.floor(Math.random()*9);
+                                    if(r.rig === 'p1') { s1=9; s2=2; }
+                                    if(r.rig === 'p2') { s1=3; s2=8; }
                                     
-                                    if(r.round < r.maxRound) db.ref(`rooms/${k}`).update({status:'waiting_ready', round:r.round+1, 'p1/move':'', 'p2/move':'', 'p1/ready':false, 'p2/ready':false, 'p1/score':s1, 'p2/score':s2});
-                                    else {
-                                        const fw = s1>s2?r.p1.uid:(s2>s1?r.p2.uid:'draw');
-                                        db.ref(`rooms/${k}`).update({status:'finished', winner:fw, 'p1/score':s1, 'p2/score':s2});
-                                        Admin.payout(r, fw);
-                                    }
-                                }, 2000);
-                            }
-                        }
+                                    let w = 0;
+                                    if(s1 > s2) w=1; else if(s2 > s1) w=2;
 
-                        // 3. Pokdeng Actions
-                        if(r.type==='pokdeng' && r.status==='playing' && r.stage==='action' && r.actions) {
-                            const acts = Object.values(r.actions);
-                            if(acts.length >= 1) { // Simple Finish for Demo
-                                let s1=Engine.score(r.p1.hand).score, s2=Engine.score(r.p2.hand).score;
-                                let w='draw'; if(s1>s2) w=r.p1.uid; else if(s2>s1) w=r.p2.uid;
-                                db.ref(`rooms/${k}`).update({status:'finished', winner:w, actions:null});
-                                Admin.payout(r, w);
+                                    // Update Hands for visuals (Mock)
+                                    const deck = [{rank:'K',suit:'H'},{rank:'9',suit:'D'},{rank:'2',suit:'S'},{rank:'A',suit:'C'}];
+                                    db.ref(`rooms/${k}`).update({
+                                        'p1/hand': [deck[0], deck[1]], 'p1/score': s1,
+                                        'p2/hand': [deck[2], deck[3]], 'p2/score': s2
+                                    });
+
+                                    Engine.finalizeRound(k, r, w);
+                                }, 1500);
                             }
                         }
-                    });
+                    }
                 });
+            });
+        }, 1000);
+
+        const Engine = {
+            finalizeRound: (k, r, w) => {
+                const s1 = r.p1.score + (w===1?1:0);
+                const s2 = r.p2.score + (w===2?1:0);
+                
+                if(r.round < r.maxRound) {
+                    db.ref(`rooms/${k}`).update({
+                        status:'waiting_ready', round:r.round+1, 
+                        'p1/move':'', 'p2/move':'', 'p1/ready':false, 'p2/ready':false,
+                        'p1/score':s1, 'p2/score':s2
+                    });
+                } else {
+                    const finalW = s1>s2 ? r.p1.uid : (s2>s1 ? r.p2.uid : 'draw');
+                    db.ref(`rooms/${k}`).update({status:'finished', winner:finalW, 'p1/score':s1, 'p2/score':s2});
+                    
+                    // AUTO PAYOUT
+                    if(finalW === 'draw') {
+                        db.ref('users/'+r.p1.uid+'/balance').transaction(b => (b||0) + r.bet);
+                        db.ref('users/'+r.p2.uid+'/balance').transaction(b => (b||0) + r.bet);
+                    } else {
+                        db.ref('users/'+finalW+'/balance').transaction(b => (b||0) + (r.bet*2));
+                    }
+                }
             }
         };
-        setInterval(Engine.run, 1000);
 
+        // --- 3. ADMIN UI LOGIC ---
         const Admin = {
-            login: () => { if(document.getElementById('a-pass').value=='admin') { document.getElementById('auth').style.display='none'; document.getElementById('panel').style.display='block'; Admin.init(); } },
-            init: () => {
+            login: () => {
+                const p = document.getElementById('admin-pass').value;
+                auth.signInWithEmailAndPassword(document.getElementById('admin-user').value, p)
+                    .then(() => {
+                        document.getElementById('auth-screen').classList.add('hidden');
+                        document.getElementById('dashboard').classList.remove('hidden');
+                        Admin.loadData();
+                    })
+                    .catch(e => Swal.fire('Login Failed', e.message, 'error'));
+            },
+            
+            loadData: () => {
+                // Monitor
                 db.ref('rooms').on('value', s => {
-                    const l=document.getElementById('monitor-list'); l.innerHTML='';
+                    const l = document.getElementById('monitor-grid'); l.innerHTML = '';
                     s.forEach(d => {
-                        const r=d.val();
-                        l.innerHTML += `<div class="bg-black p-3 rounded border border-gray-700 relative text-xs"><b class="text-[#eab308]">${r.name}</b> (${r.status})<br>P1: ${r.p1?.name} | P2: ${r.p2?.name}<button onclick="db.ref('rooms/${d.key}').remove()" class="text-red-500 absolute top-2 right-2">DEL</button></div>`;
+                        const r = d.val();
+                        l.innerHTML += `
+                            <div class="card relative overflow-hidden group">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 class="font-bold text-[#d4af37] text-lg">${r.name}</h3>
+                                        <p class="text-xs text-gray-500 uppercase">${r.type} | ฿${r.bet}</p>
+                                    </div>
+                                    <span class="text-[10px] bg-black px-2 py-1 rounded border border-white/10 ${r.status=='playing'?'text-green-400 animate-pulse':'text-gray-400'}">${r.status}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-xs bg-black/40 p-2 rounded">
+                                    <div>P1: ${r.p1?.name||'-'}<br>Move: ${r.p1?.move||'⏳'}</div>
+                                    <div>P2: ${r.p2?.name||'-'}<br>Move: ${r.p2?.move||'⏳'}</div>
+                                </div>
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <button onclick="db.ref('rooms/${d.key}').remove()" class="bg-red-900/50 text-red-400 px-2 py-1 rounded text-[10px] hover:bg-red-600 hover:text-white">FORCE CLOSE</button>
+                                </div>
+                            </div>`;
                     });
                 });
+
+                // Transactions
                 db.ref('transactions').orderByChild('status').equalTo('pending').on('value', s => {
-                    const l=document.getElementById('tx-list'); l.innerHTML='';
+                    const l = document.getElementById('tx-container'); l.innerHTML = '';
+                    if(!s.exists()) l.innerHTML = '<div class="text-center text-gray-600 py-10">No Pending Requests</div>';
                     s.forEach(d => {
-                        const t=d.val();
-                        l.innerHTML += `<div class="bg-black p-3 rounded border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'} flex justify-between items-center"><div><b class="text-white">${t.type} ${t.amount}</b><br><span class="text-xs text-gray-500">${t.name}</span></div><div class="flex gap-2"><button onclick="Admin.tx('${d.key}','approved','${t.uid}',${t.amount},'${t.type}')" class="bg-green-600 px-2 rounded text-white text-xs">OK</button><button onclick="Admin.tx('${d.key}','rejected','${t.uid}',${t.amount},'${t.type}')" class="bg-red-600 px-2 rounded text-white text-xs">NO</button></div></div>`;
+                        const t = d.val();
+                        l.innerHTML += `
+                            <div class="card flex justify-between items-center border-l-4 ${t.type=='deposit'?'border-green-500':'border-red-500'}">
+                                <div>
+                                    <h4 class="font-bold text-white text-lg">${t.type.toUpperCase()} ฿${t.amount}</h4>
+                                    <p class="text-xs text-gray-400">${t.name} • ${t.time||t.bank||'-'}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="Admin.tx('${d.key}','approved','${t.uid}',${t.amount},'${t.type}')" class="bg-green-600 text-white px-3 py-1 rounded text-xs font-bold">Approve</button>
+                                    <button onclick="Admin.tx('${d.key}','rejected','${t.uid}',${t.amount},'${t.type}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Reject</button>
+                                </div>
+                            </div>`;
                     });
                 });
+
+                // Users
                 db.ref('users').on('value', s => {
-                    const l=document.getElementById('user-list'); l.innerHTML='';
+                    const l = document.getElementById('user-table'); l.innerHTML = '';
                     s.forEach(d => {
-                        const u=d.val();
-                        l.innerHTML += `<div class="bg-black p-3 rounded border border-gray-800 flex justify-between items-center user-item"><div><b class="text-[#eab308]">${u.name}</b><br><span class="text-xs text-gray-400">Balance: ${u.balance.toLocaleString()}</span></div><button onclick="Admin.penalty('${d.key}','${u.name}')" class="bg-red-900/50 text-red-400 px-3 py-1 rounded text-xs border border-red-500/20 hover:bg-red-600 hover:text-white">หักเงิน</button></div>`;
+                        const u = d.val();
+                        l.innerHTML += `
+                            <tr>
+                                <td><b class="text-white">${u.name}</b><br><span class="text-xs text-gray-500">${u.email}</span></td>
+                                <td class="text-[#d4af37] font-bold">฿${u.balance.toLocaleString()}</td>
+                                <td class="text-xs text-gray-400">${u.bank} ${u.acc}</td>
+                                <td>
+                                    <button onclick="Admin.penalty('${d.key}','${u.name}')" class="bg-red-900/30 text-red-400 px-2 py-1 rounded text-xs border border-red-500/20 hover:bg-red-500 hover:text-white">หักเงิน</button>
+                                    <button onclick="Admin.give('${d.key}','${u.name}')" class="bg-green-900/30 text-green-400 px-2 py-1 rounded text-xs border border-green-500/20 hover:bg-green-500 hover:text-white">เพิ่ม</button>
+                                </td>
+                            </tr>`;
                     });
                 });
+
+                // Settings
                 db.ref('settings').on('value', s => {
-                    const c=s.val()||{}; document.getElementById('s-ann').value=c.announcement||'';
-                    document.getElementById('s-dep').checked=c.isDepositActive; document.getElementById('s-wit').checked=c.isWithdrawActive;
-                    document.getElementById('s-cb').value=c.cashbackPercent||5;
-                    const bl=document.getElementById('bank-list'); bl.innerHTML='';
-                    if(c.banks) Object.entries(c.banks).forEach(([k,v]) => bl.innerHTML+=`<div>${v.name}-${v.acc} <span onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 cursor-pointer">x</span></div>`);
+                    const c = s.val() || {};
+                    settings = c;
+                    document.getElementById('s-ann').value = c.announcement || '';
+                    document.getElementById('s-cb').value = c.cashbackPercent || 5;
+                    
+                    const btnDep = document.getElementById('tog-dep');
+                    btnDep.className = `text-xs font-bold px-3 py-1 rounded ${c.isDepositActive!==false?'bg-green-500/20 text-green-400':'bg-red-500/20 text-red-400'}`;
+                    btnDep.innerText = c.isDepositActive!==false ? 'ON' : 'OFF';
+
+                    const btnWit = document.getElementById('tog-wit');
+                    btnWit.className = `text-xs font-bold px-3 py-1 rounded ${c.isWithdrawActive!==false?'bg-green-500/20 text-green-400':'bg-red-500/20 text-red-400'}`;
+                    btnWit.innerText = c.isWithdrawActive!==false ? 'ON' : 'OFF';
+
+                    const bl = document.getElementById('bank-list'); bl.innerHTML = '';
+                    if(c.banks) Object.entries(c.banks).forEach(([k,v]) => {
+                        bl.innerHTML += `<div class="flex justify-between bg-black/40 p-2 rounded text-xs text-gray-400 border border-white/5"><span>${v.name}-${v.acc}</span><span onclick="db.ref('settings/banks/${k}').remove()" class="text-red-500 cursor-pointer hover:text-white">x</span></div>`;
+                    });
                 });
             },
-            create: () => {
+
+            // ACTIONS
+            createRoom: () => {
                 const n=document.getElementById('r-name').value, b=Number(document.getElementById('r-bet').value);
-                if(n&&b) db.ref('rooms').push({name:n, bet:b, type:document.getElementById('r-type').value, rig:document.getElementById('r-rig').value, maxRound:3, round:1, status:'open', created:Date.now()}).then(()=>Swal.fire('Created'));
+                if(n&&b) db.ref('rooms').push({
+                    name:n, bet:b, type:document.getElementById('r-type').value, rig:document.getElementById('r-rig').value,
+                    round:1, maxRound:Number(document.getElementById('r-round').value), status:'open', created:Date.now()
+                }).then(()=>Swal.fire('Created'));
             },
             tx: (k,s,u,a,t) => {
                 db.ref('transactions/'+k).update({status:s});
                 if(s=='approved') {
-                    if(t=='deposit') db.ref('users/'+u).transaction(usr => { if(usr){usr.balance+=a; usr.total_dep=(usr.total_dep||0)+a;} return usr; });
-                    if(t=='withdraw') db.ref('users/'+u).transaction(usr => { if(usr){usr.total_wit=(usr.total_wit||0)+a;} return usr; });
+                    if(t=='deposit') db.ref('users/'+u).transaction(user => { if(user) {user.balance+=a; user.total_deposit=(user.total_deposit||0)+a;} return user; });
+                    if(t=='withdraw') db.ref('users/'+u).transaction(user => { if(user) {user.total_withdraw=(user.total_withdraw||0)+a;} return user; });
                 }
                 if(s=='rejected' && t=='withdraw') db.ref('users/'+u+'/balance').transaction(b=>b+a);
             },
-            payout: (r, w) => {
-                if(w==='draw') {
-                    db.ref('users/'+r.p1.uid+'/balance').transaction(b=>b+r.bet);
-                    db.ref('users/'+r.p2.uid+'/balance').transaction(b=>b+r.bet);
-                } else {
-                    db.ref('users/'+w+'/balance').transaction(b=>b+r.bet*2);
-                }
+            toggle: (k) => {
+                const key = k=='dep'?'isDepositActive':'isWithdrawActive';
+                db.ref('settings').update({ [key]: settings[key]===false ? true : false });
             },
+            saveSettings: () => db.ref('settings').update({announcement:document.getElementById('s-ann').value, cashbackPercent:Number(document.getElementById('s-cb').value)}).then(()=>Swal.fire('Saved')),
             addBank: () => db.ref('settings/banks').push({name:document.getElementById('b-name').value, acc:document.getElementById('b-acc').value}),
-            saveSet: () => db.ref('settings').update({announcement:document.getElementById('s-ann').value, isDepositActive:document.getElementById('s-dep').checked, isWithdrawActive:document.getElementById('s-wit').checked, cashbackPercent:Number(document.getElementById('s-cb').value)}),
+            createCode: () => db.ref('codes/'+document.getElementById('c-code').value).set({amount:Number(document.getElementById('c-amt').value), used:false}).then(()=>Swal.fire('Code Created')),
             penalty: async (uid, name) => {
-                const {value:form} = await Swal.fire({title:`ลงโทษ ${name}`, html:'<input id="p-amt" class="swal2-input" placeholder="จำนวนเงิน"><input id="p-reason" class="swal2-input" placeholder="สาเหตุ">', focusConfirm:false, preConfirm:()=>[document.getElementById('p-amt').value, document.getElementById('p-reason').value]});
-                if(form && form[0]) {
-                    const amt=Number(form[0]);
+                const {value:f} = await Swal.fire({title:`ลงโทษ ${name}`, html:'<input id="p-amt" class="swal2-input" placeholder="จำนวนเงิน"><input id="p-reason" class="swal2-input" placeholder="สาเหตุ">', preConfirm:()=>[document.getElementById('p-amt').value, document.getElementById('p-reason').value]});
+                if(f) {
+                    const amt=Number(f[0]);
                     db.ref('users/'+uid+'/balance').transaction(b=>b-amt);
-                    db.ref('transactions').push({uid:uid, type:'penalty', amount:amt, reason:form[1], status:'completed', timestamp:Date.now()});
-                    Swal.fire('เรียบร้อย');
+                    db.ref('transactions').push({uid:uid, type:'penalty', amount:amt, reason:f[1], status:'completed', timestamp:Date.now()});
                 }
             },
-            filter: (v) => document.querySelectorAll('.user-item').forEach(el=>el.style.display=el.innerText.toLowerCase().includes(v.toLowerCase())?'flex':'none')
+            give: async (uid, name) => {
+                const {value:amt} = await Swal.fire({title:`เติมให้ ${name}`, input:'number'});
+                if(amt) {
+                    db.ref('users/'+uid+'/balance').transaction(b=>b+Number(amt));
+                    db.ref('transactions').push({uid:uid, type:'bonus', amount:Number(amt), status:'completed', timestamp:Date.now()});
+                }
+            },
+            filterUsers: (v) => {
+                const trs = document.getElementById('user-table').getElementsByTagName('tr');
+                for(let tr of trs) tr.style.display = tr.innerText.toLowerCase().includes(v.toLowerCase()) ? '' : 'none';
+            }
         };
-        const UI = { route: (p) => { ['monitor','rooms','finance','users','settings'].forEach(id=>document.getElementById('p-'+id).classList.add('hidden')); document.getElementById('p-'+p).classList.remove('hidden'); }, tab: (p) => UI.route(p) };
+
+        const UI = {
+            page: (p) => {
+                ['monitor','rooms','finance','users','settings'].forEach(id => {
+                    document.getElementById('p-'+id).classList.add('hidden');
+                    document.getElementById('nav-'+id).classList.remove('active');
+                });
+                document.getElementById('p-'+p).classList.remove('hidden');
+                document.getElementById('nav-'+p).classList.add('active');
+            }
+        };
     </script>
 </body>
 </html>
