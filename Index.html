@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAFADA - Admin</title>
+    <title>FAFADA - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,65 +12,108 @@
 </head>
 <body class="bg-slate-950 text-white min-h-screen overflow-hidden">
 
-    <div id="loginSec" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center">
-        <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl w-full max-w-sm">
-            <h1 class="text-3xl font-bold text-center text-yellow-500 mb-6 tracking-widest">ADMIN</h1>
+    <div id="loader" class="fixed inset-0 bg-slate-950 z-[999] flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-yellow-500 border-t-transparent mb-4 shadow-[0_0_15px_rgba(234,179,8,0.5)]"></div>
+        <p class="text-slate-400 font-bold animate-pulse tracking-wider">กำลังตรวจสอบสิทธิ์...</p>
+    </div>
+
+    <div id="loginSec" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center hidden">
+        <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl w-full max-w-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-600 to-yellow-400"></div>
+            <div class="text-center mb-8 mt-4">
+                <i class="fas fa-shield-alt text-5xl text-yellow-500 mb-4 drop-shadow-lg"></i>
+                <h1 class="text-3xl font-bold text-white tracking-widest">ADMIN</h1>
+                <p class="text-slate-500 text-xs mt-1">FAFADA MANAGEMENT SYSTEM</p>
+            </div>
             <form onsubmit="adminLogin(event)">
-                <input type="email" id="aEmail" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white mb-4 outline-none focus:border-yellow-500" placeholder="admin@email.com" required>
-                <input type="password" id="aPass" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white mb-6 outline-none focus:border-yellow-500" placeholder="Password" required>
-                <button class="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded-lg transition">เข้าสู่ระบบ</button>
+                <div class="mb-4 relative">
+                    <i class="fas fa-envelope absolute left-4 top-3.5 text-slate-500"></i>
+                    <input type="email" id="aEmail" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 pl-12 pr-4 text-white outline-none focus:border-yellow-500 transition" placeholder="Email" required>
+                </div>
+                <div class="mb-6 relative">
+                    <i class="fas fa-lock absolute left-4 top-3.5 text-slate-500"></i>
+                    <input type="password" id="aPass" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 pl-12 pr-4 text-white outline-none focus:border-yellow-500 transition" placeholder="Password" required>
+                </div>
+                <button class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-3 rounded-xl shadow-lg transition transform hover:scale-[1.02]">เข้าสู่ระบบ</button>
             </form>
         </div>
     </div>
 
-    <div id="pinSec" class="fixed inset-0 bg-black/95 z-[40] flex flex-col items-center justify-center hidden">
-        <h2 class="text-xl font-bold mb-4">ยืนยัน PIN Code</h2>
-        <input type="password" id="pinInput" maxlength="6" class="bg-slate-800 border border-slate-700 rounded-lg px-6 py-3 text-center text-2xl tracking-[0.5em] text-white focus:border-yellow-500 outline-none mb-4 w-64" placeholder="••••••">
-        <button onclick="checkPin()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg">UNLOCK</button>
+    <div id="pinSec" class="fixed inset-0 bg-black/95 z-[50] flex flex-col items-center justify-center hidden">
+        <i class="fas fa-user-lock text-5xl text-red-500 mb-6 animate-bounce"></i>
+        <h2 class="text-xl font-bold mb-6 text-white">ยืนยันรหัสความปลอดภัย (PIN)</h2>
+        <input type="password" id="pinInput" maxlength="6" class="bg-slate-900 border border-slate-700 rounded-xl px-8 py-4 text-center text-3xl tracking-[0.5em] text-white focus:border-red-500 outline-none mb-6 w-80 shadow-2xl" placeholder="••••••">
+        <button onclick="checkPin()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-10 rounded-xl shadow-lg transition transform hover:scale-105">ปลดล็อก</button>
     </div>
 
     <div id="dashSec" class="flex min-h-screen hidden">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
-            <div class="h-16 flex items-center justify-center border-b border-slate-800 bg-slate-950/50 text-xl font-bold text-yellow-500">FAFADA</div>
-            <div class="p-4 space-y-2 flex-1">
-                <button onclick="swTab('req')" id="mReq" class="w-full text-left px-4 py-3 rounded bg-blue-600 text-white shadow"><i class="fas fa-clock mr-2"></i> รออนุมัติ</button>
-                <button onclick="swTab('his')" id="mHis" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-history mr-2"></i> ประวัติรวม</button>
-                <button onclick="swTab('usr')" id="mUsr" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-users mr-2"></i> สมาชิก</button>
-                <button onclick="swTab('new')" id="mNew" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-bullhorn mr-2"></i> ประกาศ</button>
+        <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col shadow-xl z-20">
+            <div class="h-20 flex items-center justify-center border-b border-slate-800 bg-slate-950/50">
+                <span class="text-2xl font-bold text-yellow-500 tracking-widest drop-shadow">FAFADA</span>
             </div>
-            <div class="p-4 border-t border-slate-800">
-                <div class="text-center mb-2"><span class="text-xs text-slate-500">Admin:</span> <span id="admDisplay" class="text-xs font-bold">...</span></div>
-                <button onclick="doLogout()" class="w-full border border-red-500/50 text-red-500 py-2 rounded hover:bg-red-500 hover:text-white text-sm">LOGOUT</button>
+            <div class="p-4 space-y-2 flex-1 mt-2">
+                <button onclick="swTab('req')" id="mReq" class="w-full text-left px-6 py-4 rounded-xl bg-blue-600 text-white shadow-lg transition transform hover:translate-x-1"><i class="fas fa-clock w-6"></i> รออนุมัติ</button>
+                <button onclick="swTab('his')" id="mHis" class="w-full text-left px-6 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-history w-6"></i> ประวัติรวม</button>
+                <button onclick="swTab('usr')" id="mUsr" class="w-full text-left px-6 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-users w-6"></i> สมาชิก</button>
+                <button onclick="swTab('new')" id="mNew" class="w-full text-left px-6 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-bullhorn w-6"></i> ประกาศ</button>
+            </div>
+            <div class="p-6 border-t border-slate-800 bg-slate-900">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center text-black font-bold text-lg shadow">A</div>
+                    <div class="overflow-hidden">
+                        <div class="text-sm font-bold text-white">Super Admin</div>
+                        <div id="admDisplay" class="text-xs text-slate-500 truncate">...</div>
+                    </div>
+                </div>
+                <button onclick="doLogout()" class="w-full border border-red-500/30 bg-red-500/10 text-red-500 py-2 rounded-lg hover:bg-red-600 hover:text-white transition text-sm font-bold">ออกจากระบบ</button>
             </div>
         </aside>
 
-        <main class="flex-1 p-6 bg-slate-950 overflow-y-auto">
-            <div id="tReq">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-clock text-yellow-500"></i> รออนุมัติ <span id="pCount" class="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full">0</span></h2>
-                <div class="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
-                    <table class="w-full text-left text-sm"><tbody id="tbReq" class="divide-y divide-slate-800"></tbody></table>
-                    <div id="noReq" class="p-8 text-center text-slate-500 hidden">ไม่มีรายการค้าง</div>
+        <main class="flex-1 p-8 bg-slate-950 overflow-y-auto h-screen relative">
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
+            
+            <div id="tReq" class="animate-fade-in relative z-10">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold flex items-center gap-3"><i class="fas fa-clock text-yellow-500"></i> รายการรอตรวจสอบ</h2>
+                    <span id="pCount" class="bg-yellow-500 text-black font-bold px-4 py-1 rounded-full shadow-lg shadow-yellow-500/20">0</span>
+                </div>
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-950/80 text-slate-400 uppercase tracking-wider">
+                            <tr><th class="p-5">User Info</th><th class="p-5">Type</th><th class="p-5 text-right">Amount</th><th class="p-5 text-right">Net</th><th class="p-5 text-center">Action</th></tr>
+                        </thead>
+                        <tbody id="tbReq" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                    <div id="noReq" class="p-12 text-center text-slate-600 hidden flex flex-col items-center">
+                        <i class="fas fa-check-circle text-5xl mb-4 opacity-30"></i>
+                        <p>ไม่มีรายการค้างในขณะนี้</p>
+                    </div>
                 </div>
             </div>
 
-            <div id="tHis" class="hidden">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-list text-purple-500"></i> ประวัติทั้งหมด</h2>
-                <div class="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
-                    <table class="w-full text-left text-sm"><tbody id="tbHis" class="divide-y divide-slate-800"></tbody></table>
+            <div id="tHis" class="hidden animate-fade-in relative z-10">
+                <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-list-alt text-purple-500"></i> ประวัติธุรกรรมทั้งหมด</h2>
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-950/80 text-slate-400 uppercase tracking-wider">
+                            <tr><th class="p-5">Date</th><th class="p-5">User</th><th class="p-5">Type</th><th class="p-5 text-right">Amount</th><th class="p-5 text-center">Status</th></tr>
+                        </thead>
+                        <tbody id="tbHis" class="divide-y divide-slate-800"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <div id="tUsr" class="hidden">
-                <h2 class="text-2xl font-bold mb-6 text-blue-500">สมาชิกทั้งหมด</h2>
-                <div id="grUsr" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="tUsr" class="hidden animate-fade-in relative z-10">
+                <h2 class="text-3xl font-bold mb-8 text-blue-500 flex items-center gap-3"><i class="fas fa-users-cog"></i> สมาชิกทั้งหมด</h2>
+                <div id="grUsr" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <div id="tNew" class="hidden">
-                <h2 class="text-2xl font-bold mb-6 text-green-500">ประกาศข่าวสาร</h2>
-                <div class="bg-slate-900 p-6 rounded-lg border border-slate-800 max-w-xl">
-                    <input id="nT" class="w-full bg-slate-950 border border-slate-700 rounded p-3 mb-4 text-white outline-none" placeholder="หัวข้อ">
-                    <textarea id="nC" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded p-3 mb-4 text-white outline-none" placeholder="เนื้อหา"></textarea>
-                    <button onclick="postNews()" class="bg-green-600 hover:bg-green-500 px-6 py-2 rounded text-white font-bold">โพสต์</button>
+            <div id="tNew" class="hidden animate-fade-in relative z-10">
+                <h2 class="text-3xl font-bold mb-8 text-green-500 flex items-center gap-3"><i class="fas fa-newspaper"></i> ประกาศข่าวสาร</h2>
+                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 max-w-2xl shadow-xl">
+                    <input id="nT" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 mb-4 text-white outline-none focus:border-green-500 transition" placeholder="หัวข้อประกาศ">
+                    <textarea id="nC" rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 mb-6 text-white outline-none focus:border-green-500 transition" placeholder="รายละเอียดเนื้อหา"></textarea>
+                    <button onclick="postNews()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:scale-105">โพสต์ประกาศ</button>
                 </div>
             </div>
         </main>
@@ -78,7 +121,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where, orderBy, runTransaction, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -96,106 +139,137 @@
         const db = getFirestore(app);
         let currentUser;
 
+        // 1. SESSION CHECK (REMEMBER ME)
+        onAuthStateChanged(auth, async (user) => {
+            const loader = document.getElementById('loader');
+            const login = document.getElementById('loginSec');
+            const pin = document.getElementById('pinSec');
+
+            if (user) {
+                // มี Session อยู่ -> เช็คสิทธิ์เลย
+                try {
+                    const snap = await getDoc(doc(db, "users", user.uid));
+                    if (snap.exists() && snap.data().role === 'admin') {
+                        // ผ่าน -> ไปหน้า PIN
+                        currentUser = user;
+                        document.getElementById('admDisplay').innerText = user.email;
+                        loader.classList.add('hidden');
+                        pin.classList.remove('hidden'); 
+                    } else {
+                        // ไม่ผ่าน -> ดีดออก
+                        await signOut(auth);
+                        loader.classList.add('hidden');
+                        login.classList.remove('hidden');
+                    }
+                } catch(e) {
+                    console.error(e);
+                    loader.classList.add('hidden');
+                    login.classList.remove('hidden');
+                }
+            } else {
+                // ไม่มี Session -> ไปหน้า Login
+                loader.classList.add('hidden');
+                login.classList.remove('hidden');
+            }
+        });
+
+        // 2. MANUAL LOGIN
         window.adminLogin = async(e) => {
             e.preventDefault();
             const em=document.getElementById('aEmail').value, pw=document.getElementById('aPass').value;
             try {
                 const c = await signInWithEmailAndPassword(auth, em, pw);
-                // Auto-Fix Admin Role
+                
+                // Fix Admin Role (Auto)
                 if(em === 'farisxuma1@gmail.com') {
                     await setDoc(doc(db, "users", c.user.uid), {
                         uid: c.user.uid, email: em, displayName: 'Super Admin', role: 'admin', balance: 999999, createdAt: new Date()
                     }, { merge: true });
                 }
                 
-                // Check Permission
-                const snap = await getDoc(doc(db, "users", c.user.uid));
-                if(snap.exists() && snap.data().role === 'admin') {
-                    currentUser = c.user;
-                    document.getElementById('admDisplay').innerText = em;
-                    document.getElementById('loginSec').classList.add('hidden');
-                    document.getElementById('pinSec').classList.remove('hidden');
-                } else {
-                    await signOut(auth);
-                    Swal.fire('Access Denied', 'ไม่ใช่แอดมิน', 'error');
-                }
-            } catch(err) { Swal.fire('Error', 'เข้าสู่ระบบไม่สำเร็จ', 'error'); }
+                // onAuthStateChanged จะทำงานต่อเองอัตโนมัติ
+            } catch(err) { Swal.fire('Error', 'รหัสผ่านไม่ถูกต้อง', 'error'); }
         };
 
+        // 3. PIN UNLOCK
         window.checkPin = () => {
             if(document.getElementById('pinInput').value === '111111') {
                 document.getElementById('pinSec').classList.add('hidden');
                 document.getElementById('dashSec').classList.remove('hidden');
-                initRealtime();
-            } else { Swal.fire('Error', 'รหัสผิด', 'error'); }
+                initRealtime(); // เริ่มโหลดข้อมูล
+            } else { Swal.fire('Error', 'รหัส PIN ผิด', 'error'); }
         };
 
         window.doLogout = () => signOut(auth).then(() => location.reload());
 
+        // 4. UI LOGIC
         window.swTab = (t) => {
             ['Req','His','Usr','New'].forEach(x => {
                 document.getElementById('t'+x).classList.add('hidden');
-                document.getElementById('m'+x).className="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition";
+                document.getElementById('m'+x).className="w-full text-left px-6 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition";
             });
             document.getElementById('t'+t).classList.remove('hidden');
-            document.getElementById('m'+t).className="w-full text-left px-4 py-3 rounded bg-blue-600 text-white shadow";
+            document.getElementById('m'+t).className="w-full text-left px-6 py-4 rounded-xl bg-blue-600 text-white shadow-lg transition";
             if(t==='Usr') fetchUsr();
         };
 
         function initRealtime() {
-            // Listen to ALL transactions (Sorted by Client Side to avoid Index issues)
+            // ดึงข้อมูลทั้งหมด แล้วแยกประเภทด้วย JS (แก้ปัญหา Index)
             onSnapshot(collection(db, "transactions"), (s) => {
                 const r = document.getElementById('tbReq'), h = document.getElementById('tbHis');
                 r.innerHTML=''; h.innerHTML='';
                 
                 let list = [];
                 s.forEach(d => list.push({id:d.id, ...d.data()}));
-                list.sort((a,b) => b.timestamp - a.timestamp); // Sort JS
+                // Sort by timestamp desc
+                list.sort((a,b) => b.timestamp - a.timestamp);
 
-                let pendingCount = 0;
+                let pending = 0;
 
                 list.forEach(x => {
                     const isDep = x.type==='deposit';
                     const c = isDep ? 'text-green-400' : 'text-red-400';
                     const row = `
-                        <td class="p-4"><div class="font-bold text-white">${x.userDisplayName}</div><div class="text-xs text-slate-500">${x.email}</div></td>
-                        <td class="p-4 font-bold uppercase ${c}">${x.type}</td>
-                        <td class="p-4 text-right font-mono">${x.amount.toLocaleString()}</td>
-                        <td class="p-4 text-right text-green-400 font-bold">${x.netAmount.toLocaleString()}</td>
+                        <td class="p-5"><div class="font-bold text-white">${x.userDisplayName}</div><div class="text-xs text-slate-500">${x.email}</div></td>
+                        <td class="p-5"><span class="font-bold uppercase ${c} border border-${isDep?'green':'red'}-500/30 bg-${isDep?'green':'red'}-500/10 px-2 py-1 rounded text-xs">${x.type}</span></td>
+                        <td class="p-5 text-right font-mono text-lg">${x.amount.toLocaleString()}</td>
+                        <td class="p-5 text-right font-bold text-green-400 font-mono text-lg">${x.netAmount.toLocaleString()}</td>
                     `;
 
-                    // Add to All History
+                    // History Table
                     let st = x.status==='pending'?'<span class="text-yellow-500">Pending</span>':(x.status==='completed'?'<span class="text-green-500">Done</span>':'<span class="text-red-500">Rejected</span>');
-                    h.innerHTML += `<tr class="border-b border-slate-800 hover:bg-slate-800/50">${row}<td class="p-4 text-center text-xs uppercase font-bold">${st}</td></tr>`;
+                    h.innerHTML += `<tr class="border-b border-slate-800 hover:bg-slate-900 transition">${row.replace('<td class="p-5 text-right font-bold text-green-400 font-mono text-lg">'+x.netAmount.toLocaleString()+'</td>', '')}<td class="p-5 text-center font-bold text-xs uppercase">${st}</td></tr>`;
 
-                    // Add to Pending
+                    // Pending Table
                     if(x.status==='pending') {
-                        pendingCount++;
+                        pending++;
                         r.innerHTML += `
-                            <tr class="border-b border-slate-800 hover:bg-slate-800/50">
+                            <tr class="border-b border-slate-800 hover:bg-slate-900 transition">
                                 ${row}
-                                <td class="p-4 text-center">
-                                    <button onclick="proc('${x.id}', 'approve')" class="bg-green-600 px-3 py-1 rounded text-xs mr-2 hover:bg-green-500">อนุมัติ</button>
-                                    <button onclick="proc('${x.id}', 'reject')" class="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-500">ปฏิเสธ</button>
+                                <td class="p-5 text-center">
+                                    <button onclick="proc('${x.id}', 'approve')" class="bg-green-600 px-3 py-1 rounded text-white text-xs mr-2 hover:bg-green-500 shadow">อนุมัติ</button>
+                                    <button onclick="proc('${x.id}', 'reject')" class="bg-red-600 px-3 py-1 rounded text-white text-xs hover:bg-red-500 shadow">ปฏิเสธ</button>
                                 </td>
                             </tr>`;
                     }
                 });
                 
-                document.getElementById('pCount').innerText = pendingCount;
-                if(pendingCount===0) document.getElementById('noReq').classList.remove('hidden');
+                document.getElementById('pCount').innerText = pending;
+                if(pending===0) document.getElementById('noReq').classList.remove('hidden');
                 else document.getElementById('noReq').classList.add('hidden');
             });
         }
 
         window.proc = async(id, act) => {
-            Swal.fire({ title: 'Confirm?', showCancelButton: true }).then(async(res) => {
+            Swal.fire({ title: 'ยืนยัน?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33' }).then(async(res) => {
                 if(res.isConfirmed) {
                     try {
+                        Swal.showLoading();
                         await runTransaction(db, async(t) => {
                             const tr = await t.get(doc(db, "transactions", id));
                             const td = tr.data();
                             const ur = await t.get(doc(db, "users", td.uid));
+                            
                             if(act==='approve') {
                                 let b = ur.data().balance;
                                 if(td.type==='deposit') b+=td.amount; else b-=td.amount;
@@ -205,30 +279,30 @@
                                 t.update(doc(db, "transactions", id), { status: 'rejected', rejectedBy: currentUser.email });
                             }
                         });
-                        Swal.fire('Done', '', 'success');
+                        Swal.fire('Success', 'ดำเนินการเรียบร้อย', 'success');
                     } catch(e) { Swal.fire('Error', e.message, 'error'); }
                 }
             });
         };
 
         window.fetchUsr = async() => {
-            const g = document.getElementById('grUsr'); g.innerHTML='Loading...';
+            const g = document.getElementById('grUsr'); g.innerHTML='<p class="text-slate-500 col-span-3 text-center">Loading...</p>';
             const s = await getDocs(collection(db, "users"));
             g.innerHTML='';
             s.forEach(d => {
                 const u = d.data();
-                g.innerHTML += `<div class="bg-slate-900 p-4 rounded border border-slate-700">
-                    <div class="flex justify-between mb-2"><h4 class="font-bold">${u.displayName}</h4><span class="text-xs bg-slate-700 px-2 py-1 rounded uppercase">${u.role}</span></div>
+                g.innerHTML += `<div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-lg hover:border-blue-600 transition group">
+                    <div class="flex justify-between mb-4"><h4 class="font-bold text-lg text-white group-hover:text-blue-400 transition">${u.displayName}</h4><span class="text-xs bg-slate-800 px-2 py-1 rounded uppercase border border-slate-700">${u.role}</span></div>
                     <p class="text-xs text-slate-400 mb-2">${u.email}</p>
-                    <p class="text-xl font-bold text-green-400">฿${u.balance.toLocaleString()}</p>
-                    <button onclick="adj('${u.uid}', '${u.email}')" class="w-full bg-slate-800 hover:bg-slate-700 py-2 rounded text-xs border border-slate-700 mt-2">ปรับยอดเงิน</button>
+                    <p class="text-2xl font-bold text-green-400 mb-4">฿${u.balance.toLocaleString()}</p>
+                    <button onclick="adj('${u.uid}', '${u.email}')" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-sm border border-slate-700 transition">ปรับยอดเงิน</button>
                 </div>`;
             });
         };
 
         window.adj = async(uid, em) => {
             const {value: f} = await Swal.fire({
-                title: 'Manual Adjust', html: `<p class="mb-2 text-sm">${em}</p><select id="t" class="swal2-input"><option value="add">เพิ่ม (+)</option><option value="deduct">ลด (-)</option></select><input id="a" type="number" class="swal2-input" placeholder="Amount"><input id="r" class="swal2-input" placeholder="Reason">`,
+                title: 'Manual Adjust', html: `<p class="mb-4 text-sm text-slate-400">${em}</p><select id="t" class="swal2-input bg-white text-black"><option value="add">เพิ่มยอด (+)</option><option value="deduct">ลดยอด (-)</option></select><input id="a" type="number" class="swal2-input" placeholder="จำนวนเงิน"><input id="r" class="swal2-input" placeholder="เหตุผล">`,
                 preConfirm: () => [document.getElementById('t').value, document.getElementById('a').value, document.getElementById('r').value]
             });
             if(f) {
