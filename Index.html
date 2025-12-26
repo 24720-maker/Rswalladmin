@@ -10,35 +10,43 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style> body { font-family: 'Prompt', sans-serif; } </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen overflow-hidden">
+<body class="bg-slate-950 text-white min-h-screen overflow-hidden">
 
     <div id="loginSec" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center">
         <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl w-full max-w-sm">
             <h1 class="text-3xl font-bold text-center text-yellow-500 mb-6 tracking-widest">ADMIN</h1>
             <form onsubmit="adminLogin(event)">
-                <input type="email" id="aEmail" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white mb-4 outline-none focus:border-yellow-500" placeholder="Email" required>
+                <input type="email" id="aEmail" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white mb-4 outline-none focus:border-yellow-500" placeholder="admin@email.com" required>
                 <input type="password" id="aPass" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white mb-6 outline-none focus:border-yellow-500" placeholder="Password" required>
-                <button class="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded-lg">LOGIN</button>
+                <button class="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded-lg transition">เข้าสู่ระบบ</button>
             </form>
         </div>
+    </div>
+
+    <div id="pinSec" class="fixed inset-0 bg-black/95 z-[40] flex flex-col items-center justify-center hidden">
+        <h2 class="text-xl font-bold mb-4">ยืนยัน PIN Code</h2>
+        <input type="password" id="pinInput" maxlength="6" class="bg-slate-800 border border-slate-700 rounded-lg px-6 py-3 text-center text-2xl tracking-[0.5em] text-white focus:border-yellow-500 outline-none mb-4 w-64" placeholder="••••••">
+        <button onclick="checkPin()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg">UNLOCK</button>
     </div>
 
     <div id="dashSec" class="flex min-h-screen hidden">
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
             <div class="h-16 flex items-center justify-center border-b border-slate-800 bg-slate-950/50 text-xl font-bold text-yellow-500">FAFADA</div>
             <div class="p-4 space-y-2 flex-1">
-                <button onclick="swTab('req')" id="mReq" class="w-full text-left px-4 py-3 rounded bg-blue-600 text-white">รออนุมัติ</button>
-                <button onclick="swTab('his')" id="mHis" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white">ประวัติทั้งหมด</button>
-                <button onclick="swTab('usr')" id="mUsr" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white">สมาชิก</button>
+                <button onclick="swTab('req')" id="mReq" class="w-full text-left px-4 py-3 rounded bg-blue-600 text-white shadow"><i class="fas fa-clock mr-2"></i> รออนุมัติ</button>
+                <button onclick="swTab('his')" id="mHis" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-history mr-2"></i> ประวัติรวม</button>
+                <button onclick="swTab('usr')" id="mUsr" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-users mr-2"></i> สมาชิก</button>
+                <button onclick="swTab('new')" id="mNew" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-bullhorn mr-2"></i> ประกาศ</button>
             </div>
             <div class="p-4 border-t border-slate-800">
+                <div class="text-center mb-2"><span class="text-xs text-slate-500">Admin:</span> <span id="admDisplay" class="text-xs font-bold">...</span></div>
                 <button onclick="doLogout()" class="w-full border border-red-500/50 text-red-500 py-2 rounded hover:bg-red-500 hover:text-white text-sm">LOGOUT</button>
             </div>
         </aside>
 
         <main class="flex-1 p-6 bg-slate-950 overflow-y-auto">
             <div id="tReq">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-clock text-yellow-500"></i> รายการรออนุมัติ</h2>
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-clock text-yellow-500"></i> รออนุมัติ <span id="pCount" class="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full">0</span></h2>
                 <div class="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
                     <table class="w-full text-left text-sm"><tbody id="tbReq" class="divide-y divide-slate-800"></tbody></table>
                     <div id="noReq" class="p-8 text-center text-slate-500 hidden">ไม่มีรายการค้าง</div>
@@ -46,7 +54,7 @@
             </div>
 
             <div id="tHis" class="hidden">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-history text-purple-500"></i> ประวัติทั้งหมด</h2>
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-list text-purple-500"></i> ประวัติทั้งหมด</h2>
                 <div class="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
                     <table class="w-full text-left text-sm"><tbody id="tbHis" class="divide-y divide-slate-800"></tbody></table>
                 </div>
@@ -56,13 +64,22 @@
                 <h2 class="text-2xl font-bold mb-6 text-blue-500">สมาชิกทั้งหมด</h2>
                 <div id="grUsr" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
+
+            <div id="tNew" class="hidden">
+                <h2 class="text-2xl font-bold mb-6 text-green-500">ประกาศข่าวสาร</h2>
+                <div class="bg-slate-900 p-6 rounded-lg border border-slate-800 max-w-xl">
+                    <input id="nT" class="w-full bg-slate-950 border border-slate-700 rounded p-3 mb-4 text-white outline-none" placeholder="หัวข้อ">
+                    <textarea id="nC" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded p-3 mb-4 text-white outline-none" placeholder="เนื้อหา"></textarea>
+                    <button onclick="postNews()" class="bg-green-600 hover:bg-green-500 px-6 py-2 rounded text-white font-bold">โพสต์</button>
+                </div>
+            </div>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, where, orderBy, runTransaction, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where, orderBy, runTransaction, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBNfTBQthLLRbJP9BXZ-UQptFsdU324Mv0",
@@ -84,73 +101,94 @@
             const em=document.getElementById('aEmail').value, pw=document.getElementById('aPass').value;
             try {
                 const c = await signInWithEmailAndPassword(auth, em, pw);
-                // Fix Admin Role Immediately
+                // Auto-Fix Admin Role
                 if(em === 'farisxuma1@gmail.com') {
                     await setDoc(doc(db, "users", c.user.uid), {
                         uid: c.user.uid, email: em, displayName: 'Super Admin', role: 'admin', balance: 999999, createdAt: new Date()
                     }, { merge: true });
                 }
-                currentUser = c.user;
-                document.getElementById('loginSec').classList.add('hidden');
+                
+                // Check Permission
+                const snap = await getDoc(doc(db, "users", c.user.uid));
+                if(snap.exists() && snap.data().role === 'admin') {
+                    currentUser = c.user;
+                    document.getElementById('admDisplay').innerText = em;
+                    document.getElementById('loginSec').classList.add('hidden');
+                    document.getElementById('pinSec').classList.remove('hidden');
+                } else {
+                    await signOut(auth);
+                    Swal.fire('Access Denied', 'ไม่ใช่แอดมิน', 'error');
+                }
+            } catch(err) { Swal.fire('Error', 'เข้าสู่ระบบไม่สำเร็จ', 'error'); }
+        };
+
+        window.checkPin = () => {
+            if(document.getElementById('pinInput').value === '111111') {
+                document.getElementById('pinSec').classList.add('hidden');
                 document.getElementById('dashSec').classList.remove('hidden');
                 initRealtime();
-            } catch(e) { Swal.fire('Error', 'Login Failed', 'error'); }
+            } else { Swal.fire('Error', 'รหัสผิด', 'error'); }
         };
 
         window.doLogout = () => signOut(auth).then(() => location.reload());
 
         window.swTab = (t) => {
-            ['Req','His','Usr'].forEach(x => {
+            ['Req','His','Usr','New'].forEach(x => {
                 document.getElementById('t'+x).classList.add('hidden');
-                document.getElementById('m'+x).className="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white";
+                document.getElementById('m'+x).className="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition";
             });
             document.getElementById('t'+t).classList.remove('hidden');
-            document.getElementById('m'+t).className="w-full text-left px-4 py-3 rounded bg-blue-600 text-white";
+            document.getElementById('m'+t).className="w-full text-left px-4 py-3 rounded bg-blue-600 text-white shadow";
             if(t==='Usr') fetchUsr();
         };
 
         function initRealtime() {
-            // Listen to ALL transactions
-            onSnapshot(query(collection(db, "transactions"), orderBy("timestamp", "desc")), (s) => {
+            // Listen to ALL transactions (Sorted by Client Side to avoid Index issues)
+            onSnapshot(collection(db, "transactions"), (s) => {
                 const r = document.getElementById('tbReq'), h = document.getElementById('tbHis');
                 r.innerHTML=''; h.innerHTML='';
-                let hasReq = false;
+                
+                let list = [];
+                s.forEach(d => list.push({id:d.id, ...d.data()}));
+                list.sort((a,b) => b.timestamp - a.timestamp); // Sort JS
 
-                s.forEach(d => {
-                    const x = d.data();
+                let pendingCount = 0;
+
+                list.forEach(x => {
                     const isDep = x.type==='deposit';
                     const c = isDep ? 'text-green-400' : 'text-red-400';
                     const row = `
-                        <td class="p-4"><div class="font-bold">${x.userDisplayName}</div><div class="text-xs text-slate-500">${x.email}</div></td>
+                        <td class="p-4"><div class="font-bold text-white">${x.userDisplayName}</div><div class="text-xs text-slate-500">${x.email}</div></td>
                         <td class="p-4 font-bold uppercase ${c}">${x.type}</td>
                         <td class="p-4 text-right font-mono">${x.amount.toLocaleString()}</td>
                         <td class="p-4 text-right text-green-400 font-bold">${x.netAmount.toLocaleString()}</td>
                     `;
 
-                    // Add to History
+                    // Add to All History
                     let st = x.status==='pending'?'<span class="text-yellow-500">Pending</span>':(x.status==='completed'?'<span class="text-green-500">Done</span>':'<span class="text-red-500">Rejected</span>');
-                    h.innerHTML += `<tr class="border-b border-slate-800 hover:bg-slate-800/50">${row}<td class="p-4 text-center">${st}</td></tr>`;
+                    h.innerHTML += `<tr class="border-b border-slate-800 hover:bg-slate-800/50">${row}<td class="p-4 text-center text-xs uppercase font-bold">${st}</td></tr>`;
 
                     // Add to Pending
                     if(x.status==='pending') {
-                        hasReq = true;
+                        pendingCount++;
                         r.innerHTML += `
                             <tr class="border-b border-slate-800 hover:bg-slate-800/50">
                                 ${row}
                                 <td class="p-4 text-center">
-                                    <button onclick="proc('${d.id}', 'approve')" class="bg-green-600 px-3 py-1 rounded text-xs mr-2 hover:bg-green-500">อนุมัติ</button>
-                                    <button onclick="proc('${d.id}', 'reject')" class="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-500">ปฏิเสธ</button>
+                                    <button onclick="proc('${x.id}', 'approve')" class="bg-green-600 px-3 py-1 rounded text-xs mr-2 hover:bg-green-500">อนุมัติ</button>
+                                    <button onclick="proc('${x.id}', 'reject')" class="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-500">ปฏิเสธ</button>
                                 </td>
                             </tr>`;
                     }
                 });
                 
-                if(!hasReq) document.getElementById('noReq').classList.remove('hidden');
+                document.getElementById('pCount').innerText = pendingCount;
+                if(pendingCount===0) document.getElementById('noReq').classList.remove('hidden');
                 else document.getElementById('noReq').classList.add('hidden');
             });
         }
 
-        window.proc = async (id, act) => {
+        window.proc = async(id, act) => {
             Swal.fire({ title: 'Confirm?', showCancelButton: true }).then(async(res) => {
                 if(res.isConfirmed) {
                     try {
@@ -162,9 +200,9 @@
                                 let b = ur.data().balance;
                                 if(td.type==='deposit') b+=td.amount; else b-=td.amount;
                                 t.update(doc(db, "users", td.uid), { balance: b });
-                                t.update(doc(db, "transactions", id), { status: 'completed' });
+                                t.update(doc(db, "transactions", id), { status: 'completed', approvedBy: currentUser.email });
                             } else {
-                                t.update(doc(db, "transactions", id), { status: 'rejected' });
+                                t.update(doc(db, "transactions", id), { status: 'rejected', rejectedBy: currentUser.email });
                             }
                         });
                         Swal.fire('Done', '', 'success');
@@ -173,18 +211,51 @@
             });
         };
 
-        window.fetchUsr = async () => {
+        window.fetchUsr = async() => {
             const g = document.getElementById('grUsr'); g.innerHTML='Loading...';
-            const s = await getDocs(query(collection(db, "users"), orderBy("createdAt", "desc")));
+            const s = await getDocs(collection(db, "users"));
             g.innerHTML='';
             s.forEach(d => {
                 const u = d.data();
-                g.innerHTML += `<div class="bg-slate-800 p-4 rounded border border-slate-700">
+                g.innerHTML += `<div class="bg-slate-900 p-4 rounded border border-slate-700">
                     <div class="flex justify-between mb-2"><h4 class="font-bold">${u.displayName}</h4><span class="text-xs bg-slate-700 px-2 py-1 rounded uppercase">${u.role}</span></div>
                     <p class="text-xs text-slate-400 mb-2">${u.email}</p>
                     <p class="text-xl font-bold text-green-400">฿${u.balance.toLocaleString()}</p>
+                    <button onclick="adj('${u.uid}', '${u.email}')" class="w-full bg-slate-800 hover:bg-slate-700 py-2 rounded text-xs border border-slate-700 mt-2">ปรับยอดเงิน</button>
                 </div>`;
             });
+        };
+
+        window.adj = async(uid, em) => {
+            const {value: f} = await Swal.fire({
+                title: 'Manual Adjust', html: `<p class="mb-2 text-sm">${em}</p><select id="t" class="swal2-input"><option value="add">เพิ่ม (+)</option><option value="deduct">ลด (-)</option></select><input id="a" type="number" class="swal2-input" placeholder="Amount"><input id="r" class="swal2-input" placeholder="Reason">`,
+                preConfirm: () => [document.getElementById('t').value, document.getElementById('a').value, document.getElementById('r').value]
+            });
+            if(f) {
+                const [t, a, r] = f;
+                if(!a || !r) return;
+                try {
+                    await runTransaction(db, async(TX) => {
+                        const UR = await TX.get(doc(db, "users", uid));
+                        let B = UR.data().balance;
+                        const V = parseFloat(a);
+                        if(t==='add') B+=V; else B-=V;
+                        TX.update(doc(db, "users", uid), { balance: B });
+                        TX.set(doc(collection(db, "transactions")), {
+                            uid, email: UR.data().email, userDisplayName: UR.data().displayName, type: 'adjustment', amount: V, netAmount: V, fee: 0, status: 'completed', reason: `Admin: ${r}`, timestamp: new Date()
+                        });
+                    });
+                    Swal.fire('Updated', '', 'success'); fetchUsr();
+                } catch(e) { Swal.fire('Error', e.message, 'error'); }
+            }
+        };
+
+        window.postNews = async() => {
+            const t = document.getElementById('nT').value, c = document.getElementById('nC').value;
+            if(t) {
+                await addDoc(collection(db, "announcements"), { title: t, content: c, createdAt: new Date() });
+                Swal.fire('Posted', '', 'success');
+            }
         };
     </script>
 </body>
