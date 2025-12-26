@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAFADA - Management Console</title>
+    <title>FAFADA | Management Console</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,7 +16,7 @@
                 extend: {
                     fontFamily: { sans: ['Prompt', 'sans-serif'] },
                     colors: {
-                        dark: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
+                        dark: { 900: '#0f172a', 800: '#1e293b', 700: '#334155', 600: '#475569' },
                         gold: { 500: '#eab308', 600: '#ca8a04' }
                     }
                 }
@@ -25,248 +25,235 @@
     </script>
 
     <style>
-        /* Custom Styles */
-        body { background-color: #0f172a; color: #f8fafc; overflow: hidden; }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-        /* Animation Classes */
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .nav-active {
-            background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%);
-            color: white !important;
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
-        }
+        body { background-color: #020617; color: #f8fafc; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .sidebar-active { background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%); color: white; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .animate-enter { animation: enter 0.4s ease-out; }
+        @keyframes enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <div id="loader" class="fixed inset-0 z-[9999] bg-dark-900 flex flex-col items-center justify-center">
-        <div class="relative w-24 h-24">
-            <div class="absolute inset-0 border-t-4 border-blue-500 rounded-full animate-spin"></div>
-            <div class="absolute inset-2 border-t-4 border-gold-500 rounded-full animate-spin reverse-spin"></div>
+    <div id="loader" class="fixed inset-0 z-[999] bg-dark-900 flex flex-col items-center justify-center">
+        <div class="relative w-20 h-20">
+            <div class="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-shield-alt text-2xl text-blue-500"></i></div>
         </div>
-        <p class="mt-4 text-slate-400 font-bold tracking-widest animate-pulse">INITIALIZING SYSTEM...</p>
+        <p class="mt-4 text-slate-400 font-bold tracking-widest animate-pulse">SYSTEM CHECK...</p>
     </div>
 
-    <div id="loginSection" class="fixed inset-0 z-[100] bg-dark-900 flex items-center justify-center hidden">
-        <div class="glass-panel p-10 rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-gold-500"></div>
+    <div id="loginSec" class="fixed inset-0 z-50 flex items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] hidden">
+        <div class="glass-panel p-10 rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-enter">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
             
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-dark-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-700 shadow-inner">
-                    <i class="fas fa-shield-cat text-4xl text-gold-500"></i>
+                <div class="w-20 h-20 bg-dark-800 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-700 shadow-inner rotate-3">
+                    <span class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">F</span>
                 </div>
-                <h1 class="text-3xl font-bold tracking-widest text-white">ADMIN LOGIN</h1>
-                <p class="text-slate-500 text-sm mt-2">FAFADA MANAGEMENT CONSOLE</p>
+                <h1 class="text-3xl font-bold tracking-widest text-white">ADMIN</h1>
+                <p class="text-slate-500 text-xs mt-2 tracking-wider">MANAGEMENT CONSOLE</p>
             </div>
 
-            <form onsubmit="handleAdminLogin(event)">
-                <div class="space-y-5">
+            <form onsubmit="admin.login(event)" class="space-y-5">
+                <div class="group">
                     <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-4 text-slate-500"></i>
-                        <input type="email" id="admEmail" class="w-full bg-dark-900 border border-slate-700 rounded-xl py-3.5 pl-12 pr-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="admin@email.com" required>
+                        <i class="fas fa-user-astronaut absolute left-4 top-4 text-slate-500 group-focus-within:text-blue-500 transition"></i>
+                        <input id="aEmail" type="email" class="w-full bg-dark-900 border border-slate-700 rounded-xl py-3.5 pl-12 pr-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="Admin Email" required>
                     </div>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-4 text-slate-500"></i>
-                        <input type="password" id="admPass" class="w-full bg-dark-900 border border-slate-700 rounded-xl py-3.5 pl-12 pr-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-4 rounded-xl shadow-lg transition transform active:scale-[0.98]">
-                        เข้าสู่ระบบ <i class="fas fa-arrow-right ml-2"></i>
-                    </button>
                 </div>
+                <div class="group">
+                    <div class="relative">
+                        <i class="fas fa-fingerprint absolute left-4 top-4 text-slate-500 group-focus-within:text-blue-500 transition"></i>
+                        <input id="aPass" type="password" class="w-full bg-dark-900 border border-slate-700 rounded-xl py-3.5 pl-12 pr-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="Password" required>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-4 rounded-xl shadow-lg transition transform active:scale-[0.98]">
+                    ACCESS SYSTEM
+                </button>
             </form>
         </div>
     </div>
 
-    <div id="pinSection" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center hidden">
-        <i class="fas fa-user-lock text-6xl text-red-500 mb-6 animate-bounce"></i>
-        <h2 class="text-2xl font-bold mb-8 text-white">SECURITY VERIFICATION</h2>
-        
-        <div class="bg-dark-800 p-8 rounded-2xl border border-slate-700 shadow-2xl text-center">
-            <p class="text-slate-400 mb-4 text-sm">กรุณากรอกรหัส PIN 6 หลัก</p>
-            <input type="password" id="pinInput" maxlength="6" 
-                class="bg-dark-900 border border-slate-600 rounded-xl px-6 py-4 text-center text-4xl tracking-[0.5em] text-white focus:border-red-500 outline-none w-80 shadow-inner mb-6 font-mono" 
+    <div id="pinSec" class="fixed inset-0 z-[40] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center hidden">
+        <i class="fas fa-lock text-6xl text-red-500 mb-6 animate-bounce"></i>
+        <h2 class="text-2xl font-bold mb-8 text-white tracking-widest">SECURITY CLEARANCE</h2>
+        <div class="bg-dark-800 p-8 rounded-3xl border border-slate-700 shadow-2xl text-center">
+            <p class="text-slate-400 mb-4 text-xs uppercase tracking-widest">Enter 6-Digit PIN</p>
+            <input type="password" id="pinInp" maxlength="6" 
+                class="bg-dark-900 border border-slate-600 rounded-2xl px-6 py-4 text-center text-4xl tracking-[0.5em] text-white focus:border-red-500 outline-none w-80 shadow-inner mb-6 font-mono transition-colors" 
                 placeholder="••••••">
-            
-            <button onclick="checkPin()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition shadow-lg">
-                UNLOCK SYSTEM
+            <button onclick="admin.checkPin()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-red-900/20">
+                UNLOCK CONSOLE
             </button>
         </div>
     </div>
 
-    <div id="dashboardApp" class="flex h-screen hidden fade-in">
+    <div id="dashSec" class="flex h-screen hidden animate-enter">
         
-        <aside class="w-72 bg-dark-800 border-r border-slate-700 flex flex-col shadow-xl z-20">
+        <aside class="w-72 bg-dark-800 border-r border-slate-700 flex flex-col shadow-2xl z-20">
             <div class="h-20 flex items-center justify-center border-b border-slate-700 bg-dark-900/50">
-                <div class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-gold-500 bg-clip-text text-transparent tracking-widest">
-                    FAFADA
-                </div>
+                <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent tracking-widest">FAFADA</span>
             </div>
 
             <div class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <div class="text-xs text-slate-500 font-bold px-4 py-2 uppercase tracking-wider">Main Menu</div>
+                <div class="text-[10px] text-slate-500 font-bold px-4 py-2 uppercase tracking-widest">Main Menu</div>
                 
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3">
-                    <i class="fas fa-chart-pie w-5"></i> ภาพรวมระบบ
+                <button onclick="admin.tab('dash')" id="m-dash" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3 sidebar-active">
+                    <i class="fas fa-chart-pie w-5 text-center"></i> ภาพรวม (Overview)
                 </button>
                 
-                <button onclick="switchTab('requests')" id="nav-requests" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3 justify-between">
-                    <div class="flex items-center gap-3"><i class="fas fa-clock w-5"></i> รออนุมัติ</div>
-                    <span id="badgePending" class="bg-gold-500 text-dark-900 text-xs font-bold px-2 py-0.5 rounded-full hidden">0</span>
+                <button onclick="admin.tab('req')" id="m-req" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center justify-between group">
+                    <div class="flex items-center gap-3"><i class="fas fa-clock w-5 text-center group-hover:text-yellow-400 transition"></i> รออนุมัติ</div>
+                    <span id="badgePending" class="bg-yellow-500 text-dark-900 text-[10px] font-bold px-2 py-0.5 rounded-full hidden">0</span>
                 </button>
 
-                <div class="text-xs text-slate-500 font-bold px-4 py-2 mt-4 uppercase tracking-wider">Management</div>
+                <div class="text-[10px] text-slate-500 font-bold px-4 py-2 mt-4 uppercase tracking-widest">Management</div>
 
-                <button onclick="switchTab('users')" id="nav-users" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3">
-                    <i class="fas fa-users w-5"></i> จัดการสมาชิก
+                <button onclick="admin.tab('users')" id="m-users" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3 group">
+                    <i class="fas fa-users w-5 text-center group-hover:text-blue-400 transition"></i> สมาชิก
                 </button>
                 
-                <button onclick="switchTab('history')" id="nav-history" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3">
-                    <i class="fas fa-list-alt w-5"></i> ประวัติธุรกรรม
+                <button onclick="admin.tab('hist')" id="m-hist" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3 group">
+                    <i class="fas fa-list-alt w-5 text-center group-hover:text-purple-400 transition"></i> ประวัติธุรกรรม
                 </button>
-                
-                <button onclick="switchTab('news')" id="nav-news" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3">
-                    <i class="fas fa-newspaper w-5"></i> ประกาศข่าวสาร
+
+                <div class="text-[10px] text-slate-500 font-bold px-4 py-2 mt-4 uppercase tracking-widest">Configuration</div>
+
+                <button onclick="admin.tab('settings')" id="m-settings" class="w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3 group">
+                    <i class="fas fa-cogs w-5 text-center group-hover:text-green-400 transition"></i> ตั้งค่าระบบ
                 </button>
             </div>
 
             <div class="p-5 border-t border-slate-700 bg-dark-900">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white border border-slate-600">
-                        <i class="fas fa-user-tie"></i>
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white border border-slate-600 shadow-inner">
+                        <i class="fas fa-user-secret"></i>
                     </div>
                     <div class="overflow-hidden">
-                        <p class="text-sm font-bold text-white">Super Admin</p>
-                        <p class="text-xs text-slate-500 truncate" id="adminEmailDisplay">...</p>
+                        <p class="text-xs font-bold text-white">Administrator</p>
+                        <p class="text-[10px] text-slate-500 truncate" id="admEmail">...</p>
                     </div>
                 </div>
-                <button onclick="doLogout()" class="w-full border border-red-500/30 text-red-400 bg-red-500/10 hover:bg-red-500 hover:text-white py-2.5 rounded-lg transition text-sm font-bold flex items-center justify-center gap-2">
-                    <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+                <button onclick="admin.logout()" class="w-full border border-red-500/20 text-red-400 bg-red-500/5 hover:bg-red-500 hover:text-white py-2.5 rounded-lg transition text-xs font-bold flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-out-alt"></i> LOGOUT
                 </button>
             </div>
         </aside>
 
-        <main class="flex-1 bg-dark-900 overflow-y-auto relative h-screen">
-            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none fixed"></div>
+        <main class="flex-1 bg-dark-900 overflow-y-auto relative custom-scroll">
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none fixed"></div>
 
-            <div class="p-8 relative z-10 max-w-7xl mx-auto">
+            <div class="p-8 relative z-10 max-w-7xl mx-auto space-y-8">
                 
-                <div id="tab-dashboard" class="space-y-6 fade-in">
-                    <h2 class="text-3xl font-bold mb-6">ภาพรวมระบบ (Overview)</h2>
-                    
+                <div id="tab-dash" class="animate-enter">
+                    <h2 class="text-2xl font-bold mb-6 text-white flex items-center gap-2"><i class="fas fa-chart-line text-blue-500"></i> System Overview</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg relative overflow-hidden group">
+                        <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-users text-6xl text-blue-500"></i></div>
-                            <p class="text-slate-400 text-sm font-bold uppercase">สมาชิกทั้งหมด</p>
-                            <h3 class="text-4xl font-bold text-white mt-2" id="statUsers">0</h3>
-                            <p class="text-xs text-blue-400 mt-2"><i class="fas fa-arrow-up"></i> Active Users</p>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Users</p>
+                            <h3 class="text-4xl font-bold text-white mt-2" id="st-users">0</h3>
+                            <div class="h-1 w-12 bg-blue-500 rounded mt-4"></div>
                         </div>
-                        
-                        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg relative overflow-hidden group">
+                        <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-wallet text-6xl text-green-500"></i></div>
-                            <p class="text-slate-400 text-sm font-bold uppercase">เงินในระบบรวม</p>
-                            <h3 class="text-4xl font-bold text-green-400 mt-2">฿<span id="statMoney">0.00</span></h3>
-                            <p class="text-xs text-green-600 mt-2">System Balance</p>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">System Balance</p>
+                            <h3 class="text-4xl font-bold text-green-400 mt-2">฿<span id="st-balance">0.00</span></h3>
+                            <div class="h-1 w-12 bg-green-500 rounded mt-4"></div>
                         </div>
-
-                        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg relative overflow-hidden group cursor-pointer hover:border-gold-500 transition" onclick="switchTab('requests')">
-                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-clock text-6xl text-gold-500"></i></div>
-                            <p class="text-slate-400 text-sm font-bold uppercase">รายการรอตรวจสอบ</p>
-                            <h3 class="text-4xl font-bold text-gold-500 mt-2" id="statPending">0</h3>
-                            <p class="text-xs text-gold-700 mt-2">คลิกเพื่อจัดการ</p>
+                        <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group border-l-4 border-yellow-500 cursor-pointer hover:bg-slate-800/50 transition" onclick="admin.tab('req')">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-clock text-6xl text-yellow-500"></i></div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Pending Requests</p>
+                            <h3 class="text-4xl font-bold text-yellow-500 mt-2" id="st-pending">0</h3>
+                            <p class="text-[10px] text-yellow-600/80 mt-2">Click to manage</p>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-requests" class="hidden fade-in space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-clock text-gold-500"></i> รายการรออนุมัติ</h2>
-                        <button onclick="initRealtimeData()" class="text-slate-400 hover:text-white text-sm"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                <div id="tab-req" class="hidden animate-enter">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2"><i class="fas fa-tasks text-yellow-500"></i> รายการรออนุมัติ</h2>
+                        <button onclick="admin.init()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600 transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                     </div>
 
-                    <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+                    <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
                         <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-900/50 text-slate-400 uppercase tracking-wider border-b border-slate-700">
+                            <thead class="bg-dark-800 text-slate-400 text-xs uppercase tracking-wider font-bold">
                                 <tr>
-                                    <th class="p-5">User Info</th>
+                                    <th class="p-5">User Info & KYC</th>
                                     <th class="p-5">Type</th>
                                     <th class="p-5 text-right">Amount</th>
-                                    <th class="p-5 text-right">Net Receive</th>
-                                    <th class="p-5 text-center">Actions</th>
+                                    <th class="p-5 text-right">Net</th>
+                                    <th class="p-5 text-center">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableRequests" class="divide-y divide-slate-700"></tbody>
+                            <tbody id="tbReq" class="divide-y divide-slate-800"></tbody>
                         </table>
-                        <div id="emptyRequests" class="p-16 text-center text-slate-600 hidden">
-                            <i class="fas fa-check-circle text-5xl mb-4 opacity-20"></i>
+                        <div id="noReq" class="p-20 text-center text-slate-600 hidden flex flex-col items-center">
+                            <i class="fas fa-check-double text-5xl mb-4 opacity-20"></i>
                             <p>ไม่มีรายการค้างในขณะนี้</p>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-users" class="hidden fade-in space-y-6">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-users-cog text-blue-500"></i> จัดการสมาชิก</h2>
-                        
-                        <div class="relative w-full md:w-96">
-                            <i class="fas fa-search absolute left-4 top-3.5 text-slate-500"></i>
-                            <input type="text" id="userSearch" onkeyup="filterUsers()" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white focus:border-blue-500 outline-none transition" 
-                                placeholder="ค้นหา Email หรือ ชื่อ...">
+                <div id="tab-settings" class="hidden animate-enter">
+                    <h2 class="text-2xl font-bold mb-6 text-white flex items-center gap-2"><i class="fas fa-sliders-h text-green-500"></i> ตั้งค่าระบบ (System Config)</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="glass-panel p-8 rounded-2xl border-l-4 border-green-500">
+                            <h3 class="font-bold text-lg mb-6 flex items-center gap-2"><i class="fas fa-money-bill-wave"></i> การเงิน & บัญชี</h3>
+                            
+                            <label class="text-xs text-slate-400 block mb-1 font-bold ml-1">หักค่าธรรมเนียมถอน (%)</label>
+                            <div class="relative mb-6">
+                                <input id="cfgFee" type="number" class="w-full bg-dark-900 border border-slate-600 rounded-xl p-3 pr-10 text-white outline-none focus:border-green-500 transition" placeholder="e.g. 5">
+                                <span class="absolute right-4 top-3 text-slate-500">%</span>
+                            </div>
+
+                            <label class="text-xs text-slate-400 block mb-1 font-bold ml-1">เลขบัญชีแอดมิน (แสดงหน้าฝากเงินของลูกค้า)</label>
+                            <textarea id="cfgBank" rows="4" class="w-full bg-dark-900 border border-slate-600 rounded-xl p-3 text-white outline-none focus:border-green-500 transition" placeholder="ธนาคาร: ...&#10;เลขบัญชี: ...&#10;ชื่อบัญชี: ..."></textarea>
+                        </div>
+
+                        <div class="space-y-8">
+                            <div class="glass-panel p-8 rounded-2xl border-l-4 border-blue-500">
+                                <h3 class="font-bold text-lg mb-6 flex items-center gap-2"><i class="fas fa-address-book"></i> การติดต่อ</h3>
+                                <label class="text-xs text-slate-400 block mb-1 font-bold ml-1">ลิงก์ติดต่อ (Line/Facebook)</label>
+                                <input id="cfgLink" type="text" class="w-full bg-dark-900 border border-slate-600 rounded-xl p-3 text-white outline-none focus:border-blue-500 transition" placeholder="https://line.me/...">
+                                <button onclick="admin.saveConfig()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold mt-6 shadow-lg shadow-blue-900/30 transition">บันทึกการตั้งค่าทั้งหมด</button>
+                            </div>
+
+                            <div class="glass-panel p-8 rounded-2xl border-l-4 border-purple-500">
+                                <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-bullhorn"></i> ประกาศข่าวสาร</h3>
+                                <input id="nT" class="w-full bg-dark-900 border border-slate-600 rounded-xl p-3 mb-2 text-white text-sm focus:border-purple-500 outline-none" placeholder="หัวข้อประกาศ">
+                                <textarea id="nC" rows="2" class="w-full bg-dark-900 border border-slate-600 rounded-xl p-3 mb-2 text-white text-sm focus:border-purple-500 outline-none" placeholder="รายละเอียด..."></textarea>
+                                <button onclick="admin.postNews()" class="w-full bg-purple-600 hover:bg-purple-500 py-2 rounded-xl font-bold text-sm shadow-lg transition">ลงประกาศ</button>
+                            </div>
                         </div>
                     </div>
-
-                    <div id="gridUsers" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        </div>
                 </div>
 
-                <div id="tab-history" class="hidden fade-in space-y-6">
-                    <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-list-alt text-purple-500"></i> ประวัติธุรกรรมทั้งหมด</h2>
-                    <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+                <div id="tab-users" class="hidden animate-enter">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white"><i class="fas fa-users-cog text-blue-500"></i> สมาชิกทั้งหมด</h2>
+                        <input type="text" id="uSearch" onkeyup="admin.filterU()" class="bg-dark-800 border border-slate-600 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-blue-500" placeholder="ค้นหา...">
+                    </div>
+                    <div id="grUsr" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <div id="tab-hist" class="hidden animate-enter">
+                    <h2 class="text-2xl font-bold mb-6 text-white"><i class="fas fa-history text-purple-500"></i> ประวัติธุรกรรมรวม</h2>
+                    <div class="glass-panel rounded-2xl overflow-hidden">
                         <div class="max-h-[600px] overflow-y-auto">
                             <table class="w-full text-left text-sm">
-                                <thead class="bg-slate-900/50 text-slate-400 uppercase tracking-wider border-b border-slate-700 sticky top-0 z-10 backdrop-blur-md">
-                                    <tr>
-                                        <th class="p-5">Date/Time</th>
-                                        <th class="p-5">User</th>
-                                        <th class="p-5">Type</th>
-                                        <th class="p-5 text-right">Amount</th>
-                                        <th class="p-5 text-center">Status</th>
-                                        <th class="p-5 text-right">Note</th>
-                                    </tr>
+                                <thead class="bg-dark-800 text-slate-400 text-xs uppercase sticky top-0 z-10">
+                                    <tr><th class="p-4">Time</th><th class="p-4">User</th><th class="p-4">Type</th><th class="p-4 text-right">Amount</th><th class="p-4 text-center">Status</th></tr>
                                 </thead>
-                                <tbody id="tableHistory" class="divide-y divide-slate-700"></tbody>
+                                <tbody id="tbHis" class="divide-y divide-slate-800"></tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-
-                <div id="tab-news" class="hidden fade-in space-y-6">
-                    <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-newspaper text-green-500"></i> จัดการข่าวสาร</h2>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-1 bg-slate-800 p-6 rounded-2xl border border-slate-700 h-fit">
-                            <h3 class="font-bold mb-4">ลงประกาศใหม่</h3>
-                            <input id="newsTitle" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 mb-3 text-white outline-none focus:border-green-500" placeholder="หัวข้อ...">
-                            <textarea id="newsContent" rows="4" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 mb-4 text-white outline-none focus:border-green-500" placeholder="รายละเอียด..."></textarea>
-                            <button onclick="postNews()" class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-bold transition shadow-lg">โพสต์ประกาศ</button>
-                        </div>
-
-                        <div class="lg:col-span-2 space-y-4" id="newsList">
-                            </div>
                     </div>
                 </div>
 
@@ -277,354 +264,219 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, orderBy, runTransaction, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where, orderBy, runTransaction, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBNfTBQthLLRbJP9BXZ-UQptFsdU324Mv0",
-            authDomain: "fafada-d9899.firebaseapp.com",
-            projectId: "fafada-d9899",
-            storageBucket: "fafada-d9899.firebasestorage.app",
-            messagingSenderId: "484777586908",
-            appId: "1:484777586908:web:16a8f0367ad15737364419",
-            measurementId: "G-Q73X8Q841W"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const firebaseConfig = { apiKey: "AIzaSyBNfTBQthLLRbJP9BXZ-UQptFsdU324Mv0", authDomain: "fafada-d9899.firebaseapp.com", projectId: "fafada-d9899", storageBucket: "fafada-d9899.firebasestorage.app", messagingSenderId: "484777586908", appId: "1:484777586908:web:16a8f0367ad15737364419", measurementId: "G-Q73X8Q841W" };
+        const app_fb = initializeApp(firebaseConfig);
+        const auth = getAuth(app_fb);
+        const db = getFirestore(app_fb);
         
-        let currentUser = null;
-        let allUsersData = []; // Store users for search
+        let currentUser;
+        let allUsers = [];
 
-        // ===================================
-        // 1. GLOBAL BINDING (For HTML Buttons)
-        // ===================================
-        
-        // --- LOGIN ---
-        window.handleAdminLogin = async (e) => {
-            e.preventDefault();
-            const em = document.getElementById('admEmail').value;
-            const pw = document.getElementById('admPass').value;
-            try {
-                const c = await signInWithEmailAndPassword(auth, em, pw);
-                // Auto-Fix
-                if(em === 'farisxuma1@gmail.com') {
-                    await setDoc(doc(db, "users", c.user.uid), {
-                        uid: c.user.uid, email: em, displayName: 'Super Admin', role: 'admin', balance: 999999, createdAt: new Date()
-                    }, { merge: true });
-                }
-            } catch(err) { Swal.fire('Login Failed', 'Email หรือ Password ไม่ถูกต้อง', 'error'); }
-        };
-
-        // --- PIN ---
-        window.checkPin = () => {
-            if(document.getElementById('pinInput').value === '111111') {
-                document.getElementById('pinSection').classList.add('hidden');
-                document.getElementById('dashboardApp').classList.remove('hidden');
-                switchTab('dashboard');
-                initRealtimeData(); // Start Listeners
-            } else { Swal.fire('Error', 'PIN Code ไม่ถูกต้อง', 'error'); }
-        };
-
-        window.doLogout = () => signOut(auth).then(() => location.reload());
-
-        // --- TABS ---
-        window.switchTab = (tabName) => {
-            // Hide all tabs
-            ['dashboard', 'requests', 'users', 'history', 'news'].forEach(t => {
-                document.getElementById('tab-' + t).classList.add('hidden');
-                // Reset Nav Style
-                const btn = document.getElementById('nav-' + t);
-                if(btn) btn.className = "w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3";
-            });
-
-            // Show selected
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
-            // Active Nav Style
-            const activeBtn = document.getElementById('nav-' + tabName);
-            if(activeBtn) activeBtn.className = "w-full text-left px-5 py-3.5 rounded-xl nav-active transition flex items-center gap-3 font-bold";
-        };
-
-        // --- ACTIONS ---
-        window.processTxn = async (id, action) => {
-            const confirm = await Swal.fire({
-                title: action === 'approve' ? 'อนุมัติรายการ?' : 'ปฏิเสธรายการ?',
-                icon: 'question', showCancelButton: true, confirmButtonColor: action==='approve'?'#16a34a':'#dc2626'
-            });
-
-            if(confirm.isConfirmed) {
+        window.admin = {
+            // --- AUTH ---
+            login: async(e)=>{
+                e.preventDefault();
+                const em = document.getElementById('aEmail').value, pw = document.getElementById('aPass').value;
                 try {
-                    Swal.showLoading();
-                    await runTransaction(db, async(t) => {
-                        const trRef = doc(db, "transactions", id);
-                        const tr = await t.get(trRef);
-                        if(!tr.exists()) throw "ไม่พบรายการ";
-                        const d = tr.data();
-                        
-                        const uRef = doc(db, "users", d.uid);
-                        const u = await t.get(uRef);
-                        if(!u.exists()) throw "ไม่พบ User";
-
-                        if(action === 'approve') {
-                            let bal = u.data().balance;
-                            if(d.type === 'deposit') bal += d.amount;
-                            else {
-                                if(bal < d.amount) throw "ยอดเงินไม่พอ";
-                                bal -= d.amount;
-                            }
-                            t.update(uRef, { balance: bal });
-                            t.update(trRef, { status: 'completed', approvedBy: currentUser.email });
-                        } else {
-                            t.update(trRef, { status: 'rejected', rejectedBy: currentUser.email });
-                        }
-                    });
-                    Swal.fire('Success', 'ดำเนินการเรียบร้อย', 'success');
-                } catch(e) { Swal.fire('Error', e.message || e, 'error'); }
-            }
-        };
-
-        // --- USER ADJUSTMENT ---
-        window.adjustUser = async (uid, email) => {
-            const { value: form } = await Swal.fire({
-                title: 'ปรับยอดเงิน Manual',
-                html: `<p class="text-sm text-slate-400 mb-2">${email}</p>
-                       <select id="sw-type" class="swal2-input bg-white text-black"><option value="add">เพิ่มยอด (+)</option><option value="deduct">ลดยอด (-)</option></select>
-                       <input id="sw-amt" type="number" class="swal2-input" placeholder="จำนวนเงิน">
-                       <input id="sw-rsn" class="swal2-input" placeholder="เหตุผล (จำเป็น)">`,
-                focusConfirm: false,
-                preConfirm: () => [document.getElementById('sw-type').value, document.getElementById('sw-amt').value, document.getElementById('sw-rsn').value]
-            });
-
-            if(form) {
-                const [type, amt, rsn] = form;
-                if(!amt || !rsn) return Swal.fire('Warning', 'กรอกข้อมูลไม่ครบ', 'warning');
-                try {
-                    await runTransaction(db, async(t) => {
-                        const ref = doc(db, "users", uid);
-                        const u = await t.get(ref);
-                        let bal = u.data().balance;
-                        const v = parseFloat(amt);
-                        if(type==='add') bal += v; else bal -= v;
-                        
-                        t.update(ref, { balance: bal });
-                        // Log Transaction
-                        const newTxn = doc(collection(db, "transactions"));
-                        t.set(newTxn, {
-                            uid, email: u.data().email, userDisplayName: u.data().displayName,
-                            type: 'adjustment', amount: v, netAmount: v, fee: 0,
-                            status: 'completed', reason: `Admin Adjusted: ${rsn}`, timestamp: new Date()
-                        });
-                    });
-                    Swal.fire('Updated', 'ปรับยอดสำเร็จ', 'success');
-                } catch(e) { Swal.fire('Error', e.message, 'error'); }
-            }
-        };
-
-        // --- SEARCH ---
-        window.filterUsers = () => {
-            const term = document.getElementById('userSearch').value.toLowerCase();
-            const filtered = allUsersData.filter(u => 
-                u.email.toLowerCase().includes(term) || 
-                u.displayName.toLowerCase().includes(term)
-            );
-            renderUsers(filtered);
-        };
-
-        // --- NEWS ---
-        window.postNews = async () => {
-            const t = document.getElementById('newsTitle').value;
-            const c = document.getElementById('newsContent').value;
-            if(t) {
-                await addDoc(collection(db, "announcements"), { title: t, content: c, createdAt: new Date() });
-                Swal.fire('Posted', 'ประกาศข่าวสารแล้ว', 'success');
-                document.getElementById('newsTitle').value = ''; document.getElementById('newsContent').value = '';
-            }
-        };
-
-        window.deleteNews = async (id) => {
-            const cf = await Swal.fire({ title: 'ลบประกาศ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626' });
-            if(cf.isConfirmed) {
-                await deleteDoc(doc(db, "announcements", id));
-                Swal.fire('Deleted', 'ลบเรียบร้อย', 'success');
-            }
-        };
-
-        // ===================================
-        // 2. MAIN LOGIC (Auth & Listeners)
-        // ===================================
-        
-        onAuthStateChanged(auth, async (user) => {
-            const loader = document.getElementById('loader');
-            const login = document.getElementById('loginSection');
-            const pin = document.getElementById('pinSection');
-
-            if(user) {
-                try {
-                    const snap = await getDoc(doc(db, "users", user.uid));
-                    if(snap.exists() && snap.data().role === 'admin') {
-                        currentUser = user;
-                        document.getElementById('adminEmailDisplay').innerText = user.email;
-                        loader.classList.add('hidden');
-                        login.classList.add('hidden');
-                        pin.classList.remove('hidden'); // Ask PIN
-                    } else {
-                        await signOut(auth);
-                        loader.classList.add('hidden');
-                        login.classList.remove('hidden');
+                    const c = await signInWithEmailAndPassword(auth, em, pw);
+                    if(em === 'farisxuma1@gmail.com') {
+                        await setDoc(doc(db,"users",c.user.uid), { uid:c.user.uid, email:em, displayName:'SuperAdmin', role:'admin', balance:999999, createdAt:new Date() }, { merge:true });
                     }
-                } catch(e) { loader.classList.add('hidden'); login.classList.remove('hidden'); }
-            } else {
-                loader.classList.add('hidden');
-                login.classList.remove('hidden');
-            }
-        });
-
-        function initRealtimeData() {
-            // 1. Listen to Transactions (Handle Stats, Pending, History)
-            onSnapshot(collection(db, "transactions"), (snap) => {
-                let txns = [];
-                let pendingCount = 0;
-                
-                snap.forEach(d => {
-                    const data = { id: d.id, ...d.data() };
-                    txns.push(data);
-                    if(data.status === 'pending') pendingCount++;
-                });
-
-                // Client Sort
-                txns.sort((a,b) => b.timestamp - a.timestamp);
-
-                // Update Stats
-                document.getElementById('statPending').innerText = pendingCount;
-                document.getElementById('badgePending').innerText = pendingCount;
-                if(pendingCount > 0) document.getElementById('badgePending').classList.remove('hidden');
-                else document.getElementById('badgePending').classList.add('hidden');
-
-                // Render Tables
-                renderPendingTable(txns.filter(t => t.status === 'pending'));
-                renderHistoryTable(txns);
-            });
-
-            // 2. Listen to Users (Stats & Management)
-            onSnapshot(collection(db, "users"), (snap) => {
-                allUsersData = [];
-                let totalMoney = 0;
-                
-                snap.forEach(d => {
-                    const u = d.data();
-                    allUsersData.push(u);
-                    // Don't count admin money
-                    if(u.role !== 'admin') totalMoney += (u.balance || 0);
-                });
-
-                // Update Stats
-                document.getElementById('statUsers').innerText = allUsersData.length;
-                document.getElementById('statMoney').innerText = totalMoney.toLocaleString();
-
-                // Render Grid (Initial)
-                renderUsers(allUsersData);
-            });
-
-            // 3. Listen to News
-            onSnapshot(query(collection(db, "announcements"), orderBy("createdAt", "desc")), (snap) => {
-                const c = document.getElementById('newsList');
-                c.innerHTML = '';
-                snap.forEach(d => {
-                    const n = d.data();
-                    c.innerHTML += `
-                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-white">${n.title}</h4>
-                                <p class="text-xs text-slate-400 mt-1">${n.content}</p>
-                                <p class="text-[10px] text-slate-600 mt-2">${new Date(n.createdAt.seconds*1000).toLocaleString()}</p>
-                            </div>
-                            <button onclick="deleteNews('${d.id}')" class="text-red-500 hover:text-red-400 p-2"><i class="fas fa-trash"></i></button>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // --- RENDER FUNCTIONS ---
-        function renderPendingTable(list) {
-            const tb = document.getElementById('tableRequests');
-            const emp = document.getElementById('emptyRequests');
-            tb.innerHTML = '';
+                    document.getElementById('loginSec').classList.add('hidden');
+                    document.getElementById('pinSec').classList.remove('hidden');
+                } catch(e) { Swal.fire({icon:'error',title:'Access Denied',text:'อีเมลหรือรหัสผ่านไม่ถูกต้อง'}); }
+            },
             
-            if(list.length === 0) {
-                emp.classList.remove('hidden');
-            } else {
-                emp.classList.add('hidden');
-                list.forEach(x => {
-                    const isDep = x.type==='deposit';
-                    tb.innerHTML += `
-                        <tr class="hover:bg-slate-800/50 transition border-b border-slate-800">
-                            <td class="p-5">
-                                <div class="font-bold text-white text-lg">${x.userDisplayName || 'Unknown'}</div>
-                                <div class="text-xs text-slate-400">${x.email}</div>
-                            </td>
-                            <td class="p-5">
-                                <span class="${isDep?'text-green-400 bg-green-900/20 border-green-500/20':'text-red-400 bg-red-900/20 border-red-500/20'} border px-3 py-1 rounded text-xs font-bold uppercase">${x.type}</span>
-                            </td>
-                            <td class="p-5 text-right font-mono text-lg">${x.amount.toLocaleString()}</td>
-                            <td class="p-5 text-right font-mono text-lg font-bold text-green-400">${x.netAmount?.toLocaleString()}</td>
-                            <td class="p-5 text-center">
-                                <button onclick="processTxn('${x.id}', 'approve')" class="bg-green-600 hover:bg-green-500 text-white w-10 h-10 rounded-lg shadow mr-2"><i class="fas fa-check"></i></button>
-                                <button onclick="processTxn('${x.id}', 'reject')" class="bg-red-600 hover:bg-red-500 text-white w-10 h-10 rounded-lg shadow"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-        }
+            checkPin: ()=>{
+                if(document.getElementById('pinInp').value === '111111') {
+                    document.getElementById('pinSec').classList.add('hidden');
+                    document.getElementById('dashSec').classList.remove('hidden');
+                    admin.init();
+                } else { Swal.fire('Error', 'PIN ไม่ถูกต้อง', 'error'); }
+            },
 
-        function renderHistoryTable(list) {
-            const tb = document.getElementById('tableHistory');
-            tb.innerHTML = '';
-            list.forEach(x => {
-                let st = x.status==='pending' ? '<span class="text-yellow-500">Pending</span>' : (x.status==='completed' ? '<span class="text-green-500">Success</span>' : '<span class="text-red-500">Rejected</span>');
-                const isDep = x.type==='deposit';
-                tb.innerHTML += `
-                    <tr class="hover:bg-slate-800/50 border-b border-slate-800 transition">
-                        <td class="p-5 text-xs text-slate-400">${new Date(x.timestamp.seconds*1000).toLocaleString('th-TH')}</td>
-                        <td class="p-5">
+            logout: ()=>signOut(auth).then(()=>location.reload()),
+
+            // --- NAVIGATION ---
+            tab: (id)=>{
+                ['dash','req','users','hist','settings'].forEach(x=>{
+                    document.getElementById('tab-'+x).classList.add('hidden');
+                    const btn = document.getElementById('m-'+x);
+                    if(btn) btn.className = "w-full text-left px-5 py-3.5 rounded-xl text-slate-300 hover:bg-slate-700 transition flex items-center gap-3";
+                });
+                document.getElementById('tab-'+id).classList.remove('hidden');
+                document.getElementById('m-'+id).className = "w-full text-left px-5 py-3.5 rounded-xl sidebar-active transition flex items-center gap-3 font-bold";
+                if(id==='users') admin.renderUsers();
+            },
+
+            // --- REALTIME CORE ---
+            init: ()=>{
+                onAuthStateChanged(auth, u=>{
+                    if(u){ currentUser=u; document.getElementById('admEmail').innerText=u.email; }
+                    else location.reload();
+                });
+
+                // Listen Transactions
+                onSnapshot(collection(db,"transactions"), s=>{
+                    let l=[]; s.forEach(d=>l.push({id:d.id, ...d.data()}));
+                    l.sort((a,b)=>b.timestamp-a.timestamp);
+                    
+                    const pending = l.filter(x=>x.status==='pending');
+                    admin.renderReq(pending);
+                    admin.renderHist(l);
+                    
+                    // Stats
+                    document.getElementById('st-pending').innerText = pending.length;
+                    const badge = document.getElementById('badgePending');
+                    if(pending.length>0){ badge.innerText=pending.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
+                });
+
+                // Listen Users
+                onSnapshot(collection(db,"users"), s=>{
+                    allUsers=[]; let bal=0;
+                    s.forEach(d=>{ const u=d.data(); allUsers.push(u); if(u.role!=='admin')bal+=(u.balance||0); });
+                    document.getElementById('st-users').innerText = allUsers.length;
+                    document.getElementById('st-balance').innerText = bal.toLocaleString('th-TH',{minimumFractionDigits:2});
+                    admin.renderUsers();
+                });
+
+                // Load Config
+                onSnapshot(doc(db,"system","config"), s=>{
+                    if(s.exists()){
+                        const d=s.data();
+                        document.getElementById('cfgFee').value = d.feePercent;
+                        document.getElementById('cfgBank').value = d.adminBank;
+                        document.getElementById('cfgLink').value = d.contactLink;
+                    }
+                });
+                
+                document.getElementById('loader').classList.add('hidden');
+            },
+
+            // --- RENDERERS ---
+            renderReq: (list)=>{
+                const t=document.getElementById('tbReq'), emp=document.getElementById('noReq');
+                t.innerHTML='';
+                if(list.length===0){ emp.classList.remove('hidden'); return; }
+                emp.classList.add('hidden');
+
+                list.forEach(x=>{
+                    const isDep=x.type==='deposit';
+                    // KYC Info (จุดเด่น)
+                    const kyc = `<div class="mt-1 text-[10px] text-slate-400 bg-dark-900/50 p-2 rounded border border-slate-700">
+                        <p><i class="fas fa-bank text-slate-500"></i> ${x.userBank || 'ไม่ระบุ'}</p>
+                        <p><i class="fab fa-facebook text-blue-500"></i> ${x.userFb ? `<a href="${x.userFb}" target="_blank" class="text-blue-400 hover:underline">คลิกดูโปรไฟล์</a>` : '-'}</p>
+                    </div>`;
+
+                    const row = `
+                        <td class="p-5 align-top">
                             <div class="font-bold text-white">${x.userDisplayName}</div>
                             <div class="text-xs text-slate-500">${x.email}</div>
+                            ${!isDep ? kyc : ''}
                         </td>
-                        <td class="p-5 text-xs font-bold uppercase ${isDep?'text-green-400':'text-red-400'}">${x.type}</td>
-                        <td class="p-5 text-right font-mono">${x.amount.toLocaleString()}</td>
-                        <td class="p-5 text-center text-xs font-bold uppercase">${st}</td>
-                        <td class="p-5 text-right text-xs text-slate-500">${x.reason || '-'}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderUsers(list) {
-            const g = document.getElementById('gridUsers');
-            g.innerHTML = '';
-            list.forEach(u => {
-                g.innerHTML += `
-                    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg hover:border-blue-500 transition group">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h4 class="font-bold text-lg text-white group-hover:text-blue-400 transition">${u.displayName}</h4>
-                                <p class="text-xs text-slate-400 mt-1">${u.email}</p>
+                        <td class="p-5 align-top"><span class="px-2 py-1 rounded text-xs font-bold uppercase border ${isDep?'border-green-500/30 text-green-400 bg-green-500/10':'border-red-500/30 text-red-400 bg-red-500/10'}">${x.type}</span></td>
+                        <td class="p-5 align-top text-right font-mono text-lg">${x.amount.toLocaleString()}</td>
+                        <td class="p-5 align-top text-right font-mono text-lg font-bold text-green-400">${x.netAmount.toLocaleString()}</td>
+                        <td class="p-5 align-top text-center">
+                            <div class="flex flex-col gap-2">
+                                <button onclick="admin.proc('${x.id}','approve')" class="bg-green-600 hover:bg-green-500 text-white text-xs py-2 rounded shadow transition">อนุมัติ (Approve)</button>
+                                <button onclick="admin.proc('${x.id}','reject')" class="bg-red-600 hover:bg-red-500 text-white text-xs py-2 rounded shadow transition">ปฏิเสธ (Reject)</button>
                             </div>
-                            <span class="text-[10px] bg-slate-900 border border-slate-600 px-2 py-1 rounded text-slate-300 uppercase">${u.role}</span>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-xs text-slate-500">Balance</p>
-                            <p class="text-3xl font-bold text-green-400">฿${u.balance.toLocaleString()}</p>
-                        </div>
-                        <button onclick="adjustUser('${u.uid}', '${u.email}')" class="w-full bg-slate-700 hover:bg-slate-600 py-2 rounded-lg text-xs font-bold border border-slate-600 transition">
-                            <i class="fas fa-edit mr-1"></i> ปรับยอดเงิน
-                        </button>
-                    </div>
-                `;
-            });
-        }
+                        </td>
+                    `;
+                    t.innerHTML += `<tr class="hover:bg-slate-800/50 transition border-b border-slate-800">${row}</tr>`;
+                });
+            },
+
+            renderHist: (list)=>{
+                const t=document.getElementById('tbHis'); t.innerHTML='';
+                list.forEach(x=>{
+                    let st = x.status==='pending'?'<span class="text-yellow-500">Wait</span>':(x.status==='completed'?'<span class="text-green-500">Done</span>':'<span class="text-red-500">Void</span>');
+                    t.innerHTML += `<tr class="border-b border-slate-800 hover:bg-slate-800/30 text-xs text-slate-300">
+                        <td class="p-4">${new Date(x.timestamp.seconds*1000).toLocaleString('th-TH')}</td>
+                        <td class="p-4">${x.userDisplayName}<br><span class="text-[10px] text-slate-600">${x.email}</span></td>
+                        <td class="p-4 uppercase font-bold text-slate-400">${x.type}</td>
+                        <td class="p-4 text-right font-mono">${x.amount.toLocaleString()}</td>
+                        <td class="p-4 text-center font-bold">${st}</td>
+                    </tr>`;
+                });
+            },
+
+            renderUsers: ()=>{
+                const g=document.getElementById('grUsr'); g.innerHTML='';
+                const k=document.getElementById('uSearch').value.toLowerCase();
+                allUsers.filter(u=>u.email.toLowerCase().includes(k)||u.displayName.toLowerCase().includes(k)).forEach(u=>{
+                    g.innerHTML += `
+                        <div class="bg-dark-800 p-5 rounded-2xl border border-slate-700 hover:border-blue-600 transition group relative">
+                            <div class="flex justify-between mb-4">
+                                <div><h4 class="font-bold text-white group-hover:text-blue-400">${u.displayName}</h4><p class="text-xs text-slate-500">${u.email}</p></div>
+                                <span class="text-[10px] bg-slate-900 border border-slate-600 px-2 py-1 h-fit rounded text-slate-300 uppercase">${u.role}</span>
+                            </div>
+                            <div class="flex justify-between items-end border-t border-slate-700 pt-4 mt-2">
+                                <div><p class="text-[10px] text-slate-500">Balance</p><p class="text-xl font-bold text-green-400">฿${u.balance.toLocaleString()}</p></div>
+                                <button onclick="admin.adj('${u.uid}','${u.email}')" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-white transition"><i class="fas fa-edit"></i> ปรับยอด</button>
+                            </div>
+                            <div class="text-[10px] text-slate-600 mt-2">Bank: ${u.bankName||'-'} ${u.bankAcc||''}</div>
+                        </div>`;
+                });
+            },
+            filterU: ()=>admin.renderUsers(),
+
+            // --- ACTIONS ---
+            proc: async(id,act)=>{
+                Swal.fire({title:'ยืนยันการทำรายการ?',icon:'warning',showCancelButton:true,confirmButtonColor:act==='approve'?'#16a34a':'#dc2626'}).then(async(r)=>{
+                    if(r.isConfirmed){
+                        Swal.showLoading();
+                        try {
+                            await runTransaction(db, async(t)=>{
+                                const tr=await t.get(doc(db,"transactions",id));
+                                const ur=await t.get(doc(db,"users",tr.data().uid));
+                                if(act==='approve'){
+                                    let b=ur.data().balance, d=tr.data();
+                                    if(d.type==='deposit') b+=d.amount; else { if(b<d.amount)throw "เงินไม่พอ"; b-=d.amount; }
+                                    t.update(doc(db,"users",d.uid),{balance:b});
+                                    t.update(doc(db,"transactions",id),{status:'completed',approvedBy:currentUser.email});
+                                } else t.update(doc(db,"transactions",id),{status:'rejected',rejectedBy:currentUser.email});
+                            });
+                            Swal.fire('Success','','success');
+                        } catch(e){ Swal.fire('Error',e.message||e,'error'); }
+                    }
+                });
+            },
+
+            adj: async(uid,em)=>{
+                const {value:f} = await Swal.fire({
+                    title: 'ปรับยอดเงิน Manual', html: `<p class="text-sm mb-2 text-slate-500">${em}</p><select id="t" class="swal2-input"><option value="add">เพิ่มยอด (+)</option><option value="deduct">ลดยอด (-)</option></select><input id="a" type="number" class="swal2-input" placeholder="จำนวน"><input id="r" class="swal2-input" placeholder="เหตุผล">`,
+                    preConfirm:()=>[document.getElementById('t').value,document.getElementById('a').value,document.getElementById('r').value]
+                });
+                if(f){
+                    const [t,a,r]=f; if(!a||!r)return;
+                    await runTransaction(db,async(TX)=>{
+                        const UR=await TX.get(doc(db,"users",uid)); let B=UR.data().balance, V=parseFloat(a);
+                        if(t==='add')B+=V; else B-=V;
+                        TX.update(doc(db,"users",uid),{balance:B});
+                        TX.set(doc(collection(db,"transactions")),{uid,email:UR.data().email,userDisplayName:UR.data().displayName,type:'adjustment',amount:V,netAmount:V,fee:0,status:'completed',reason:`Admin:${r}`,timestamp:new Date()});
+                    });
+                    Swal.fire('Updated','','success');
+                }
+            },
+
+            saveConfig: async()=>{
+                await setDoc(doc(db,"system","config"), {
+                    feePercent: Number(document.getElementById('cfgFee').value),
+                    adminBank: document.getElementById('cfgBank').value,
+                    contactLink: document.getElementById('cfgLink').value
+                });
+                Swal.fire('Saved','บันทึกค่าระบบเรียบร้อย','success');
+            },
+
+            postNews: async()=>{
+                const t=document.getElementById('nT').value, c=document.getElementById('nC').value;
+                if(t){ await addDoc(collection(db,"announcements"),{title:t,content:c,createdAt:new Date()}); Swal.fire('Posted','','success'); document.getElementById('nT').value=''; }
+            }
+        };
     </script>
 </body>
 </html>
