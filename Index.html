@@ -3,87 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAFADA - Admin Panel</title>
+    <title>FAFADA - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style> body { font-family: 'Prompt', sans-serif; } </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen overflow-hidden">
+<body class="bg-slate-950 text-white min-h-screen overflow-hidden">
 
-    <div id="loginSection" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center">
-        <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl w-full max-w-sm">
-            <div class="text-center mb-6">
-                <h1 class="text-3xl font-bold text-yellow-500 tracking-widest">ADMIN</h1>
-                <p class="text-slate-500 text-sm">FAFADA Management System</p>
+    <div id="loginSection" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center">
+        <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl w-full max-w-sm">
+            <div class="text-center mb-8">
+                <i class="fas fa-user-shield text-5xl text-yellow-500 mb-4"></i>
+                <h1 class="text-2xl font-bold text-white tracking-widest">ADMIN PANEL</h1>
+                <p class="text-slate-500 text-sm">Restricted Area</p>
             </div>
             <form onsubmit="handleAdminLogin(event)">
                 <div class="mb-4">
-                    <label class="text-xs text-slate-400">Email</label>
-                    <input type="email" id="admEmail" value="farisxuma1@gmail.com" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-yellow-500 outline-none" required>
+                    <label class="text-xs text-slate-400 font-bold ml-1">ADMIN EMAIL</label>
+                    <input type="email" id="admEmail" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-yellow-500 outline-none transition" required>
                 </div>
                 <div class="mb-6">
-                    <label class="text-xs text-slate-400">Password</label>
-                    <input type="password" id="admPass" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-yellow-500 outline-none" required>
+                    <label class="text-xs text-slate-400 font-bold ml-1">PASSWORD</label>
+                    <input type="password" id="admPass" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-yellow-500 outline-none transition" required>
                 </div>
-                <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded transition">เข้าสู่ระบบ</button>
+                <button type="submit" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-3 rounded-lg transition shadow-lg transform hover:scale-105">LOGIN</button>
             </form>
         </div>
     </div>
 
-    <div id="pinSection" class="fixed inset-0 bg-black/95 z-[90] flex flex-col items-center justify-center hidden">
-        <i class="fas fa-user-shield text-5xl text-yellow-500 mb-4"></i>
-        <h2 class="text-xl font-bold mb-4">Security Verification</h2>
-        <input type="password" id="pinInput" maxlength="6" class="bg-slate-800 border border-slate-600 rounded-lg px-6 py-3 text-center text-3xl tracking-[0.5em] text-white focus:border-yellow-500 outline-none mb-4 w-64" placeholder="••••••">
-        <button onclick="checkPin()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg">UNLOCK</button>
+    <div id="pinSection" class="fixed inset-0 bg-black/95 z-[90] flex flex-col items-center justify-center hidden backdrop-blur-sm">
+        <div class="text-center animate-fade-in-up">
+            <i class="fas fa-lock text-5xl text-red-500 mb-6"></i>
+            <h2 class="text-2xl font-bold mb-2">Security Verification</h2>
+            <p class="text-slate-400 text-sm mb-6">กรอกรหัส PIN 6 หลัก</p>
+            <input type="password" id="pinInput" maxlength="6" class="bg-slate-900 border border-slate-700 rounded-xl px-6 py-4 text-center text-3xl tracking-[0.5em] text-white focus:border-red-500 outline-none mb-6 w-full max-w-xs shadow-lg" placeholder="••••••">
+            <br>
+            <button onclick="checkPin()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-10 rounded-xl shadow-lg transition transform hover:scale-105">UNLOCK</button>
+        </div>
     </div>
 
     <div id="dashboardSection" class="flex min-h-screen hidden">
-        <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
-            <div class="h-20 flex items-center justify-center border-b border-slate-700 bg-slate-900/50">
+        <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col">
+            <div class="h-20 flex items-center justify-center border-b border-slate-800 bg-slate-950/50">
                 <span class="text-xl font-bold text-yellow-500 tracking-widest">FAFADA</span>
             </div>
-            <div class="p-4 space-y-2 flex-1">
-                <button onclick="switchTab('dash')" id="menuDash" class="w-full text-left px-4 py-3 rounded bg-blue-600 text-white"><i class="fas fa-list mr-2"></i> อนุมัติรายการ</button>
-                <button onclick="switchTab('users')" id="menuUsers" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-700 hover:text-white"><i class="fas fa-users mr-2"></i> สมาชิก</button>
-                <button onclick="switchTab('news')" id="menuNews" class="w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-700 hover:text-white"><i class="fas fa-bullhorn mr-2"></i> ประกาศข่าว</button>
+            <div class="p-4 space-y-2 flex-1 mt-4">
+                <button onclick="switchTab('dash')" id="menuDash" class="w-full text-left px-6 py-4 rounded-xl bg-blue-600 text-white shadow-lg transition"><i class="fas fa-list mr-3"></i> อนุมัติรายการ</button>
+                <button onclick="switchTab('users')" id="menuUsers" class="w-full text-left px-6 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-users mr-3"></i> สมาชิก</button>
+                <button onclick="switchTab('news')" id="menuNews" class="w-full text-left px-6 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fas fa-bullhorn mr-3"></i> ประกาศข่าว</button>
             </div>
-            <div class="p-4 border-t border-slate-700">
-                <p class="text-xs text-slate-500 mb-2 text-center" id="adminEmailDisplay">...</p>
-                <button onclick="doLogout()" class="w-full border border-red-500 text-red-500 py-2 rounded hover:bg-red-500 hover:text-white transition text-sm">Logout</button>
+            <div class="p-6 border-t border-slate-800 bg-slate-900">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-lg">A</div>
+                    <div class="overflow-hidden">
+                        <div class="text-sm font-bold text-white">Super Admin</div>
+                        <div id="adminEmailDisplay" class="text-xs text-slate-500 truncate">...</div>
+                    </div>
+                </div>
+                <button onclick="doLogout()" class="w-full border border-red-500/30 bg-red-500/10 text-red-500 py-3 rounded-lg hover:bg-red-500 hover:text-white transition text-sm font-bold tracking-wide">LOGOUT</button>
             </div>
         </aside>
 
-        <main class="flex-1 p-6 bg-slate-900 overflow-y-auto h-screen">
+        <main class="flex-1 p-8 bg-slate-950 overflow-y-auto h-screen">
+            
             <div id="tabDash" class="animate-fade-in">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-clock text-yellow-500"></i> รายการรออนุมัติ <span id="pendingCount" class="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full">0</span></h2>
-                <div class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-clock text-yellow-500"></i> รายการรออนุมัติ <span id="pendingCount" class="bg-yellow-500 text-black text-sm px-3 py-1 rounded-full shadow-lg shadow-yellow-500/20">0</span></h2>
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-black/20 text-slate-400 uppercase">
-                            <tr><th class="p-4">User</th><th class="p-4">Type</th><th class="p-4 text-right">Amount</th><th class="p-4 text-right">Net</th><th class="p-4 text-center">Action</th></tr>
+                        <thead class="bg-slate-950/80 text-slate-400 uppercase tracking-wider">
+                            <tr><th class="p-5">User Info</th><th class="p-5">Type</th><th class="p-5 text-right">Amount</th><th class="p-5 text-right">Net</th><th class="p-5 text-center">Action</th></tr>
                         </thead>
-                        <tbody id="reqTable" class="divide-y divide-slate-700"></tbody>
+                        <tbody id="reqTable" class="divide-y divide-slate-800/50"></tbody>
                     </table>
-                    <div id="noReq" class="p-8 text-center text-slate-500 hidden">ไม่มีรายการค้าง</div>
+                    <div id="noReq" class="p-12 text-center text-slate-600 hidden">
+                        <i class="fas fa-check-circle text-4xl mb-2 opacity-50"></i>
+                        <p>ไม่มีรายการค้าง</p>
+                    </div>
                 </div>
             </div>
 
             <div id="tabUsers" class="hidden animate-fade-in">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-users-cog text-blue-500"></i> สมาชิกทั้งหมด</h2>
-                <div class="flex gap-4 mb-6">
-                    <input type="text" id="searchInp" class="bg-slate-800 border border-slate-700 px-4 py-2 rounded text-white w-full outline-none focus:border-blue-500" placeholder="ค้นหาอีเมล...">
-                    <button onclick="fetchUsers()" class="bg-blue-600 px-6 py-2 rounded font-bold hover:bg-blue-500">ค้นหา</button>
+                <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-users-cog text-blue-500"></i> สมาชิกทั้งหมด</h2>
+                <div class="flex gap-4 mb-8">
+                    <div class="relative w-full">
+                        <i class="fas fa-search absolute left-4 top-4 text-slate-500"></i>
+                        <input type="text" id="searchInp" class="w-full bg-slate-900 border border-slate-800 px-12 py-3 rounded-xl text-white outline-none focus:border-blue-500 transition" placeholder="ค้นหาอีเมลสมาชิก...">
+                    </div>
+                    <button onclick="fetchUsers()" class="bg-blue-600 px-8 py-3 rounded-xl font-bold hover:bg-blue-500 shadow-lg shadow-blue-600/20">ค้นหา</button>
                 </div>
-                <div id="userGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="userGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
             <div id="tabNews" class="hidden animate-fade-in">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-newspaper text-green-500"></i> ประกาศข่าวสาร</h2>
-                <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 max-w-xl">
-                    <input type="text" id="newsTitle" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white mb-4 outline-none" placeholder="หัวข้อ...">
-                    <textarea id="newsContent" rows="4" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white mb-4 outline-none" placeholder="เนื้อหา..."></textarea>
-                    <button onclick="postNews()" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded text-white font-bold">โพสต์ประกาศ</button>
+                <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-newspaper text-green-500"></i> ประกาศข่าวสาร</h2>
+                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 max-w-2xl shadow-2xl">
+                    <div class="mb-6">
+                        <label class="block text-slate-400 mb-2 text-sm">หัวข้อประกาศ</label>
+                        <input type="text" id="newsTitle" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-green-500 transition" placeholder="ใส่หัวข้อ...">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-slate-400 mb-2 text-sm">รายละเอียด</label>
+                        <textarea id="newsContent" rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-green-500 transition" placeholder="ใส่เนื้อหา..."></textarea>
+                    </div>
+                    <button onclick="postNews()" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl text-white font-bold shadow-lg shadow-green-600/20 transition transform hover:scale-[1.02]">โพสต์ประกาศ</button>
                 </div>
             </div>
         </main>
@@ -109,7 +133,7 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // 1. LOGIN & AUTO-FIX PERMISSIONS
+        // 1. ADMIN LOGIN & AUTO-FIX
         window.handleAdminLogin = async (e) => {
             e.preventDefault();
             const email = document.getElementById('admEmail').value;
@@ -119,19 +143,19 @@
                 const credential = await signInWithEmailAndPassword(auth, email, pass);
                 const user = credential.user;
 
-                // *** จุดแก้บั๊ก: ถ้าเป็น farisxuma1@gmail.com บังคับเซ็ต Admin ทันที ***
+                // **ระบบ Auto-Fix: ถ้าเป็น farisxuma1@gmail.com จะบังคับเขียน role: admin ลง database ทันที**
                 if (user.email === 'farisxuma1@gmail.com') {
                     await setDoc(doc(db, "users", user.uid), {
                         uid: user.uid,
                         email: user.email,
                         displayName: 'Super Admin',
-                        role: 'admin', // บังคับเขียน
-                        balance: 999999, // ตั้งเงินหลอกๆ ไว้ (Admin ไม่ได้ใช้เงินจริง)
+                        role: 'admin', 
+                        balance: 999999,
                         createdAt: new Date()
-                    }, { merge: true }); // merge=true คือถ้ามีข้อมูลอยู่แล้วจะไม่ทับของเก่า แค่อัปเดต role
+                    }, { merge: true });
                 }
 
-                // เช็ค Role อีกทีเพื่อความชัวร์
+                // ตรวจสอบสิทธิ์
                 const snap = await getDoc(doc(db, "users", user.uid));
                 if (snap.exists() && snap.data().role === 'admin') {
                     currentUser = user;
@@ -140,10 +164,10 @@
                     document.getElementById('pinSection').classList.remove('hidden');
                 } else {
                     await signOut(auth);
-                    Swal.fire('ปฏิเสธการเข้าถึง', 'บัญชีนี้ไม่ใช่ Admin', 'error');
+                    Swal.fire('Access Denied', 'บัญชีนี้ไม่ใช่ Admin', 'error');
                 }
             } catch (err) {
-                Swal.fire('ผิดพลาด', err.message, 'error');
+                Swal.fire('ผิดพลาด', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
             }
         };
 
@@ -154,23 +178,25 @@
                 document.getElementById('dashboardSection').classList.remove('hidden');
                 initRealtime();
             } else {
-                Swal.fire('รหัสผิด', 'กรุณาลองใหม่', 'error');
+                Swal.fire('รหัสผิด', 'PIN Code ไม่ถูกต้อง', 'error');
+                document.getElementById('pinInput').value = '';
             }
         };
 
         window.doLogout = () => signOut(auth).then(() => location.reload());
 
-        // 3. APP LOGIC
+        // 3. UI TABS
         window.switchTab = (t) => {
             ['dash', 'users', 'news'].forEach(k => {
                 document.getElementById('tab'+k.charAt(0).toUpperCase()+k.slice(1)).classList.add('hidden');
-                document.getElementById('menu'+k.charAt(0).toUpperCase()+k.slice(1)).className = "w-full text-left px-4 py-3 rounded text-slate-400 hover:bg-slate-700 hover:text-white";
+                document.getElementById('menu'+k.charAt(0).toUpperCase()+k.slice(1)).className = "w-full text-left px-6 py-4 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition";
             });
             document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('hidden');
-            document.getElementById('menu'+t.charAt(0).toUpperCase()+t.slice(1)).className = "w-full text-left px-4 py-3 rounded bg-blue-600 text-white";
+            document.getElementById('menu'+t.charAt(0).toUpperCase()+t.slice(1)).className = "w-full text-left px-6 py-4 rounded-xl bg-blue-600 text-white shadow-lg transition";
             if(t==='users') fetchUsers();
         };
 
+        // 4. REALTIME PENDING REQUESTS
         function initRealtime() {
             const q = query(collection(db, "transactions"), where("status", "==", "pending"), orderBy("timestamp", "asc"));
             onSnapshot(q, (snaps) => {
@@ -184,18 +210,20 @@
                     const t = d.data();
                     const isDep = t.type==='deposit';
                     tb.innerHTML += `
-                        <tr class="hover:bg-slate-800 border-b border-slate-700">
-                            <td class="p-4">
-                                <div class="font-bold text-white">${t.userDisplayName}</div>
+                        <tr class="hover:bg-slate-800 transition border-b border-slate-800">
+                            <td class="p-5">
+                                <div class="font-bold text-white text-lg">${t.userDisplayName || 'Unknown'}</div>
                                 <div class="text-xs text-slate-400">${t.email}</div>
-                                <div class="text-xs text-slate-500">${new Date(t.timestamp.seconds*1000).toLocaleString('th-TH')}</div>
+                                <div class="text-xs text-slate-500 mt-1">${new Date(t.timestamp.seconds*1000).toLocaleString('th-TH')}</div>
                             </td>
-                            <td class="p-4"><span class="${isDep?'text-green-400':'text-red-400'} uppercase font-bold text-xs">${t.type}</span></td>
-                            <td class="p-4 text-right">${t.amount.toLocaleString()}</td>
-                            <td class="p-4 text-right font-bold text-green-400">${t.netAmount.toLocaleString()}</td>
-                            <td class="p-4 text-center">
-                                <button onclick="proc('${d.id}', 'approve')" class="bg-green-600 px-2 py-1 rounded text-white text-xs mr-2">อนุมัติ</button>
-                                <button onclick="proc('${d.id}', 'reject')" class="bg-red-600 px-2 py-1 rounded text-white text-xs">ปฏิเสธ</button>
+                            <td class="p-5">
+                                <span class="${isDep?'text-green-400 bg-green-900/30 border-green-500/30':'text-red-400 bg-red-900/30 border-red-500/30'} px-3 py-1 rounded text-xs uppercase font-bold border">${t.type}</span>
+                            </td>
+                            <td class="p-5 text-right font-mono text-lg">${t.amount.toLocaleString()}</td>
+                            <td class="p-5 text-right font-mono text-lg font-bold text-green-400">${t.netAmount.toLocaleString()}</td>
+                            <td class="p-5 text-center">
+                                <button onclick="proc('${d.id}', 'approve')" class="bg-green-600 hover:bg-green-500 text-white w-10 h-10 rounded-lg shadow mr-2 transition"><i class="fas fa-check"></i></button>
+                                <button onclick="proc('${d.id}', 'reject')" class="bg-red-600 hover:bg-red-500 text-white w-10 h-10 rounded-lg shadow transition"><i class="fas fa-times"></i></button>
                             </td>
                         </tr>`;
                 });
@@ -203,9 +231,10 @@
         }
 
         window.proc = async (id, act) => {
-            Swal.fire({ title: 'ยืนยัน?', showCancelButton: true }).then(async(res) => {
+            Swal.fire({ title: 'ยืนยัน?', icon: 'question', showCancelButton: true }).then(async(res) => {
                 if(res.isConfirmed) {
                     try {
+                        Swal.showLoading();
                         await runTransaction(db, async(txn) => {
                             const tr = await txn.get(doc(db, "transactions", id));
                             if(!tr.exists()) throw "ไม่พบรายการ";
@@ -223,43 +252,46 @@
                                 txn.update(doc(db, "transactions", id), { status: 'rejected', rejectedBy: currentUser.email });
                             }
                         });
-                        Swal.fire('สำเร็จ', '', 'success');
+                        Swal.fire('สำเร็จ', 'ดำเนินการเรียบร้อย', 'success');
                     } catch(e) { Swal.fire('Error', e, 'error'); }
                 }
             });
         };
 
+        // 5. USER MANAGEMENT
         window.fetchUsers = async () => {
             const g = document.getElementById('userGrid');
-            g.innerHTML = '<p class="col-span-3 text-center text-slate-500">Loading...</p>';
+            g.innerHTML = '<p class="col-span-3 text-center text-slate-500 animate-pulse">กำลังดึงข้อมูล...</p>';
             const k = document.getElementById('searchInp').value;
             let q = k ? query(collection(db, "users"), where("email", "==", k)) : query(collection(db, "users"), orderBy("createdAt", "desc"));
             const s = await getDocs(q);
             g.innerHTML = '';
+            if(s.empty) { g.innerHTML = '<p class="col-span-3 text-center text-slate-500">ไม่พบข้อมูล</p>'; return; }
+
             s.forEach(d => {
                 const u = d.data();
                 g.innerHTML += `
-                    <div class="bg-slate-800 p-4 rounded border border-slate-700">
-                        <div class="flex justify-between mb-2">
-                            <h4 class="font-bold text-sm">${u.displayName}</h4>
-                            <span class="text-xs bg-slate-700 px-2 py-1 rounded uppercase">${u.role}</span>
+                    <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-lg hover:border-blue-500 transition">
+                        <div class="flex justify-between mb-4">
+                            <div><h4 class="font-bold text-lg text-white">${u.displayName}</h4><p class="text-xs text-slate-400">${u.email}</p></div>
+                            <span class="bg-slate-800 px-3 py-1 h-fit rounded text-xs uppercase text-slate-300 font-bold border border-slate-700">${u.role}</span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-2">${u.email}</p>
-                        <p class="text-xl font-bold text-green-400 mb-3">฿${u.balance.toLocaleString()}</p>
-                        <button onclick="adj('${u.uid}', '${u.email}')" class="w-full bg-slate-700 py-2 rounded text-xs hover:bg-slate-600">ปรับยอดเงิน</button>
+                        <p class="text-3xl font-bold text-green-400 mb-6">฿${u.balance.toLocaleString()}</p>
+                        <button onclick="adj('${u.uid}', '${u.email}')" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-sm border border-slate-700 transition font-bold">ปรับยอดเงิน</button>
                     </div>`;
             });
         };
 
         window.adj = async (uid, em) => {
             const {value: f} = await Swal.fire({
-                title: 'ปรับยอดเงิน', html: `<p class="mb-2 text-sm">${em}</p><select id="t" class="swal2-input"><option value="add">เพิ่ม (+)</option><option value="deduct">ลด (-)</option></select><input id="a" type="number" class="swal2-input" placeholder="จำนวน"><input id="r" class="swal2-input" placeholder="เหตุผล">`,
+                title: 'ปรับยอดเงิน Manual', html: `<p class="mb-4 text-sm text-slate-400">${em}</p><select id="t" class="swal2-input"><option value="add">เพิ่มยอด (+)</option><option value="deduct">ลดยอด (-)</option></select><input id="a" type="number" class="swal2-input" placeholder="จำนวนเงิน"><input id="r" class="swal2-input" placeholder="เหตุผล (บังคับ)">`,
                 preConfirm: () => [document.getElementById('t').value, document.getElementById('a').value, document.getElementById('r').value]
             });
             if(f) {
                 const [t, a, r] = f;
-                if(!a || !r) return;
+                if(!a || !r) return Swal.fire('ข้อมูลไม่ครบ', '', 'warning');
                 try {
+                    Swal.showLoading();
                     await runTransaction(db, async(TX) => {
                         const UR = await TX.get(doc(db, "users", uid));
                         let B = UR.data().balance;
@@ -270,17 +302,20 @@
                             uid, email: UR.data().email, userDisplayName: UR.data().displayName, type: 'adjustment', amount: V, netAmount: V, fee: 0, status: 'completed', reason: `Admin: ${r}`, timestamp: new Date()
                         });
                     });
-                    Swal.fire('Updated', '', 'success'); fetchUsers();
+                    Swal.fire('Updated', 'ปรับยอดสำเร็จ', 'success'); fetchUsers();
                 } catch(e) { Swal.fire('Error', e.message, 'error'); }
             }
         };
 
+        // 6. POST NEWS
         window.postNews = async () => {
             const t = document.getElementById('newsTitle').value;
             const c = document.getElementById('newsContent').value;
             if(t) {
                 await addDoc(collection(db, "announcements"), { title: t, content: c, createdAt: new Date() });
-                Swal.fire('Posted', '', 'success');
+                Swal.fire('สำเร็จ', 'ประกาศข่าวสารแล้ว', 'success');
+                document.getElementById('newsTitle').value = "";
+                document.getElementById('newsContent').value = "";
             }
         };
     </script>
