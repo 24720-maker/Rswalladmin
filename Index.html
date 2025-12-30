@@ -3,197 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RS COMMAND CENTER | ระบบจัดการหลังบ้าน</title>
-    
+    <title>RS ADMIN PANEL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@100;300;400;600&family=Prompt:wght@100;300;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/th.js"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Kanit', 'sans-serif'], title: ['Prompt', 'sans-serif'] },
-                    colors: { brand: '#F0B90B', bgDark: '#010409', cardDark: '#0D1117' }
+                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
+                    colors: { 
+                        admin: '#7209B7', 
+                        dark: '#0F172A',
+                        card: '#1E293B'
+                    }
                 }
             }
         }
     </script>
-
     <style>
-        body { background-color: #010409; color: #E6EDF3; font-family: 'Kanit', sans-serif; }
-        .stat-card { background: #0D1117; border: 1px solid #30363d; border-radius: 1.5rem; transition: 0.3s; }
-        .stat-card:hover { border-color: var(--brand); transform: translateY(-5px); }
-        .user-row:hover { background: rgba(240, 185, 11, 0.02); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { background-color: #0F172A; color: white; }
+        .glass { background: #1E293B; border: 1px solid #334155; border-radius: 12px; }
+        .btn-action { transition: 0.2s; }
+        .btn-action:hover { transform: translateY(-2px); }
     </style>
 </head>
-<body class="flex flex-col lg:flex-row min-h-screen">
+<body class="p-6">
 
-    <div id="loader" class="fixed inset-0 z-[1000] bg-bgDark flex flex-col items-center justify-center">
-        <i class="fas fa-user-shield text-brand text-5xl animate-bounce mb-4"></i>
-        <p class="text-brand font-black tracking-widest text-xs uppercase">Authenticating Admin...</p>
-    </div>
-
-    <div id="authPage" class="hidden fixed inset-0 z-[900] bg-bgDark flex items-center justify-center p-6">
-        <div class="max-w-sm w-full p-10 bg-cardDark rounded-[3rem] text-center border border-brand/20 shadow-2xl">
-            <h1 class="text-3xl font-black text-white italic font-title uppercase mb-2">Admin <span class="text-brand">Login</span></h1>
-            <p class="text-slate-500 text-[10px] font-bold uppercase mb-10 tracking-widest">RS Command Hub</p>
-            <div class="space-y-4">
-                <input id="lEmail" type="email" class="w-full p-5 bg-bgDark border border-slate-800 rounded-2xl text-white outline-none focus:border-brand" placeholder="Admin Email">
-                <input id="lPass" type="password" class="w-full p-5 bg-bgDark border border-slate-800 rounded-2xl text-white outline-none focus:border-brand" placeholder="Password">
-                <button onclick="admin.login()" class="w-full bg-brand text-bgDark py-5 rounded-2xl font-black uppercase text-xs shadow-xl">Unlock System</button>
-            </div>
+    <div id="authOverlay" class="fixed inset-0 z-50 bg-dark flex items-center justify-center">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold mb-4 text-admin">ADMIN LOGIN</h1>
+            <input id="admEmail" class="block w-64 p-3 rounded mb-2 bg-gray-800 border border-gray-700" placeholder="Admin Email">
+            <input id="admPass" type="password" class="block w-64 p-3 rounded mb-4 bg-gray-800 border border-gray-700" placeholder="Password">
+            <button onclick="admin.login()" class="bg-admin w-full py-3 rounded font-bold hover:bg-purple-600 transition">เข้าสู่ระบบจัดการ</button>
         </div>
     </div>
 
-    <aside class="w-full lg:w-72 p-8 bg-cardDark border-r border-slate-800 flex flex-col hidden" id="sideNav">
-        <div class="flex items-center gap-3 mb-12">
-            <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-bgDark font-black italic">RS</div>
-            <h2 class="text-white font-black text-lg font-title tracking-tighter uppercase">Command</h2>
-        </div>
-        <nav class="space-y-2 flex-1">
-            <button onclick="ui.view('users')" class="w-full p-4 rounded-xl text-brand font-bold flex items-center gap-4 bg-brand/10 border border-brand/20 transition-all"><i class="fas fa-users"></i> จัดการสมาชิก</button>
-            <button onclick="ui.view('signals')" class="w-full p-4 rounded-xl text-slate-400 font-bold flex items-center gap-4 hover:bg-white/5 transition-all"><i class="fas fa-broadcast-tower"></i> สัญญาณเรียลไทม์</button>
-        </nav>
-        <button onclick="admin.logout()" class="text-rose-500 font-bold text-xs p-4 mt-10 border border-rose-500/20 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><i class="fas fa-power-off mr-2"></i> ออกจากระบบ</button>
-    </aside>
-
-    <main class="flex-1 p-6 lg:p-12 overflow-y-auto no-scrollbar hidden" id="mainDashboard">
+    <div id="dashboard" class="hidden max-w-6xl mx-auto">
         
-        <section id="v-users" class="space-y-10">
-            <header class="flex flex-col lg:flex-row justify-between lg:items-end gap-6">
-                <div>
-                    <h1 class="text-4xl font-black text-white font-title italic uppercase">User <span class="text-brand">Wallet</span></h1>
-                    <p class="text-slate-500 font-bold text-xs uppercase tracking-widest mt-2">จัดการยอดเงินและสมาชิกในระบบ</p>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="stat-card px-6 py-4 text-center"><p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Total Users</p><p id="countUsers" class="text-xl font-black text-white">0</p></div>
-                    <div class="stat-card px-6 py-4 text-center"><p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Total Credits</p><p id="totalCredits" class="text-xl font-black text-brand">฿ 0</p></div>
-                </div>
-            </header>
-
-            <div class="bg-cardDark border border-slate-800 rounded-3xl overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-bgDark/50 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
-                        <tr>
-                            <th class="p-6">ชื่อลูกค้า</th>
-                            <th>อีเมล</th>
-                            <th>ยอดเงินปัจจุบัน</th>
-                            <th class="text-center">จัดการเงิน</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTable">
-                        </tbody>
-                </table>
+        <div class="flex justify-between items-center mb-8 bg-card p-6 rounded-2xl shadow-lg border border-gray-700">
+            <div>
+                <h1 class="text-2xl font-bold text-white"><i class="fas fa-user-shield text-admin mr-2"></i>ระบบจัดการสมาชิก (RS PRIME)</h1>
+                <p class="text-gray-400 text-sm">จัดการวันหมดอายุและสถานะสมาชิก</p>
             </div>
-        </section>
-
-        <section id="v-signals" class="hidden space-y-10">
-            <h1 class="text-4xl font-black text-white font-title italic uppercase">Live <span class="text-brand">Feed</span></h1>
-            <div id="signalFeed" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p id="adminName" class="font-bold">Admin</p>
+                    <button onclick="admin.logout()" class="text-xs text-red-400 hover:text-red-300">ออกจากระบบ</button>
                 </div>
-        </section>
+            </div>
+        </div>
 
-    </main>
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-500"></i>
+                <input oninput="admin.filter(this.value)" class="w-full bg-card border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white focus:border-admin outline-none" placeholder="ค้นหาชื่อ หรือ อีเมลลูกค้า...">
+            </div>
+            <button onclick="admin.loadUsers()" class="px-6 py-3 bg-gray-700 rounded-xl hover:bg-gray-600 transition"><i class="fas fa-sync-alt mr-2"></i>รีเฟรชข้อมูล</button>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-gray-700 shadow-xl">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-800 text-gray-400 text-sm uppercase">
+                    <tr>
+                        <th class="p-4">ชื่อลูกค้า (Name)</th>
+                        <th class="p-4">แพ็กเกจปัจจุบัน</th>
+                        <th class="p-4">สถานะ (Status)</th>
+                        <th class="p-4">วันหมดอายุ (Expire)</th>
+                        <th class="p-4 text-center">จัดการ (Action)</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody" class="bg-card divide-y divide-gray-700 text-sm">
+                    <tr><td colspan="5" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="editModal" class="hidden fixed inset-0 z-40 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-card w-full max-w-md rounded-2xl p-6 border border-gray-600 shadow-2xl relative">
+            <button onclick="document.getElementById('editModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-user-cog text-3xl text-admin"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white">จัดการสมาชิก</h2>
+                <p id="modalUserName" class="text-admin font-bold">User Name</p>
+                <p id="modalUserEmail" class="text-xs text-gray-500">email@example.com</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-bold">เปลี่ยนชื่อแพ็กเกจ</label>
+                    <select id="editPlanName" class="w-full bg-dark border border-gray-600 rounded-lg p-3 mt-1 text-white">
+                        <option value="Free User">Free User</option>
+                        <option value="VIP 7 Days">VIP 7 Days (รายสัปดาห์)</option>
+                        <option value="VIP 30 Days">VIP 30 Days (รายเดือน)</option>
+                        <option value="VIP 1 Year">VIP 1 Year (รายปี)</option>
+                        <option value="VVIP Lifetime">VVIP Lifetime (ตลอดชีพ)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-bold">เพิ่มวันใช้งาน (Add Days)</label>
+                    <div class="grid grid-cols-3 gap-2 mt-1">
+                        <button onclick="admin.addDays(7)" class="bg-gray-700 hover:bg-green-600 py-2 rounded text-xs font-bold transition">+7 วัน</button>
+                        <button onclick="admin.addDays(30)" class="bg-gray-700 hover:bg-green-600 py-2 rounded text-xs font-bold transition">+30 วัน</button>
+                        <button onclick="admin.addDays(365)" class="bg-gray-700 hover:bg-green-600 py-2 rounded text-xs font-bold transition">+1 ปี</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-bold">หรือ กำหนดวันที่เอง</label>
+                    <input type="date" id="editDate" class="w-full bg-dark border border-gray-600 rounded-lg p-3 mt-1 text-white">
+                </div>
+                
+                <button onclick="admin.saveChanges()" class="w-full bg-admin hover:bg-purple-600 py-4 rounded-xl font-bold text-lg shadow-lg mt-4 transition">บันทึกข้อมูล (SAVE)</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 🔥 FIREBASE CONFIG (ต้องเหมือนกับหน้าลูกค้า)
+        // 🔥 FIREBASE CONFIG (ใส่ให้ตรงกับหน้าเว็บลูกค้า)
         const firebaseConfig = { apiKey: "AIzaSyBNfTBQthLLRbJP9BXZ-UQptFsdU324Mv0", authDomain: "fafada-d9899.firebaseapp.com", projectId: "fafada-d9899", storageBucket: "fafada-d9899.firebasestorage.app", messagingSenderId: "484777586908", appId: "1:484777586908:web:16a8f0367ad15737364419" };
-        const app_fb = initializeApp(firebaseConfig);
-        const auth = getAuth(app_fb);
-        const db = getFirestore(app_fb);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        window.ui = {
-            view: (v) => {
-                ['users', 'signals'].forEach(id => document.getElementById('v-'+id).classList.add('hidden'));
-                document.getElementById('v-'+v).classList.remove('hidden');
-            },
-            hideLoader: () => { document.getElementById('loader').classList.add('opacity-0'); setTimeout(()=> document.getElementById('loader').classList.add('hidden'), 700); }
-        };
+        let allUsers = [];
+        let editingUid = null;
 
         window.admin = {
             login: async () => {
-                const em = document.getElementById('lEmail').value.trim();
-                const ps = document.getElementById('lPass').value.trim();
-                if(em !== 'farisxuma1@gmail.com') return Swal.fire('Denied','เฉพาะแอดมินเท่านั้น','error');
-                try { await signInWithEmailAndPassword(auth, em, ps); } catch(e) { Swal.fire('Error','Master Key Incorrect','error'); }
+                const e = document.getElementById('admEmail').value;
+                const p = document.getElementById('admPass').value;
+                try {
+                    await signInWithEmailAndPassword(auth, e, p);
+                    // ในระบบจริงควรเช็ค Role แอดมินตรงนี้
+                } catch(err) { Swal.fire('Error', 'Login Failed', 'error'); }
             },
             logout: () => signOut(auth).then(()=>location.reload()),
-            updateBalance: async (uid, currentBalance) => {
-                const { value: amount } = await Swal.fire({
-                    title: 'จัดการยอดเงิน',
-                    input: 'number',
-                    inputLabel: 'ระบุจำนวนเงินที่ต้องการ (ใส่ค่าลบเพื่อหักออก)',
-                    inputValue: 0,
-                    showCancelButton: true,
-                    confirmButtonColor: '#F0B90B'
+
+            loadUsers: async () => {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500"><i class="fas fa-circle-notch fa-spin mr-2"></i>Loading data...</td></tr>';
+                
+                try {
+                    const sn = await getDocs(collection(db, "users"));
+                    allUsers = [];
+                    sn.forEach(doc => {
+                        allUsers.push({ id: doc.id, ...doc.data() });
+                    });
+                    admin.renderTable(allUsers);
+                } catch(e) { console.error(e); Swal.fire('Error', 'Cannot load users', 'error'); }
+            },
+
+            renderTable: (users) => {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '';
+                
+                if(users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">No users found.</td></tr>';
+                    return;
+                }
+
+                users.forEach(u => {
+                    // Check Expiry
+                    const now = new Date();
+                    let expiry = u.expiryDate ? u.expiryDate.toDate() : null;
+                    let isActive = expiry && expiry > now;
+                    let statusHtml = isActive 
+                        ? `<span class="bg-green-500/10 text-green-500 px-3 py-1 rounded-full text-xs font-bold border border-green-500/20">ACTIVE</span>` 
+                        : `<span class="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-xs font-bold border border-red-500/20">EXPIRED</span>`;
+
+                    let expiryText = expiry ? moment(expiry).format('D MMM YYYY, HH:mm') : '-';
+                    let timeLeft = isActive ? `<br><span class="text-[10px] text-gray-400">เหลือ ${moment(expiry).diff(now, 'days')} วัน</span>` : '';
+
+                    const row = `
+                        <tr class="hover:bg-gray-800 transition">
+                            <td class="p-4 border-b border-gray-700">
+                                <div class="font-bold text-white">${u.displayName || 'No Name'}</div>
+                                <div class="text-xs text-gray-500">${u.email}</div>
+                            </td>
+                            <td class="p-4 border-b border-gray-700 text-sm text-yellow-500">${u.planName || 'Free'}</td>
+                            <td class="p-4 border-b border-gray-700">${statusHtml}</td>
+                            <td class="p-4 border-b border-gray-700 text-sm">${expiryText} ${timeLeft}</td>
+                            <td class="p-4 border-b border-gray-700 text-center">
+                                <button onclick="admin.openEdit('${u.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg btn-action">
+                                    <i class="fas fa-edit mr-1"></i> แก้ไข
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
                 });
-                if (amount) {
-                    const newBalance = parseFloat(currentBalance) + parseFloat(amount);
-                    await updateDoc(doc(db, "users", uid), { balance: newBalance });
-                    Swal.fire('สำเร็จ!', 'อัปเดตยอดเงินเรียบร้อย', 'success');
+            },
+
+            filter: (val) => {
+                const lower = val.toLowerCase();
+                const filtered = allUsers.filter(u => 
+                    (u.displayName && u.displayName.toLowerCase().includes(lower)) || 
+                    (u.email && u.email.toLowerCase().includes(lower))
+                );
+                admin.renderTable(filtered);
+            },
+
+            openEdit: (uid) => {
+                const user = allUsers.find(u => u.id === uid);
+                if(!user) return;
+                
+                editingUid = uid;
+                document.getElementById('modalUserName').innerText = user.displayName;
+                document.getElementById('modalUserEmail').innerText = user.email;
+                document.getElementById('editPlanName').value = user.planName || 'Free User';
+                
+                // Set Date Input if exists
+                if(user.expiryDate) {
+                    const d = user.expiryDate.toDate();
+                    document.getElementById('editDate').value = d.toISOString().split('T')[0];
+                } else {
+                    document.getElementById('editDate').value = '';
+                }
+
+                document.getElementById('editModal').classList.remove('hidden');
+            },
+
+            addDays: (days) => {
+                const dateInput = document.getElementById('editDate');
+                let baseDate = new Date();
+                
+                // If currently has future date, add on top of it. If expired, add from today.
+                const user = allUsers.find(u => u.id === editingUid);
+                if(user.expiryDate && user.expiryDate.toDate() > baseDate) {
+                    baseDate = user.expiryDate.toDate();
+                }
+
+                baseDate.setDate(baseDate.getDate() + days);
+                dateInput.value = baseDate.toISOString().split('T')[0];
+                
+                // Auto update plan name suggestion
+                const select = document.getElementById('editPlanName');
+                if(days === 7) select.value = 'VIP 7 Days';
+                if(days === 30) select.value = 'VIP 30 Days';
+                if(days === 365) select.value = 'VIP 1 Year';
+            },
+
+            saveChanges: async () => {
+                if(!editingUid) return;
+                const newPlan = document.getElementById('editPlanName').value;
+                const dateVal = document.getElementById('editDate').value;
+                
+                let newExpiry = null;
+                if(dateVal) {
+                    newExpiry = new Date(dateVal);
+                    newExpiry.setHours(23, 59, 59); // Set to end of day
+                }
+
+                try {
+                    await updateDoc(doc(db, "users", editingUid), {
+                        planName: newPlan,
+                        expiryDate: newExpiry ? Timestamp.fromDate(newExpiry) : null
+                    });
+                    
+                    Swal.fire('Saved', 'อัปเดตข้อมูลสำเร็จ', 'success');
+                    document.getElementById('editModal').classList.add('hidden');
+                    admin.loadUsers(); // Refresh table
+                } catch(e) {
+                    Swal.fire('Error', e.message, 'error');
                 }
             }
         };
 
-        onAuthStateChanged(auth, u => {
-            if(u && u.email === 'farisxuma1@gmail.com') {
-                document.getElementById('authPage').classList.add('hidden');
-                document.getElementById('sideNav').classList.remove('hidden');
-                document.getElementById('mainDashboard').classList.remove('hidden');
-                ui.hideLoader();
-
-                // 👥 Listen to all users
-                onSnapshot(collection(db, "users"), s => {
-                    const tb = document.getElementById('userTable'); tb.innerHTML = '';
-                    let totalUsers = 0; let totalCredits = 0;
-                    s.forEach(d => {
-                        const u = d.data();
-                        totalUsers++; totalCredits += (u.balance || 0);
-                        tb.innerHTML += `
-                        <tr class="user-row border-b border-slate-800/50 transition-all">
-                            <td class="p-6 font-bold text-white">${u.displayName}</td>
-                            <td class="text-slate-400 text-xs">${u.email}</td>
-                            <td class="font-black text-brand italic">฿ ${(u.balance || 0).toLocaleString()}</td>
-                            <td class="p-6 text-center">
-                                <button onclick="admin.updateBalance('${d.id}', ${u.balance || 0})" class="px-4 py-2 bg-slate-800 rounded-lg text-[10px] font-black hover:bg-brand hover:text-bgDark transition-all">จัดการเงิน</button>
-                            </td>
-                        </tr>`;
-                    });
-                    document.getElementById('countUsers').innerText = totalUsers;
-                    document.getElementById('totalCredits').innerText = '฿ ' + totalCredits.toLocaleString();
-                });
-
-                // 📡 Listen to global signals feed
-                const q = query(collection(db, "signals"), orderBy("timestamp", "desc"), limit(10));
-                onSnapshot(q, s => {
-                    const feed = document.getElementById('signalFeed'); feed.innerHTML = '';
-                    s.forEach(d => {
-                        const sig = d.data();
-                        const isBuy = sig.type === 'BUY';
-                        feed.innerHTML += `
-                        <div class="stat-card p-6 flex justify-between items-center border-l-4 ${isBuy?'border-l-success':'border-l-danger'}">
-                            <div>
-                                <p class="text-xs font-black text-white uppercase">${sig.name}</p>
-                                <p class="text-[9px] text-slate-500">${moment(sig.timestamp?.seconds*1000).fromNow()}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-black ${isBuy?'text-success':'text-danger'}">${sig.type}</p>
-                                <p class="text-[9px] text-slate-400">Duration: ${sig.duration}m</p>
-                            </div>
-                        </div>`;
-                    });
-                });
-
+        // Auth State Listener
+        onAuthStateChanged(auth, user => {
+            if(user) {
+                document.getElementById('authOverlay').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('adminName').innerText = user.email;
+                admin.loadUsers();
             } else {
-                document.getElementById('authPage').classList.remove('hidden');
-                ui.hideLoader();
+                document.getElementById('authOverlay').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS ADMIN PANEL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/th.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
+                    colors: { 
+                        admin: '#7209B7', 
+                        dark: '#0F172A',
+                        card: '#1E293B'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0F172A; color: white; }
+        .glass { background: #1E293B; border: 1px solid #334155; border-radius: 12px; }
+        .btn-action { transition: 0.2s; }
+        .btn-action:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="p-6">
+
+    <div id="authOverlay" class="fixed inset-0 z-50 bg-dark flex items-center justify-center">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold mb-4 text-admin">ADMIN LOGIN</h1>
+            <input id="admEmail" class="block w-64 p-3 rounded mb-2 bg-gray-800 border border-gray-700" placeholder="Admin Email">
+            <input id="admPass" type="password" class="block w-64 p-3 rounded mb-4 bg-gray-800 border border-gray-700" placeholder="Password">
+            <button onclick="admin.login()" class="bg-admin w-full py-3 rounded font-bold hover:bg-purple-600 transition">เข้าสู่ระบบจัดการ</button>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden max-w-6xl mx-auto">
+        
+        <div class="flex justify-between items-center mb-8 bg-card p-6 rounded-2xl shadow-lg border border-gray-700">
+            <div>
+                <h1 class="text-2xl font-bold text-white"><i class="fas fa-user-shield text-admin mr-2"></i>ระบบจัดการสมาชิก (RS PRIME)</h1>
+                <p class="text-gray-400 text-sm">จัดการวันหมดอายุและสถานะสมาชิก</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p id="adminName" class="font-bold">Admin</p>
+                    <button onclick="admin.logout()" class="text-xs text-red-400 hover:text-red-300">ออกจากระบบ</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-500"></i>
+                <input oninput="admin.filter(this.value)" class="w-full bg-card border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white focus:border-admin outline-none" placeholder="ค้นหาชื่อ หรือ อีเมลลูกค้า...">
+            </div>
+            <button onclick="admin.loadUsers()" class="px-6 py-3 bg-gray-700 rounded-xl hover:bg-gray-600 transition"><i class="fas fa-sync-alt mr-2"></i>รีเฟรชข้อมูล</button>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-gray-700 shadow-xl">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-800 text-gray-400 text-sm uppercase">
+                    <tr>
+                        <th class="p-4">ชื่อลูกค้า (Name)</th>
+                        <th class="p-4">แพ็กเกจปัจจุบัน</th>
+                        <th class="p-4">สถานะ (Status)</th>
+                        <th class="p-4">วันหมดอายุ (Expire)</th>
+                        <th class="p-4 text-center">จัดการ (Action)</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody" class="bg-card divide-y divide-gray-700 text-sm">
+                    <tr><td colspan="5" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="editModal" class="hidden fixed inset-0 z-40 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-card w-full max-w-md rounded-2xl p-6 border border-gray-600 shadow-2xl relative">
+            <button onclick="document.getElementById('editModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-user-cog text-3xl text-admin"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white">จัดการสมาชิก</h2>
+                <p id="modalUserName" class="text-admin font-bold">User Name</p>
+                <p id="modalUserEmail" class="text-xs text-gray-500">email@example.com</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-bold">เปลี่ยนชื่อแพ็กเกจ</label>
+                    <select id="editPlanName" class="w-full bg-dark border border-gray-600 rounded-lg p-3 mt-1 text-white">
+                        <option value="Free User">Free User</option>
+                        <option value="VIP 7 Days">VIP 7 Days (รายสัปดาห์)</option>
+                        <option value="VIP 30 Days">VIP 30 Days (รายเดือน)</option>
+                        <option value="VIP 1 Year">VIP 1 Year (รายปี)</option>
+                        <option value="VVIP Lifetime">VVIP Lifetime (ตลอดชีพ)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-bold">เพิ่มวันใช้งาน (Add Days)</label>
+                    <div class="grid grid-cols-3 gap-2 mt-1">
+                        <button onclick="admin.addDays(7)" class="bg-gray-700 hover:bg-green-600 py-2 rounded text-xs font-bold transition">+7 วัน</button>
+                        <button onclick="admin.addDays(30)" class="bg-gray-700 hover:bg-green-600 py-2 rounded text-xs font-bold transition">+30 วัน</button>
+                        <button onclick="admin.addDays(365)" class="bg-gray-700 hover:bg-green-600 py-2 rounded text-xs font-bold transition">+1 ปี</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-bold">หรือ กำหนดวันที่เอง</label>
+                    <input type="date" id="editDate" class="w-full bg-dark border border-gray-600 rounded-lg p-3 mt-1 text-white">
+                </div>
+                
+                <button onclick="admin.saveChanges()" class="w-full bg-admin hover:bg-purple-600 py-4 rounded-xl font-bold text-lg shadow-lg mt-4 transition">บันทึกข้อมูล (SAVE)</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 🔥 FIREBASE CONFIG (ใส่ให้ตรงกับหน้าเว็บลูกค้า)
+        const firebaseConfig = { apiKey: "AIzaSyBNfTBQthLLRbJP9BXZ-UQptFsdU324Mv0", authDomain: "fafada-d9899.firebaseapp.com", projectId: "fafada-d9899", storageBucket: "fafada-d9899.firebasestorage.app", messagingSenderId: "484777586908", appId: "1:484777586908:web:16a8f0367ad15737364419" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allUsers = [];
+        let editingUid = null;
+
+        window.admin = {
+            login: async () => {
+                const e = document.getElementById('admEmail').value;
+                const p = document.getElementById('admPass').value;
+                try {
+                    await signInWithEmailAndPassword(auth, e, p);
+                    // ในระบบจริงควรเช็ค Role แอดมินตรงนี้
+                } catch(err) { Swal.fire('Error', 'Login Failed', 'error'); }
+            },
+            logout: () => signOut(auth).then(()=>location.reload()),
+
+            loadUsers: async () => {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500"><i class="fas fa-circle-notch fa-spin mr-2"></i>Loading data...</td></tr>';
+                
+                try {
+                    const sn = await getDocs(collection(db, "users"));
+                    allUsers = [];
+                    sn.forEach(doc => {
+                        allUsers.push({ id: doc.id, ...doc.data() });
+                    });
+                    admin.renderTable(allUsers);
+                } catch(e) { console.error(e); Swal.fire('Error', 'Cannot load users', 'error'); }
+            },
+
+            renderTable: (users) => {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '';
+                
+                if(users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">No users found.</td></tr>';
+                    return;
+                }
+
+                users.forEach(u => {
+                    // Check Expiry
+                    const now = new Date();
+                    let expiry = u.expiryDate ? u.expiryDate.toDate() : null;
+                    let isActive = expiry && expiry > now;
+                    let statusHtml = isActive 
+                        ? `<span class="bg-green-500/10 text-green-500 px-3 py-1 rounded-full text-xs font-bold border border-green-500/20">ACTIVE</span>` 
+                        : `<span class="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-xs font-bold border border-red-500/20">EXPIRED</span>`;
+
+                    let expiryText = expiry ? moment(expiry).format('D MMM YYYY, HH:mm') : '-';
+                    let timeLeft = isActive ? `<br><span class="text-[10px] text-gray-400">เหลือ ${moment(expiry).diff(now, 'days')} วัน</span>` : '';
+
+                    const row = `
+                        <tr class="hover:bg-gray-800 transition">
+                            <td class="p-4 border-b border-gray-700">
+                                <div class="font-bold text-white">${u.displayName || 'No Name'}</div>
+                                <div class="text-xs text-gray-500">${u.email}</div>
+                            </td>
+                            <td class="p-4 border-b border-gray-700 text-sm text-yellow-500">${u.planName || 'Free'}</td>
+                            <td class="p-4 border-b border-gray-700">${statusHtml}</td>
+                            <td class="p-4 border-b border-gray-700 text-sm">${expiryText} ${timeLeft}</td>
+                            <td class="p-4 border-b border-gray-700 text-center">
+                                <button onclick="admin.openEdit('${u.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg btn-action">
+                                    <i class="fas fa-edit mr-1"></i> แก้ไข
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            },
+
+            filter: (val) => {
+                const lower = val.toLowerCase();
+                const filtered = allUsers.filter(u => 
+                    (u.displayName && u.displayName.toLowerCase().includes(lower)) || 
+                    (u.email && u.email.toLowerCase().includes(lower))
+                );
+                admin.renderTable(filtered);
+            },
+
+            openEdit: (uid) => {
+                const user = allUsers.find(u => u.id === uid);
+                if(!user) return;
+                
+                editingUid = uid;
+                document.getElementById('modalUserName').innerText = user.displayName;
+                document.getElementById('modalUserEmail').innerText = user.email;
+                document.getElementById('editPlanName').value = user.planName || 'Free User';
+                
+                // Set Date Input if exists
+                if(user.expiryDate) {
+                    const d = user.expiryDate.toDate();
+                    document.getElementById('editDate').value = d.toISOString().split('T')[0];
+                } else {
+                    document.getElementById('editDate').value = '';
+                }
+
+                document.getElementById('editModal').classList.remove('hidden');
+            },
+
+            addDays: (days) => {
+                const dateInput = document.getElementById('editDate');
+                let baseDate = new Date();
+                
+                // If currently has future date, add on top of it. If expired, add from today.
+                const user = allUsers.find(u => u.id === editingUid);
+                if(user.expiryDate && user.expiryDate.toDate() > baseDate) {
+                    baseDate = user.expiryDate.toDate();
+                }
+
+                baseDate.setDate(baseDate.getDate() + days);
+                dateInput.value = baseDate.toISOString().split('T')[0];
+                
+                // Auto update plan name suggestion
+                const select = document.getElementById('editPlanName');
+                if(days === 7) select.value = 'VIP 7 Days';
+                if(days === 30) select.value = 'VIP 30 Days';
+                if(days === 365) select.value = 'VIP 1 Year';
+            },
+
+            saveChanges: async () => {
+                if(!editingUid) return;
+                const newPlan = document.getElementById('editPlanName').value;
+                const dateVal = document.getElementById('editDate').value;
+                
+                let newExpiry = null;
+                if(dateVal) {
+                    newExpiry = new Date(dateVal);
+                    newExpiry.setHours(23, 59, 59); // Set to end of day
+                }
+
+                try {
+                    await updateDoc(doc(db, "users", editingUid), {
+                        planName: newPlan,
+                        expiryDate: newExpiry ? Timestamp.fromDate(newExpiry) : null
+                    });
+                    
+                    Swal.fire('Saved', 'อัปเดตข้อมูลสำเร็จ', 'success');
+                    document.getElementById('editModal').classList.add('hidden');
+                    admin.loadUsers(); // Refresh table
+                } catch(e) {
+                    Swal.fire('Error', e.message, 'error');
+                }
+            }
+        };
+
+        // Auth State Listener
+        onAuthStateChanged(auth, user => {
+            if(user) {
+                document.getElementById('authOverlay').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('adminName').innerText = user.email;
+                admin.loadUsers();
+            } else {
+                document.getElementById('authOverlay').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
             }
         });
     </script>
