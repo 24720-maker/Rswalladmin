@@ -3,334 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RS INFINITY | SUPER ADMIN</title>
+    <title>RS INFINITY - ADMIN CONSOLE</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
-                    colors: { 
-                        primary: '#8B5CF6', 
-                        dark: '#020617',
-                        card: '#0F172A',
-                        accent: '#10B981'
+                    colors: {
+                        gold: '#D4AF37',
+                        'gold-dark': '#A67C00',
+                        dark: '#0f0f0f',
+                        glass: 'rgba(30, 30, 30, 0.9)',
+                    },
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                        tech: ['Rajdhani', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+
     <style>
-        body { background: #020617; color: #e2e8f0; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-item { transition: 0.3s; border-radius: 12px; margin-bottom: 4px; }
-        .sidebar-item:hover, .sidebar-item.active { background: rgba(139, 92, 246, 0.2); color: #A78BFA; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        body {
+            background-color: #050505;
+            color: #e5e5e5;
+        }
+        .glass-panel {
+            background: #121212;
+            border: 1px solid #333;
+        }
+        .nav-item.active {
+            background: rgba(212, 175, 55, 0.1);
+            color: #D4AF37;
+            border-right: 3px solid #D4AF37;
+        }
+        /* Table Styles */
+        .custom-table th { text-align: left; padding: 12px; color: #888; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid #333; }
+        .custom-table td { padding: 16px 12px; border-bottom: 1px solid #222; }
+        .custom-table tr:hover { background-color: #1a1a1a; }
+        
+        .status-active { color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .status-expired { color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
     </style>
 </head>
-<body class="flex min-h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden">
 
-    <div id="authOverlay" class="fixed inset-0 z-[9999] bg-dark flex items-center justify-center p-6">
-        <div class="glass w-full max-w-md p-10 rounded-3xl text-center shadow-2xl">
-            <div class="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-shield-halved text-4xl text-primary"></i>
-            </div>
-            <h1 class="text-3xl font-bold mb-2">Admin Login</h1>
-            <p class="text-gray-500 mb-8 text-sm">เฉพาะผู้ดูแลระบบที่มีสิทธิ์เข้าถึงเท่านั้น</p>
-            <div class="space-y-4">
-                <input id="admEmail" type="email" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-primary transition" placeholder="Admin Email">
-                <input id="admPass" type="password" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-primary transition" placeholder="Password">
-                <button onclick="admin.login()" class="w-full bg-primary py-4 rounded-xl font-bold text-lg hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] transition">LOGIN</button>
-            </div>
+    <div id="admin-login" class="fixed inset-0 z-50 bg-black flex items-center justify-center">
+        <div class="w-full max-w-md p-8 glass-panel rounded-2xl border border-gold/30">
+            <h1 class="text-3xl font-bold text-center mb-2 text-gold tracking-widest font-tech">ADMIN ACCESS</h1>
+            <p class="text-center text-gray-500 text-sm mb-6">RS Infinity Command Center</p>
+            <form id="login-form" class="space-y-4">
+                <input type="email" id="adm-email" placeholder="Admin Email" class="w-full bg-black/50 border border-gray-700 p-3 rounded text-white focus:border-gold outline-none">
+                <input type="password" id="adm-pass" placeholder="Password" class="w-full bg-black/50 border border-gray-700 p-3 rounded text-white focus:border-gold outline-none">
+                <button type="submit" class="w-full bg-gold text-black font-bold py-3 rounded hover:bg-gold-dark transition">LOGIN</button>
+            </form>
         </div>
     </div>
 
-    <aside class="w-72 glass border-r border-white/5 p-6 hidden md:flex flex-col">
-        <div class="flex items-center gap-3 mb-10 px-2">
-            <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-                <i class="fas fa-bolt text-white"></i>
+    <aside class="w-64 bg-[#0a0a0a] border-r border-gray-800 flex flex-col hidden" id="sidebar">
+        <div class="p-6 flex items-center gap-3">
+            <i class="fa-solid fa-shield-cat text-gold text-2xl"></i>
+            <div>
+                <div class="font-bold text-lg text-white font-tech tracking-wide">RS ADMIN</div>
+                <div class="text-[10px] text-gray-500">System Manager</div>
             </div>
-            <h2 class="text-xl font-bold tracking-tight">RS CONTROL</h2>
         </div>
-
-        <nav class="flex-1">
-            <button onclick="admin.changeTab('users')" id="btn-users" class="sidebar-item active w-full flex items-center gap-4 p-4 text-sm font-medium">
-                <i class="fas fa-users-cog text-lg"></i> จัดการลูกค้า
-            </button>
-            <button onclick="admin.changeTab('config')" id="btn-config" class="sidebar-item w-full flex items-center gap-4 p-4 text-sm font-medium">
-                <i class="fas fa-tools text-lg"></i> ตั้งค่าระบบ
-            </button>
+        
+        <nav class="flex-1 mt-4">
+            <a href="#" onclick="showPage('dashboard')" id="menu-dashboard" class="nav-item active flex items-center gap-3 px-6 py-4 text-gray-400 hover:text-white transition">
+                <i class="fa-solid fa-chart-line w-5"></i> Dashboard
+            </a>
+            <a href="#" onclick="showPage('users')" id="menu-users" class="nav-item flex items-center gap-3 px-6 py-4 text-gray-400 hover:text-white transition">
+                <i class="fa-solid fa-users w-5"></i> จัดการสมาชิก
+            </a>
+            <a href="#" onclick="showPage('settings')" id="menu-settings" class="nav-item flex items-center gap-3 px-6 py-4 text-gray-400 hover:text-white transition">
+                <i class="fa-solid fa-sliders w-5"></i> ตั้งค่าระบบ
+            </a>
         </nav>
 
-        <div class="mt-auto pt-6 border-t border-white/5">
-            <div id="adminProfile" class="flex items-center gap-3 mb-4 px-2">
-                <div class="w-8 h-8 rounded-full bg-gray-700"></div>
-                <p class="text-xs font-medium truncate w-32" id="admShowEmail">Admin</p>
-            </div>
-            <button onclick="admin.logout()" class="w-full text-left p-4 text-sm text-red-400 hover:text-red-300">
-                <i class="fas fa-sign-out-alt mr-2"></i> ออกจากระบบ
+        <div class="p-4 border-t border-gray-800">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 text-red-500 p-2 hover:bg-red-900/10 rounded transition">
+                <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
             </button>
         </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto p-6 md:p-10 relative">
-        
-        <div id="tab-users" class="tab-content">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-white">จัดการลูกค้า</h1>
-                    <p class="text-gray-500 text-sm">เพิ่มวันใช้งานและตรวจสอบสถานะสมาชิก</p>
-                </div>
-                <div class="flex gap-4">
-                    <div class="glass px-6 py-4 rounded-2xl text-center">
-                        <p class="text-xs text-gray-500 uppercase font-bold">Total Users</p>
-                        <p id="stat-total" class="text-2xl font-bold text-primary">0</p>
-                    </div>
-                    <div class="glass px-6 py-4 rounded-2xl text-center">
-                        <p class="text-xs text-gray-500 uppercase font-bold">Active</p>
-                        <p id="stat-active" class="text-2xl font-bold text-accent">0</p>
-                    </div>
-                </div>
+    <main class="flex-1 flex flex-col relative hidden" id="main-content">
+        <header class="h-16 border-b border-gray-800 flex justify-between items-center px-8 bg-[#0a0a0a]">
+            <h2 id="page-title" class="text-xl font-bold text-gold font-tech">DASHBOARD OVERVIEW</h2>
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-xs text-gray-400">System Online</span>
             </div>
+        </header>
 
-            <div class="flex gap-4 mb-6">
-                <div class="flex-1 relative">
-                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                    <input oninput="admin.filter(this.value)" class="w-full bg-card border border-white/5 rounded-2xl py-4 pl-14 pr-6 outline-none focus:border-primary/50 transition" placeholder="ค้นหาชื่อ หรือ อีเมลลูกค้า...">
-                </div>
-                <button onclick="admin.loadUsers()" class="px-6 bg-card border border-white/5 rounded-2xl hover:bg-gray-800 transition"><i class="fas fa-sync-alt"></i></button>
-            </div>
-
-            <div class="glass rounded-3xl overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-white/5 text-gray-400 text-xs uppercase tracking-widest font-bold">
-                        <tr>
-                            <th class="p-6">User Info</th>
-                            <th class="p-6">Package</th>
-                            <th class="p-6">Status</th>
-                            <th class="p-6">Expires At</th>
-                            <th class="p-6 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody" class="divide-y divide-white/5">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="tab-config" class="tab-content hidden">
-            <h1 class="text-3xl font-bold mb-8 text-white">ตั้งค่าระบบ (System Config)</h1>
+        <div class="flex-1 overflow-auto p-8">
             
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="glass p-8 rounded-3xl">
-                    <div class="w-12 h-12 bg-blue-600/20 text-blue-500 rounded-xl flex items-center justify-center mb-6 text-xl">
-                        <i class="fab fa-facebook-f"></i>
+            <div id="page-dashboard" class="space-y-6 animate-fade">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel p-6 rounded-xl border-l-4 border-gold">
+                        <div class="text-gray-400 text-sm mb-1">สมาชิกทั้งหมด (Total Users)</div>
+                        <div id="stat-total" class="text-4xl font-bold font-tech text-white">0</div>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Facebook Support</h3>
-                    <p class="text-gray-500 text-sm mb-6">ลิงก์สำหรับให้ลูกค้ากด "ติดต่อแอดมิน" (Messenger)</p>
-                    <input id="cfgFb" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl mb-4 outline-none focus:border-primary" placeholder="https://m.me/yourpage">
-                    <button onclick="admin.saveConfig('fb')" class="bg-primary px-8 py-3 rounded-xl font-bold hover:scale-105 transition">บันทึก Facebook</button>
-                </div>
-
-                <div class="glass p-8 rounded-3xl">
-                    <div class="w-12 h-12 bg-green-600/20 text-green-500 rounded-xl flex items-center justify-center mb-6 text-xl">
-                        <i class="fab fa-line"></i>
+                    <div class="glass-panel p-6 rounded-xl border-l-4 border-green-500">
+                        <div class="text-gray-400 text-sm mb-1">ใช้งานได้ (Active)</div>
+                        <div id="stat-active" class="text-4xl font-bold font-tech text-green-400">0</div>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Line Official</h3>
-                    <p class="text-gray-500 text-sm mb-6">ลิงก์ Line OA (ถ้ามี)</p>
-                    <input id="cfgLine" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl mb-4 outline-none focus:border-primary" placeholder="https://line.me/ti/p/...">
-                    <button onclick="admin.saveConfig('line')" class="bg-accent px-8 py-3 rounded-xl font-bold hover:scale-105 transition">บันทึก Line</button>
+                    <div class="glass-panel p-6 rounded-xl border-l-4 border-red-500">
+                        <div class="text-gray-400 text-sm mb-1">หมดอายุ (Expired)</div>
+                        <div id="stat-expired" class="text-4xl font-bold font-tech text-red-400">0</div>
+                    </div>
                 </div>
             </div>
+
+            <div id="page-users" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <div class="relative w-64">
+                        <i class="fa-solid fa-search absolute left-3 top-3 text-gray-500"></i>
+                        <input type="text" id="search-input" placeholder="ค้นหา Email..." class="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:border-gold outline-none">
+                    </div>
+                    <button onclick="refreshUsers()" class="p-2 text-gold hover:bg-gray-800 rounded"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                </div>
+
+                <div class="glass-panel rounded-xl overflow-hidden">
+                    <table class="w-full custom-table text-sm">
+                        <thead>
+                            <tr>
+                                <th>Email / UID</th>
+                                <th>Package</th>
+                                <th>Expire Date</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="page-settings" class="hidden max-w-2xl mx-auto">
+                <div class="glass-panel p-8 rounded-xl border border-gray-700">
+                    <h3 class="text-xl font-bold mb-6 text-white border-b border-gray-700 pb-4">ตั้งค่าการติดต่อ (Contact Config)</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2"><i class="fa-brands fa-line text-green-500 mr-2"></i>LINE Official Link</label>
+                            <input type="text" id="conf-line" class="w-full bg-black/50 border border-gray-600 rounded p-3 text-white focus:border-green-500 outline-none" placeholder="https://line.me/...">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2"><i class="fa-brands fa-facebook text-blue-500 mr-2"></i>Facebook Page Link</label>
+                            <input type="text" id="conf-fb" class="w-full bg-black/50 border border-gray-600 rounded p-3 text-white focus:border-blue-500 outline-none" placeholder="https://facebook.com/...">
+                        </div>
+                        <button onclick="saveConfig()" class="w-full bg-gold hover:bg-gold-dark text-black font-bold py-3 rounded transition shadow-lg shadow-gold/20">
+                            บันทึกข้อมูล (SAVE CONFIG)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <div id="editModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6">
-        <div class="glass w-full max-w-lg p-8 rounded-[2.5rem] relative shadow-2xl">
-            <button onclick="document.getElementById('editModal').classList.add('hidden')" class="absolute top-6 right-6 text-gray-500 hover:text-white"><i class="fas fa-times text-2xl"></i></button>
-            
-            <div class="flex items-center gap-4 mb-8">
-                <div class="w-14 h-14 bg-primary/20 rounded-2xl flex items-center justify-center text-primary text-2xl"><i class="fas fa-user-edit"></i></div>
-                <div>
-                    <h2 id="modalUserName" class="text-2xl font-bold">User Name</h2>
-                    <p id="modalUserEmail" class="text-sm text-gray-500">email@example.com</p>
-                </div>
-            </div>
-
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">เลือกแพ็กเกจ (Plan Name)</label>
-                    <select id="editPlan" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-primary">
-                        <option value="Free User">Free User (ฟรี)</option>
-                        <option value="VIP 30 Days">VIP 30 Days (รายเดือน)</option>
-                        <option value="VIP 1 Year">VIP 1 Year (รายปี)</option>
-                        <option value="VVIP Lifetime">VVIP Lifetime (ตลอดชีพ)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">จัดการวันหมดอายุ</label>
-                    <div class="grid grid-cols-3 gap-2 mb-4">
-                        <button onclick="admin.addDays(7)" class="bg-white/5 hover:bg-white/10 p-3 rounded-xl text-xs font-bold transition">+7 วัน</button>
-                        <button onclick="admin.addDays(30)" class="bg-white/5 hover:bg-white/10 p-3 rounded-xl text-xs font-bold transition">+30 วัน</button>
-                        <button onclick="admin.addDays(365)" class="bg-white/5 hover:bg-white/10 p-3 rounded-xl text-xs font-bold transition">+1 ปี</button>
-                    </div>
-                    <input type="date" id="editDate" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-primary">
-                </div>
-
-                <button onclick="admin.saveUser()" class="w-full bg-primary py-4 rounded-2xl font-bold text-lg hover:shadow-lg hover:shadow-primary/20 transition">บันทึกข้อมูลลูกค้า</button>
-            </div>
-        </div>
-    </div>
-
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, collection, getDocs, getDoc, updateDoc, setDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // 🔥 FIREBASE CONFIG (ใช้ตัวเดิมของคุณ)
-        const firebaseConfig = { apiKey: "AIzaSyBNfTBQthLLRbJP9BXZ-UQptFsdU324Mv0", authDomain: "fafada-d9899.firebaseapp.com", projectId: "fafada-d9899", storageBucket: "fafada-d9899.firebasestorage.app", messagingSenderId: "484777586908", appId: "1:484777586908:web:16a8f0367ad15737364419" };
+        // FIREBASE CONFIG (SAME AS USER APP)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNfTBQthLLRbJP9BXZ-UQptFsdU324Mv0",
+            authDomain: "fafada-d9899.firebaseapp.com",
+            projectId: "fafada-d9899",
+            storageBucket: "fafada-d9899.appspot.com",
+            messagingSenderId: "484777586908",
+            appId: "1:484777586908:web:16a8f0367ad15737364419"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // STATE
         let allUsers = [];
-        let editingUid = null;
 
-        window.admin = {
-            login: async () => {
-                const e = document.getElementById('admEmail').value;
-                const p = document.getElementById('admPass').value;
-                try {
-                    await signInWithEmailAndPassword(auth, e, p);
-                    Swal.fire({ icon: 'success', title: 'Welcome Admin', showConfirmButton: false, timer: 1500 });
-                } catch(err) { Swal.fire('Error', 'ไม่สามารถเข้าสู่ระบบได้', 'error'); }
-            },
-            logout: () => signOut(auth).then(()=>location.reload()),
+        // --- AUTH ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('admin-login').style.display = 'none';
+                document.getElementById('sidebar').classList.remove('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                initAdmin();
+            } else {
+                document.getElementById('admin-login').style.display = 'flex';
+                document.getElementById('sidebar').classList.add('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+            }
+        });
 
-            changeTab: (tab) => {
-                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-                document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-                document.getElementById('tab-'+tab).classList.remove('hidden');
-                document.getElementById('btn-'+tab).classList.add('active');
-                if(tab === 'config') admin.loadConfig();
-            },
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adm-email').value;
+            const pass = document.getElementById('adm-pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                // Note: In real production, check if user.uid is in 'admins' collection
+            } catch (err) {
+                Swal.fire('Login Failed', err.message, 'error');
+            }
+        });
 
-            loadUsers: async () => {
-                const tbody = document.getElementById('userTableBody');
-                tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading Database...</td></tr>';
-                
-                try {
-                    const sn = await getDocs(collection(db, "users"));
-                    allUsers = [];
-                    sn.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
-                    admin.renderTable(allUsers);
+        window.logout = () => signOut(auth);
+
+        // --- MAIN LOGIC ---
+        function initAdmin() {
+            // Listen to Users Collection Realtime
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                allUsers = [];
+                let activeCount = 0;
+                let expiredCount = 0;
+                const now = new Date();
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const expiry = data.expiryDate ? data.expiryDate.toDate() : new Date(0);
+                    const isActive = expiry > now;
                     
-                    // Stats
-                    document.getElementById('stat-total').innerText = allUsers.length;
-                    document.getElementById('stat-active').innerText = allUsers.filter(u => u.expiryDate && u.expiryDate.toDate() > new Date()).length;
-                } catch(e) { console.error(e); }
-            },
+                    if (isActive) activeCount++; else expiredCount++;
 
-            renderTable: (users) => {
-                const tbody = document.getElementById('userTableBody');
-                tbody.innerHTML = '';
-                users.forEach(u => {
-                    const now = new Date();
-                    const expiry = u.expiryDate ? u.expiryDate.toDate() : null;
-                    const isActive = expiry && expiry > now;
-
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-white/[0.02] transition">
-                            <td class="p-6">
-                                <div class="font-bold text-white">${u.displayName || 'No Name'}</div>
-                                <div class="text-xs text-gray-500 font-mono">${u.email}</div>
-                            </td>
-                            <td class="p-6 text-sm font-medium text-primary">${u.planName || 'Free'}</td>
-                            <td class="p-6">
-                                ${isActive ? '<span class="px-3 py-1 bg-accent/10 text-accent text-[10px] font-bold rounded-full border border-accent/20">ACTIVE</span>' : '<span class="px-3 py-1 bg-red-500/10 text-red-500 text-[10px] font-bold rounded-full border border-red-500/20">EXPIRED</span>'}
-                            </td>
-                            <td class="p-6 text-sm text-gray-400">
-                                ${expiry ? moment(expiry).format('DD/MM/YYYY HH:mm') : '-'}
-                            </td>
-                            <td class="p-6 text-right">
-                                <button onclick="admin.openEdit('${u.id}')" class="w-10 h-10 bg-white/5 hover:bg-primary hover:text-white rounded-xl transition"><i class="fas fa-pen-nib"></i></button>
-                            </td>
-                        </tr>
-                    `;
+                    allUsers.push({
+                        id: doc.id,
+                        ...data,
+                        expiryObj: expiry,
+                        isActive
+                    });
                 });
-            },
 
-            filter: (q) => {
-                const search = q.toLowerCase();
-                const filtered = allUsers.filter(u => (u.displayName||'').toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
-                admin.renderTable(filtered);
-            },
+                // Update Stats
+                document.getElementById('stat-total').innerText = allUsers.length;
+                document.getElementById('stat-active').innerText = activeCount;
+                document.getElementById('stat-expired').innerText = expiredCount;
 
-            openEdit: (uid) => {
-                const u = allUsers.find(x => x.id === uid);
-                editingUid = uid;
-                document.getElementById('modalUserName').innerText = u.displayName;
-                document.getElementById('modalUserEmail').innerText = u.email;
-                document.getElementById('editPlan').value = u.planName || 'Free User';
-                if(u.expiryDate) document.getElementById('editDate').value = u.expiryDate.toDate().toISOString().split('T')[0];
-                document.getElementById('editModal').classList.remove('hidden');
-            },
+                // Render Table
+                renderTable(allUsers);
+            });
 
-            addDays: (days) => {
-                let base = new Date();
-                const user = allUsers.find(u => u.id === editingUid);
-                if(user.expiryDate && user.expiryDate.toDate() > base) base = user.expiryDate.toDate();
-                base.setDate(base.getDate() + days);
-                document.getElementById('editDate').value = base.toISOString().split('T')[0];
-            },
-
-            saveUser: async () => {
-                const plan = document.getElementById('editPlan').value;
-                const date = document.getElementById('editDate').value;
-                const expiry = date ? Timestamp.fromDate(new Date(date + "T23:59:59")) : null;
-
-                try {
-                    await updateDoc(doc(db, "users", editingUid), { planName: plan, expiryDate: expiry });
-                    Swal.fire('สำเร็จ', 'อัปเดตสมาชิกแล้ว', 'success');
-                    document.getElementById('editModal').classList.add('hidden');
-                    admin.loadUsers();
-                } catch(e) { Swal.fire('Error', e.message, 'error'); }
-            },
-
-            // ⚙️ CONFIG LOGIC
-            loadConfig: async () => {
-                const d = await getDoc(doc(db, "system", "config"));
-                if(d.exists()) {
-                    const data = d.data();
-                    document.getElementById('cfgFb').value = data.fb || '';
-                    document.getElementById('cfgLine').value = data.line || '';
+            // Load Config
+            onSnapshot(doc(db, "system", "config"), (docSnap) => {
+                if (docSnap.exists()) {
+                    const d = docSnap.data();
+                    document.getElementById('conf-line').value = d.lineLink || '';
+                    document.getElementById('conf-fb').value = d.facebookLink || '';
                 }
-            },
-            saveConfig: async (type) => {
-                const val = type === 'fb' ? document.getElementById('cfgFb').value : document.getElementById('cfgLine').value;
+            });
+        }
+
+        // --- TABLE & ACTIONS ---
+        function renderTable(users) {
+            const tbody = document.getElementById('user-table-body');
+            tbody.innerHTML = '';
+
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="font-bold text-white">${u.email}</div>
+                        <div class="text-[10px] text-gray-500 font-mono">${u.id}</div>
+                    </td>
+                    <td>
+                        <span class="text-gold text-xs border border-gold/30 px-2 py-1 rounded">${u.packageType || 'FREE'}</span>
+                    </td>
+                    <td>
+                        <div class="text-gray-300 font-tech">${u.expiryObj.toLocaleString('th-TH')}</div>
+                    </td>
+                    <td>
+                        <span class="${u.isActive ? 'status-active' : 'status-expired'}">
+                            ${u.isActive ? 'ACTIVE' : 'EXPIRED'}
+                        </span>
+                    </td>
+                    <td class="text-right space-x-2">
+                        <button onclick="addDays('${u.id}', '${u.email}')" class="bg-gray-800 hover:bg-green-900 text-green-500 px-3 py-1 rounded text-xs transition border border-gray-700" title="Add Time">
+                            <i class="fa-solid fa-clock-rotate-left"></i> เติมวัน
+                        </button>
+                         <button onclick="editUser('${u.id}', '${u.packageType || ''}')" class="bg-gray-800 hover:bg-blue-900 text-blue-500 px-3 py-1 rounded text-xs transition border border-gray-700" title="Edit Package">
+                            <i class="fa-solid fa-pen"></i> แก้ไข
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Search
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allUsers.filter(u => u.email.toLowerCase().includes(term) || u.id.includes(term));
+            renderTable(filtered);
+        });
+
+        // --- ACTIONS ---
+        window.addDays = async (uid, email) => {
+            const { value: days } = await Swal.fire({
+                title: 'เติมวันใช้งาน',
+                html: `User: <span class="text-gold">${email}</span><br>เลือกจำนวนวันที่ต้องการเพิ่ม:`,
+                input: 'select',
+                inputOptions: {
+                    '7': '7 วัน (Trial)',
+                    '30': '30 วัน (1 เดือน)',
+                    '90': '90 วัน (3 เดือน)',
+                    '365': '365 วัน (1 ปี)'
+                },
+                inputPlaceholder: 'เลือกจำนวนวัน',
+                showCancelButton: true,
+                background: '#1a1a1a', color: '#fff'
+            });
+
+            if (days) {
+                const user = allUsers.find(u => u.id === uid);
+                // If expired, start from now. If active, add to existing.
+                let baseDate = user.isActive ? user.expiryObj : new Date();
+                let newDate = new Date(baseDate.getTime() + (parseInt(days) * 24 * 60 * 60 * 1000));
+
                 try {
-                    await setDoc(doc(db, "system", "config"), { [type]: val }, { merge: true });
-                    Swal.fire('Saved', 'บันทึกการตั้งค่าเรียบร้อย', 'success');
+                    await updateDoc(doc(db, "users", uid), { expiryDate: newDate });
+                    Swal.fire({icon: 'success', title: 'เติมวันสำเร็จ!', text: `หมดอายุ: ${newDate.toLocaleString()}`, background: '#1a1a1a', color: '#fff'});
                 } catch(e) { Swal.fire('Error', e.message, 'error'); }
             }
         };
 
-        onAuthStateChanged(auth, u => {
-            if(u) {
-                document.getElementById('authOverlay').classList.add('hidden');
-                document.getElementById('admShowEmail').innerText = u.email;
-                admin.loadUsers();
-            } else {
-                document.getElementById('authOverlay').classList.remove('hidden');
+        window.editUser = async (uid, currentPack) => {
+            const { value: pack } = await Swal.fire({
+                title: 'เปลี่ยนแพ็กเกจ',
+                input: 'select',
+                inputOptions: {
+                    'FREE MEMBER': 'Free Member',
+                    'VIP TRADER': 'VIP TRADER',
+                    'VVIP DIRECTOR': 'VVIP DIRECTOR'
+                },
+                inputValue: currentPack,
+                showCancelButton: true,
+                background: '#1a1a1a', color: '#fff'
+            });
+
+            if (pack) {
+                try {
+                    await updateDoc(doc(db, "users", uid), { packageType: pack });
+                    Swal.fire({icon: 'success', title: 'บันทึกสำเร็จ', background: '#1a1a1a', color: '#fff'});
+                } catch(e) { Swal.fire('Error', e.message, 'error'); }
             }
-        });
+        };
+
+        // --- CONFIG ---
+        window.saveConfig = async () => {
+            const line = document.getElementById('conf-line').value;
+            const fb = document.getElementById('conf-fb').value;
+            
+            try {
+                await setDoc(doc(db, "system", "config"), {
+                    lineLink: line,
+                    facebookLink: fb
+                }, { merge: true });
+                Swal.fire({icon: 'success', title: 'บันทึกการตั้งค่าแล้ว', background: '#1a1a1a', color: '#fff'});
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        };
+
+        // --- NAVIGATION ---
+        window.showPage = (page) => {
+            document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('page-' + page).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active', 'text-white'));
+            document.getElementById('menu-' + page).classList.add('active', 'text-white');
+            
+            const titles = { 'dashboard': 'DASHBOARD OVERVIEW', 'users': 'USER MANAGEMENT', 'settings': 'SYSTEM SETTINGS' };
+            document.getElementById('page-title').innerText = titles[page];
+        };
+
+        window.refreshUsers = () => { /* Handled by snapshot listener automatically */ };
     </script>
 </body>
 </html>
